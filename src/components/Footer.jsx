@@ -14,7 +14,7 @@ export default function Footer() {
           yPercent: 100,
           ease: 'none',
           stagger: 0.08,
-          scrollTrigger: { trigger: '.footer-giant', start: 'top bottom', end: 'bottom bottom', scrub: 0.8 },
+          scrollTrigger: { trigger: '.footer-giant', start: 'top bottom', end: 'bottom bottom', scrub: true },
         })
       })
     },

@@ -21,7 +21,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
 function useSmoothScroll() {
   useEffect(() => {
     if (prefersReduced()) return
-    const lenis = new Lenis({ wrapper: window, content: document.documentElement, anchors: true, lerp: 0.09 })
+    const lenis = new Lenis({ wrapper: window, content: document.documentElement, anchors: true, lerp: 0.15 })
     lenis.on('scroll', ScrollTrigger.update)
     const raf = (time) => lenis.raf(time * 1000)
     gsap.ticker.add(raf)
@@ -56,7 +56,7 @@ function Page() {
         )
       })
       // Lesefortschritt
-      gsap.to('.scroll-progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } })
+      gsap.to('.scroll-progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } })
     },
     { dependencies: [lang], revertOnUpdate: true },
   )

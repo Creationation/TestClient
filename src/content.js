@@ -12,8 +12,9 @@ export const site = {
   street: 'Schulerstraße 1–3',
   city: '1010 Wien',
   instagram: 'https://www.instagram.com/', // Platzhalter
-  mapsEmbed: 'https://www.google.com/maps?q=Schulerstra%C3%9Fe+1-3,+1010+Wien&z=17&output=embed',
-  mapsLink: 'https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien',
+  // hl = Sprache der Karte (sonst übernimmt Google die Browsersprache)
+  mapsEmbed: (lang) => `https://www.google.com/maps?q=Schulerstra%C3%9Fe+1-3,+1010+Wien&z=17&hl=${lang}&output=embed`,
+  mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
   video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
 }
 

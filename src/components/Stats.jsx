@@ -18,31 +18,29 @@ export default function Stats() {
           const obj = { v: 0 }
           let shown = 0
           el.textContent = '0'
+          // Zahl zählt im Takt des Scrollens hoch
           gsap.to(obj, {
             v: end,
-            duration: end > 10 ? 2.8 : 1.6,
-            ease: 'power2.out',
+            ease: 'power1.out',
             // nur schreiben, wenn sich die Zahl wirklich ändert (spart Layout-Arbeit)
             onUpdate: () => {
               const v = Math.round(obj.v)
               if (v !== shown) el.textContent = shown = v
             },
-            scrollTrigger: { trigger: el, start: 'top 92%', once: true },
+            scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 55%', scrub: true },
           })
         })
         gsap.from('.stat-item', {
           autoAlpha: 0,
           y: 30,
-          duration: 1.6,
           stagger: 0.15,
-          scrollTrigger: { trigger: '.stat-grid', start: 'top 90%', once: true },
+          scrollTrigger: { trigger: '.stat-grid', start: 'top 95%', end: 'top 60%', scrub: true },
         })
         gsap.from('.stat-line', {
           scaleX: 0,
           transformOrigin: 'left center',
-          duration: 1.8,
-          ease: 'power3.inOut',
-          scrollTrigger: { trigger: '.stat-grid', start: 'top 90%', once: true },
+          ease: 'none',
+          scrollTrigger: { trigger: '.stat-grid', start: 'top 95%', end: 'top 50%', scrub: true },
         })
       })
       mm.add(REDUCE, () => nums.forEach((el) => (el.textContent = el.dataset.value)))

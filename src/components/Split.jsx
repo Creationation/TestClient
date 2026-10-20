@@ -3,7 +3,7 @@ import { gsap, SplitText, useGSAP, MOTION } from '../lib/gsap'
 
 // Text, der Zeile für Zeile hinter einer Maske hervorgleitet.
 // `immediate` = sofort beim Laden (Hero), sonst beim Hineinscrollen.
-export default function Split({ as: Tag = 'p', children, className = '', delay = 0, immediate = false, start = 'top 88%' }) {
+export default function Split({ as: Tag = 'p', children, className = '', delay = 0, immediate = false, start = 'top 92%' }) {
   const ref = useRef(null)
 
   useGSAP(
@@ -15,14 +15,15 @@ export default function Split({ as: Tag = 'p', children, className = '', delay =
           linesClass: 'split-line',
           autoSplit: true,
           onSplit: (self) =>
-            gsap.from(self.lines, {
-              yPercent: 110,
-              duration: 1.5,
-              ease: 'power4.out',
-              stagger: 0.11,
-              delay,
-              scrollTrigger: immediate ? undefined : { trigger: ref.current, start, once: true },
-            }),
+            immediate
+              ? gsap.from(self.lines, { yPercent: 110, duration: 1.5, ease: 'power4.out', stagger: 0.11, delay })
+              : // direkt an die Scrollposition gekoppelt – kein Nachlaufen, auch bei schnellem Scrollen
+                gsap.from(self.lines, {
+                  yPercent: 110,
+                  ease: 'power2.out',
+                  stagger: 0.15,
+                  scrollTrigger: { trigger: ref.current, start, end: 'top 60%', scrub: true },
+                }),
         })
       })
     },

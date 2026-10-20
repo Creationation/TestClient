@@ -34,16 +34,14 @@ export default function Process() {
         gsap.from('.process-line', {
           scaleX: 0,
           transformOrigin: 'left center',
-          duration: 2,
-          ease: 'power3.inOut',
-          scrollTrigger: { trigger: '.process-grid', start: 'top 85%', once: true },
+          ease: 'none',
+          scrollTrigger: { trigger: '.process-grid', start: 'top 92%', end: 'top 45%', scrub: true },
         })
         gsap.from('.process-step', {
           autoAlpha: 0,
           y: 30,
-          duration: 1.4,
           stagger: 0.14,
-          scrollTrigger: { trigger: '.process-grid', start: 'top 85%', once: true },
+          scrollTrigger: { trigger: '.process-grid', start: 'top 92%', end: 'top 50%', scrub: true },
         })
       })
     },

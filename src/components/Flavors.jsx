@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { flavors, unsplash } from '../content'
-import { setBg } from '../lib/bg'
+import { setBg, stopBg } from '../lib/bg'
 import { gsap, ScrollTrigger, useGSAP, MOTION, REDUCE } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Split from './Split'
@@ -16,10 +16,14 @@ export default function Flavors() {
   useGSAP(
     () => {
       let active = 0
+      let pinned = null // Pin-ScrollTrigger (nur mit Animation)
       const activate = (i) => {
         active = i
-        setBg(flavors[i].tone)
         if (counter.current) counter.current.textContent = String(i + 1).padStart(2, '0')
+        // Der horizontale Scroll läuft leicht nach: Farbe nur setzen, solange die Sektion
+        // noch im Bild ist – sonst würde sie den Hintergrund der nächsten Sektion überschreiben.
+        if (pinned && !pinned.isActive) return
+        setBg(flavors[i].tone)
       }
       const mm = gsap.matchMedia()
 
@@ -34,15 +38,18 @@ export default function Flavors() {
             trigger: root.current,
             start: 'top top',
             end: () => `+=${distance()}`,
-            scrub: 0.8,
+            scrub: true,
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             refreshPriority: 1,
             onEnter: () => activate(active),
             onEnterBack: () => activate(active),
+            onLeave: stopBg,
+            onLeaveBack: stopBg,
           },
         })
+        pinned = scroll.scrollTrigger
 
         gsap.to('.flavors-progress', {
           scaleX: 1,

@@ -20,7 +20,7 @@ export default function Story() {
 
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
-          scrollTrigger: { trigger: root.current, start: 'top top', end: '+=240%', scrub: 0.8, pin: true, anticipatePin: 1, refreshPriority: 2 },
+          scrollTrigger: { trigger: root.current, start: 'top top', end: '+=240%', scrub: true, pin: true, anticipatePin: 1, refreshPriority: 2 },
         })
         tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: 3 }, 0)
         fills.forEach((fill, i) => {

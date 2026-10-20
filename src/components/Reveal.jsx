@@ -15,7 +15,7 @@ export default function Reveal({ image, ratio = 0.8, sizes = '100vw', alt = '', 
         gsap.fromTo(
           ref.current,
           { clipPath: 'inset(100% 0% 0% 0%)' },
-          { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.8, ease: 'power3.inOut', scrollTrigger: { trigger: ref.current, start: 'top 90%', once: true } },
+          { clipPath: 'inset(0% 0% 0% 0%)', ease: 'power2.out', scrollTrigger: { trigger: ref.current, start: 'top 95%', end: 'top 50%', scrub: true } },
         )
         gsap.fromTo(
           img,

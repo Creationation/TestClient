@@ -59,7 +59,7 @@
     @apply h-px w-full bg-current opacity-15;
   }
   .btn {
-    @apply font-sans text-[0.68rem] font-normal tracking-[0.32em] uppercase inline-flex items-center justify-center gap-4 border px-8 py-4 transition-[background-color,color,border-color] duration-500 ease-out;
+    @apply font-sans text-[0.68rem] font-normal tracking-[0.32em] uppercase inline-flex items-center justify-center gap-4 rounded-full border px-8 py-4 transition-[background-color,color,border-color] duration-500 ease-out;
   }
   /* Masken-Zeilen von SplitText: etwas Luft für Unterlängen & Kursive */
   .split-line-mask {

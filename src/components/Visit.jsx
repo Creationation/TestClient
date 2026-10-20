@@ -3,7 +3,7 @@ import { useLang } from '../lib/lang'
 import Split from './Split'
 
 export default function Visit() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
   return (
     <section id="visit" data-bg="#1E1712" className="relative py-28 text-cream md:py-44">
@@ -35,7 +35,7 @@ export default function Visit() {
           </div>
 
           <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-6">
-            <a href={site.mapsLink} target="_blank" rel="noreferrer" className="btn border-gold bg-gold text-espresso hover:border-cream hover:bg-cream">
+            <a href={site.mapsLink(lang)} target="_blank" rel="noreferrer" className="btn border-gold bg-gold text-espresso hover:border-cream hover:bg-cream">
               {t.visit.directions}
               <span aria-hidden="true">→</span>
             </a>
@@ -49,7 +49,8 @@ export default function Visit() {
         <div className="relative h-[350px] overflow-hidden rounded-[20px] bg-cream/5 md:rounded-[26px] md:h-[450px] lg:sticky lg:top-28 lg:self-start">
           <iframe
             title={t.visit.mapTitle}
-            src={site.mapsEmbed}
+            key={lang}
+            src={site.mapsEmbed(lang)}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             className="absolute inset-0 h-full w-full border-0 [filter:grayscale(1)_sepia(0.28)_contrast(0.95)_brightness(0.97)]"
