@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { flavors, unsplash } from '../content'
+import { gsap } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
 
@@ -29,6 +30,63 @@ export default function Flavors() {
     setIndex(Math.min(flavors.length - 1, Math.round(el.scrollLeft / step())))
   }
   const go = (dir) => track.current?.scrollBy({ left: dir * step(), behavior: 'smooth' })
+
+  // Touch: senkrecht wischen scrollt die Seite (Browser, touch-action: pan-y),
+  // waagrecht wischen bewegt nur die Fotos – mit Einrasten auf die nächste Karte.
+  useEffect(() => {
+    const el = track.current
+    let drag = null
+    const down = (e) => {
+      if (e.pointerType !== 'touch') return
+      gsap.killTweensOf(el) // laufendes Einrasten stoppen, Finger übernimmt
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, left: el.scrollLeft, t: performance.now(), axis: null, lastX: e.clientX, lastT: performance.now(), v: 0 }
+    }
+    const move = (e) => {
+      if (!drag || e.pointerId !== drag.id) return
+      const dx = e.clientX - drag.x
+      const dy = e.clientY - drag.y
+      if (!drag.axis) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return
+        drag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+        if (drag.axis === 'y') return void (drag = null) // Seite scrollt nativ weiter
+        el.style.scrollSnapType = 'none'
+      }
+      const now = performance.now()
+      drag.v = (e.clientX - drag.lastX) / Math.max(1, now - drag.lastT)
+      drag.lastX = e.clientX
+      drag.lastT = now
+      el.scrollLeft = drag.left - dx
+    }
+    const up = (e) => {
+      if (!drag || e.pointerId !== drag.id) return
+      const { axis, v, left } = drag
+      drag = null
+      if (axis !== 'x') return // abgebrochen, bevor eine Richtung feststand
+      const s = step()
+      const max = el.scrollWidth - el.clientWidth
+      const moved = el.scrollLeft - left
+      let i = Math.round(left / s)
+      // schon ein kurzes Stück oder ein kleiner Schwung reicht für die nächste Karte
+      if (Math.abs(moved) > s * 0.18 || Math.abs(v) > 0.3) i += Math.sign(moved || -v) * Math.max(1, Math.round(Math.abs(moved) / s))
+      // eigenes Einrasten per GSAP – lässt sich nicht von nativen Scroll-Gesten abbrechen
+      gsap.to(el, {
+        scrollLeft: Math.min(max, Math.max(0, i * s)),
+        duration: 0.45,
+        ease: 'power3.out',
+        onComplete: () => (el.style.scrollSnapType = ''),
+      })
+    }
+    el.addEventListener('pointerdown', down)
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', up)
+    return () => {
+      el.removeEventListener('pointerdown', down)
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', up)
+    }
+  }, [])
 
   return (
     <section id="flavors" data-bg="#C4D0BC" className="relative overflow-hidden py-24 text-ink md:py-32">
@@ -61,12 +119,11 @@ export default function Flavors() {
         </div>
       </div>
 
-      {/* data-lenis-prevent: der Smooth-Scroll greift hier nicht ein, Wischen bleibt nativ */}
+      {/* touch-pan-y: senkrechtes Wischen scrollt die Seite, waagrechtes übernimmt der Effekt oben */}
       <ul
         ref={track}
         onScroll={onScroll}
-        data-lenis-prevent
-        className="mt-10 flex snap-x snap-mandatory scroll-px-6 gap-5 overflow-x-auto overscroll-x-contain px-6 pb-2 [scrollbar-width:none] sm:scroll-px-10 sm:gap-8 sm:px-10 md:mt-14 lg:scroll-px-16 lg:gap-10 lg:px-16 [&::-webkit-scrollbar]:hidden"
+        className="mt-10 flex touch-pan-y snap-x snap-mandatory scroll-px-6 gap-5 overflow-x-auto overscroll-x-contain px-6 pb-2 [scrollbar-width:none] sm:scroll-px-10 sm:gap-8 sm:px-10 md:mt-14 lg:scroll-px-16 lg:gap-10 lg:px-16 [&::-webkit-scrollbar]:hidden"
       >
         {flavors.map((f, i) => {
           const c = f[lang]
