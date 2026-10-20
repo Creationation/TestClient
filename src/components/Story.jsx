@@ -38,8 +38,8 @@ export default function Story() {
 
   return (
     <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
-      <div className="container-x grid h-full items-center gap-6 pt-20 pb-8 motion-reduce:py-28 md:grid-cols-[1fr_1.05fr] md:gap-16 md:pt-24 md:pb-12 lg:gap-24">
-        <figure className="relative h-[34svh] w-full overflow-hidden rounded-[22px] md:mx-auto md:h-[74svh] md:max-h-[780px] md:max-w-[540px] md:rounded-[28px]">
+      <div className="container-x grid h-full content-center items-center gap-6 pt-20 pb-8 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid-cols-[1fr_1.05fr] lg:content-normal lg:gap-24">
+        <figure className="relative h-[34svh] w-full overflow-hidden rounded-[22px] md:h-[42svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px]">
           <img
             src={src(900)}
             sizes="(min-width: 768px) 540px, 100vw"

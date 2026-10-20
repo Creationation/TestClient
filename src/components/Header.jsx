@@ -36,7 +36,7 @@ export default function Header() {
           <Logo city={false} />
         </a>
         <div className="flex items-center gap-6 md:gap-12">
-          <ul className="hidden items-center gap-10 md:flex">
+          <ul className="hidden items-center gap-10 lg:flex">
             {links.map(([href, label]) => (
               <li key={href}>
                 <a href={href} className="label opacity-80 transition-opacity duration-300 hover:opacity-100">
@@ -67,7 +67,7 @@ export default function Header() {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={t.nav.menu}
-            className="-mr-2 flex h-10 w-10 flex-col items-center justify-center gap-[7px] md:hidden"
+            className="-mr-2 flex h-10 w-10 flex-col items-center justify-center gap-[7px] lg:hidden"
           >
             <span className={`h-px w-6 bg-current transition-transform duration-300 ${open ? 'translate-y-[4px] rotate-45' : ''}`} />
             <span className={`h-px w-6 bg-current transition-transform duration-300 ${open ? '-translate-y-[4px] -rotate-45' : ''}`} />
@@ -75,7 +75,7 @@ export default function Header() {
         </div>
       </nav>
       {open && (
-        <ul id="mobile-nav" className="container-x flex flex-col pb-6 md:hidden">
+        <ul id="mobile-nav" className="container-x flex flex-col pb-6 lg:hidden">
           {links.map(([href, label]) => (
             <li key={href} className="border-t border-forest/10">
               <a href={href} onClick={() => setOpen(false)} className="font-display block py-4 text-2xl">
