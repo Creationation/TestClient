@@ -63,7 +63,19 @@ export const flavors = [
   },
 ]
 
+// Kugel-Szene: Farben der Eiskugel & Hintergrund-Tönung je Sorte
+export const scoopFlavors = [
+  { key: 'pistazie', bg: '#E6E8D6', light: '#EEF1DC', mid: '#C3CC9C', dark: '#93A06A', lip: '#B5C08C', bit: '#76844A' },
+  { key: 'erdbeere', bg: '#F1DEDA', light: '#FBE4E4', mid: '#ECB0B5', dark: '#CF7D87', lip: '#E29CA4', bit: '#B94A5B' },
+  { key: 'schokolade', bg: '#E8DACB', light: '#B78E76', mid: '#7D5443', dark: '#523226', lip: '#6C4737', bit: '#3A2219' },
+]
+
 export const images = {
+  offer: [
+    { id: '1689076758310-92b693fe6b8b' },
+    { id: '1534778101976-62847782c213' },
+    { id: '1611292984550-6dd8def2e668' },
+  ],
   story: { id: '1516550893923-42d28e5677af', crop: '&crop=focalpoint&fp-x=0.3&fp-y=0.45&fp-z=1.3' },
   // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
   gallery: [
@@ -85,6 +97,30 @@ export const content = {
       tagline: 'Italienisches Gelato, jeden Morgen frisch gerührt – eine Minute vom Stephansdom.',
       cta: 'Sorten entdecken',
       videoLabel: 'Ein Blick in unsere Gelateria in der Schulerstraße',
+    },
+    intro: {
+      eyebrow: 'Il gelato',
+      statement: 'Gelato, wie es in Italien sein soll – cremig, ehrlich, jeden Tag frisch.',
+      flavors: ['Pistazie', 'Erdbeere', 'Schokolade'],
+    },
+    process: {
+      eyebrow: 'Handwerk',
+      title: 'So entsteht unser Gelato.',
+      steps: [
+        { title: 'Auswählen', text: 'Pistazien aus Bronte, Haselnüsse aus dem Piemont, Milch von Bauern aus dem Wienerwald.' },
+        { title: 'Rühren', text: 'Jeden Morgen in kleinen Chargen, langsam und mit wenig Luft – dafür bleibt es so dicht.' },
+        { title: 'Reifen', text: 'Die Basis ruht über Nacht, damit sich die Aromen voll entfalten können.' },
+        { title: 'Servieren', text: 'Mit der Spatel, nie mit der Kugelzange – so wie in jeder echten Gelateria.' },
+      ],
+    },
+    offer: {
+      eyebrow: 'Mehr als Gelato',
+      title: 'Ein Salon für den süßen Moment.',
+      items: [
+        { title: 'Gelato', text: 'Vierundzwanzig Sorten, täglich frisch – von Klassikern bis zu saisonalen Ideen.' },
+        { title: 'Caffè', text: 'Espresso, Cappuccino und Affogato, zubereitet wie in einer römischen Bar.' },
+        { title: 'Dolci', text: 'Cannoli, Brioche und kleine Pasticceria – perfekt zum Gelato oder Kaffee.' },
+      ],
     },
     story: {
       eyebrow: 'Unsere Geschichte',
@@ -154,6 +190,30 @@ export const content = {
       tagline: 'Italian gelato, freshly churned every morning – one minute from St. Stephen’s Cathedral.',
       cta: 'Discover flavours',
       videoLabel: 'A look inside our gelateria in Schulerstraße',
+    },
+    intro: {
+      eyebrow: 'Il gelato',
+      statement: 'Gelato the way it should be in Italy – creamy, honest, fresh every day.',
+      flavors: ['Pistachio', 'Strawberry', 'Chocolate'],
+    },
+    process: {
+      eyebrow: 'Craft',
+      title: 'How our gelato is made.',
+      steps: [
+        { title: 'Select', text: 'Pistachios from Bronte, hazelnuts from Piedmont, milk from farmers in the Vienna Woods.' },
+        { title: 'Churn', text: 'Every morning in small batches, slowly and with little air – that keeps it so dense.' },
+        { title: 'Rest', text: 'The base rests overnight so the flavours can fully develop.' },
+        { title: 'Serve', text: 'With a spatula, never a scoop – just like in every true gelateria.' },
+      ],
+    },
+    offer: {
+      eyebrow: 'More than gelato',
+      title: 'A salon for the sweet moment.',
+      items: [
+        { title: 'Gelato', text: 'Twenty-four flavours, fresh every day – from classics to seasonal ideas.' },
+        { title: 'Caffè', text: 'Espresso, cappuccino and affogato, made like in a Roman bar.' },
+        { title: 'Dolci', text: 'Cannoli, brioche and small pasticceria – perfect with gelato or coffee.' },
+      ],
     },
     story: {
       eyebrow: 'Our story',

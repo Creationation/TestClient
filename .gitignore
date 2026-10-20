@@ -26,3 +26,6 @@ dist-ssr
 # Playwright-Screenshots
 .playwright-mcp
 .vercel
+
+.vercel
+.env*

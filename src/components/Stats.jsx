@@ -51,7 +51,7 @@ export default function Stats() {
   )
 
   return (
-    <section ref={root} id="stats" className="relative bg-cream py-28 text-ink md:py-44">
+    <section ref={root} id="stats" data-bg="#F4EFE6" className="relative py-28 text-ink md:py-44">
       <div className="container-x">
         <p className="label text-pistachio">{t.stats.eyebrow}</p>
         <Split as="h2" className="font-display mt-6 max-w-[14ch] text-[clamp(2.6rem,8vw,5.5rem)] leading-[0.98]">

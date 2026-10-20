@@ -6,7 +6,7 @@ export default function Visit() {
   const { t } = useLang()
 
   return (
-    <section id="visit" className="relative bg-espresso py-28 text-cream md:py-44">
+    <section id="visit" data-bg="#1E1712" className="relative py-28 text-cream md:py-44">
       <div className="container-x grid gap-16 lg:grid-cols-[1fr_1.15fr] lg:gap-24">
         <div>
           <p className="label text-gold">{t.visit.eyebrow}</p>
@@ -46,7 +46,7 @@ export default function Visit() {
         </div>
 
         {/* Karte: rechteckig, vollständig sichtbar, warm entsättigt */}
-        <div className="relative h-[350px] overflow-hidden rounded-[4px] bg-cream/5 md:h-[450px] lg:sticky lg:top-28 lg:self-start">
+        <div className="relative h-[350px] overflow-hidden rounded-[20px] bg-cream/5 md:rounded-[26px] md:h-[450px] lg:sticky lg:top-28 lg:self-start">
           <iframe
             title={t.visit.mapTitle}
             src={site.mapsEmbed}

@@ -22,7 +22,8 @@
     background: var(--color-espresso);
   }
   body {
-    @apply bg-cream font-sans text-ink antialiased;
+    /* transparent: darunter liegt die animierte Hintergrundebene #bg */
+    @apply font-sans text-ink antialiased;
     font-weight: 300;
   }
   ::selection {

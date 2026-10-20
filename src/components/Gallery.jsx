@@ -10,7 +10,7 @@ export default function Gallery() {
   const { t } = useLang()
 
   return (
-    <section id="gallery" className="relative bg-cream pb-28 text-ink md:pb-44">
+    <section id="gallery" data-bg="#F4EFE6" className="relative pb-28 text-ink md:pb-44">
       <div className="container-x">
         <div className="flex flex-col justify-between gap-6 border-t border-ink/15 pt-16 md:flex-row md:items-end md:pt-24">
           <div>

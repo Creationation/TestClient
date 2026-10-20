@@ -18,7 +18,7 @@ export default function Flavors() {
       let active = 0
       const activate = (i) => {
         active = i
-        setBg(root.current, flavors[i].tone)
+        setBg(flavors[i].tone)
         if (counter.current) counter.current.textContent = String(i + 1).padStart(2, '0')
       }
       const mm = gsap.matchMedia()
@@ -76,7 +76,7 @@ export default function Flavors() {
   )
 
   return (
-    <section ref={root} id="flavors" className="relative overflow-hidden bg-espresso text-cream motion-safe:h-svh motion-safe:min-h-[680px]">
+    <section ref={root} id="flavors" data-bg="#1E1712" className="relative overflow-hidden text-cream motion-safe:h-svh motion-safe:min-h-[680px]">
       <div className="flex h-full flex-col justify-center gap-8 pt-24 pb-8 motion-reduce:py-28 md:gap-12 md:pt-28">
         <div className="container-x flex items-end justify-between gap-6">
           <div>
@@ -98,7 +98,7 @@ export default function Flavors() {
               const c = f[lang]
               return (
                 <li key={f.key} className="flavor-card flex w-[74vw] shrink-0 snap-start flex-col sm:w-[44vw] lg:w-[clamp(300px,24vw,380px)]">
-                  <div className="relative aspect-[4/5] max-h-[46svh] w-full overflow-hidden rounded-[2px] bg-cream/5 md:max-h-[50svh]">
+                  <div className="relative aspect-[4/5] max-h-[46svh] w-full overflow-hidden rounded-[20px] bg-cream/5 md:max-h-[50svh] md:rounded-[26px]">
                     <img
                       src={cardSrc(f.image, 760)}
                       srcSet={`${cardSrc(f.image, 480)} 480w, ${cardSrc(f.image, 760)} 760w, ${cardSrc(f.image, 1100)} 1100w`}

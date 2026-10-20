@@ -38,7 +38,7 @@ export default function Hero() {
 
       <div className="relative mx-auto h-full max-w-[1520px] md:grid md:grid-cols-[1fr_auto] md:items-center md:gap-16 md:px-16 md:pt-20 lg:gap-24">
         {/* Video: immer komplett sichtbar (contain), nie beschnitten */}
-        <div className="hero-frame absolute inset-0 md:relative md:inset-auto md:order-2 md:aspect-[9/16] md:h-[min(85svh,calc(100svh-7.5rem))]">
+        <div className="hero-frame absolute inset-0 md:relative md:inset-auto md:order-2 md:overflow-hidden md:rounded-[28px] md:aspect-[9/16] md:h-[min(85svh,calc(100svh-7.5rem))]">
           <video
             className="hero-video h-full w-full object-contain object-top md:object-center"
             autoPlay

@@ -28,7 +28,7 @@ export default function Reveal({ image, ratio = 0.8, sizes = '100vw', alt = '', 
   )
 
   return (
-    <div ref={ref} className={`relative overflow-hidden rounded-[2px] bg-espresso/10 ${className}`} style={fill ? undefined : { aspectRatio: ratio }}>
+    <div ref={ref} className={`relative overflow-hidden rounded-[20px] bg-espresso/10 md:rounded-[28px] ${className}`} style={fill ? undefined : { aspectRatio: ratio }}>
       <img
         src={src(900)}
         srcSet={`${src(500)} 500w, ${src(900)} 900w, ${src(1400)} 1400w`}
