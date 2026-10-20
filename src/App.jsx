@@ -4,7 +4,6 @@ import { gsap, ScrollTrigger, useGSAP, prefersReduced } from './lib/gsap'
 import { LangProvider, useLang } from './lib/lang'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import Intro from './components/Intro'
 import Story from './components/Story'
 import Flavors from './components/Flavors'
 import Marquee from './components/Marquee'
@@ -82,7 +81,6 @@ function Page() {
       <Header />
       <main>
         <Hero />
-        <Intro />
         <Story />
         <Flavors />
         <Marquee />

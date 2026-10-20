@@ -61,13 +61,6 @@ export const flavors = [
   },
 ]
 
-// Kugel-Szene: drei Kugeln wie die Skulptur im Salon – unten Erdbeere, Mitte Vanille, oben Pistazie
-export const scoopFlavors = [
-  { key: 'erdbeere', light: '#FCE6E9', mid: '#F2C1C9', dark: '#D9909F', crease: '#C77A8B', bit: '#CF5069', seed: '#F6D98B' },
-  { key: 'vanille', light: '#FFFDF7', mid: '#F5EDDA', dark: '#DCCBA6', crease: '#C9B48A', bit: '#3A2A20', seed: '#3A2A20', chunks: false },
-  { key: 'pistazie', light: '#F2F8EC', mid: '#D3E4C9', dark: '#A7C19C', crease: '#8FAA85', bit: '#7D9A5F', seed: '#5E7A45' },
-]
-
 export const images = {
   // „Mehr als Gelato“: Videos aus dem Salon (vom Kunden), Kaffee als Foto
   offer: [
@@ -99,14 +92,8 @@ export const content = {
     hero: {
       kicker: 'Artisan Gelato · Caffè & Desserts',
       tagline: 'Hausgemachtes Gelato, feiner Kaffee und Desserts, eine Minute vom Stephansdom.',
-      status: 'Bald geöffnet',
       cta: 'Sorten entdecken',
       videoLabel: 'Ein Blick in unsere Gelateria in der Schulerstraße',
-    },
-    intro: {
-      eyebrow: 'Il gelato',
-      statement: 'Gelato, wie es in Italien sein soll: cremig, ehrlich, jeden Tag frisch.',
-      flavors: ['Erdbeere', 'Vanille', 'Pistazie'],
     },
     process: {
       eyebrow: 'Handwerk',
@@ -169,7 +156,7 @@ export const content = {
     },
     visit: {
       eyebrow: 'Besuch uns',
-      title: 'Gleich ums Eck vom Dom.',
+      title: 'Gleich ums Eck vom Stephansdom.',
       hoursTitle: 'Öffnungszeiten',
       hours: [
         { days: 'Montag bis Freitag', time: '11 bis 22 Uhr' },
@@ -196,14 +183,8 @@ export const content = {
     hero: {
       kicker: 'Artisan Gelato · Caffè & Desserts',
       tagline: 'Handmade gelato, fine coffee and desserts, one minute from St. Stephen’s Cathedral.',
-      status: 'Opening soon',
       cta: 'Discover flavours',
       videoLabel: 'A look inside our gelateria in Schulerstraße',
-    },
-    intro: {
-      eyebrow: 'Il gelato',
-      statement: 'Gelato the way it should be in Italy: creamy, honest, fresh every day.',
-      flavors: ['Strawberry', 'Vanilla', 'Pistachio'],
     },
     process: {
       eyebrow: 'Craft',
@@ -266,7 +247,7 @@ export const content = {
     },
     visit: {
       eyebrow: 'Visit us',
-      title: 'Just around the corner from the cathedral.',
+      title: 'Just around the corner from St. Stephen’s Cathedral.',
       hoursTitle: 'Opening hours',
       hours: [
         { days: 'Monday to Friday', time: '11 am to 10 pm' },

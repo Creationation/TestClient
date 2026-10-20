@@ -60,7 +60,6 @@ export default function Hero() {
         <div className="hero-copy absolute inset-x-0 bottom-0 z-10 px-6 pb-10 sm:px-10 md:static md:order-1 md:p-0">
           <div className="hero-fade flex flex-wrap items-center gap-x-4 gap-y-3">
             <p className="label text-gold-light">{t.hero.kicker}</p>
-            <span className="label rounded-full border border-gold-light/50 px-3 py-1.5 text-[0.6rem] text-gold-light">{t.hero.status}</span>
           </div>
           {/* Schriftzug wie an der Wand des Salons */}
           <h1 aria-label="Gelati am Dom Wien" className="mt-6 text-[clamp(3rem,14vw,4.6rem)] md:mt-10 md:text-[clamp(4rem,6.6vw,8rem)]">
