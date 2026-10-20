@@ -25,15 +25,22 @@ const Strawberry = () => (
   </svg>
 )
 
-const Chocolate = () => (
-  <svg viewBox="0 0 40 34" className="h-full w-full">
-    <path d="M6 6 30 3 36 26 10 31Z" fill="#4A2C21" />
-    <path d="M6 6 30 3 31 8 8 11Z" fill="#6A4334" />
-    <path d="M10 14 31 11" stroke="#3A2219" strokeWidth="1.5" />
+// Vanilleschote mit Blüte
+const Vanilla = () => (
+  <svg viewBox="0 0 44 44" className="h-full w-full">
+    <path d="M6 38 C14 30 26 16 38 6" stroke="#3A2A20" strokeWidth="3.2" strokeLinecap="round" fill="none" />
+    <path d="M7 37 C15 29 27 15 37 7" stroke="#6B4E3A" strokeWidth="1" strokeLinecap="round" fill="none" />
+    <g transform="translate(30 30)">
+      {[0, 72, 144, 216, 288].map((r) => (
+        <ellipse key={r} cx="0" cy="-6" rx="3.6" ry="6" fill="#FFF8E6" stroke="#E8D9B5" strokeWidth="0.6" transform={`rotate(${r})`} />
+      ))}
+      <circle r="2.4" fill="#E9C46A" />
+    </g>
   </svg>
 )
 
-const KINDS = [Pistachio, Strawberry, Chocolate]
+// Reihenfolge wie die Kugeln: Erdbeere, Vanille, Pistazie
+const KINDS = [Strawberry, Vanilla, Pistachio]
 
 // Position (in % der Bühne), Größe (px), Startdrehung
 const LAYOUT = [

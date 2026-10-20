@@ -7,7 +7,7 @@ import Ingredients from './Ingredients'
 import WallPanel from './WallPanel'
 
 // Eiskugel-Szene: Beim Scrollen entsteht Kugel für Kugel ein Gelato
-// (Pistazie → Erdbeere → Schokolade). Zutaten schweben herein,
+// (Erdbeere → Vanille → Pistazie, wie die Skulptur im Salon). Zutaten schweben herein,
 // das Statement leuchtet Wort für Wort auf. Alles hängt direkt am Scroll (scrub: true).
 export default function Intro() {
   const { t } = useLang()
@@ -33,7 +33,6 @@ export default function Intro() {
         // „Kamera“ zoomt langsam heraus, während der Turm wächst
         tl.fromTo('.tower-cam', { scale: 1.5, yPercent: 20 }, { scale: 1, yPercent: 0, duration: 3.6, ease: 'power1.inOut' }, 0)
           .fromTo('.intro-wall', { yPercent: 6 }, { yPercent: -4, duration: 4 }, 0)
-          .to('.ball-tex', { rotate: 300, svgOrigin: '200 215', duration: 4 }, 0)
           .fromTo('.intro-word', { opacity: 0.14 }, { opacity: 1, stagger: 2.4 / words.length, duration: 0.3 }, 0)
 
         scoopFlavors.forEach((_, i) => {

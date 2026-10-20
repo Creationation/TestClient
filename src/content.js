@@ -61,11 +61,11 @@ export const flavors = [
   },
 ]
 
-// Kugel-Szene: Farben der drei Eiskugeln
+// Kugel-Szene: drei Kugeln wie die Skulptur im Salon – unten Erdbeere, Mitte Vanille, oben Pistazie
 export const scoopFlavors = [
-  { key: 'pistazie', light: '#EEF1DC', mid: '#C3CC9C', dark: '#93A06A', lip: '#B5C08C', bit: '#76844A' },
-  { key: 'erdbeere', light: '#FBE4E4', mid: '#ECB0B5', dark: '#CF7D87', lip: '#E29CA4', bit: '#B94A5B' },
-  { key: 'schokolade', light: '#B78E76', mid: '#7D5443', dark: '#523226', lip: '#6C4737', bit: '#3A2219' },
+  { key: 'erdbeere', light: '#FCE6E9', mid: '#F2C1C9', dark: '#D9909F', crease: '#C77A8B', bit: '#CF5069', seed: '#F6D98B' },
+  { key: 'vanille', light: '#FFFDF7', mid: '#F5EDDA', dark: '#DCCBA6', crease: '#C9B48A', bit: '#3A2A20', seed: '#3A2A20', chunks: false },
+  { key: 'pistazie', light: '#F2F8EC', mid: '#D3E4C9', dark: '#A7C19C', crease: '#8FAA85', bit: '#7D9A5F', seed: '#5E7A45' },
 ]
 
 export const images = {
@@ -101,7 +101,7 @@ export const content = {
     intro: {
       eyebrow: 'Il gelato',
       statement: 'Gelato, wie es in Italien sein soll – cremig, ehrlich, jeden Tag frisch.',
-      flavors: ['Pistazie', 'Erdbeere', 'Schokolade'],
+      flavors: ['Erdbeere', 'Vanille', 'Pistazie'],
     },
     process: {
       eyebrow: 'Handwerk',
@@ -195,7 +195,7 @@ export const content = {
     intro: {
       eyebrow: 'Il gelato',
       statement: 'Gelato the way it should be in Italy – creamy, honest, fresh every day.',
-      flavors: ['Pistachio', 'Strawberry', 'Chocolate'],
+      flavors: ['Strawberry', 'Vanilla', 'Pistachio'],
     },
     process: {
       eyebrow: 'Craft',
