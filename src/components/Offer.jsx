@@ -1,19 +1,19 @@
 import { images } from '../content'
 import { useLang } from '../lib/lang'
 import Reveal from './Reveal'
-import Split from './Split'
+import Appear from './Appear'
 
 // „Mehr als Gelato“: Gelato, Caffè, Dolci
 export default function Offer() {
   const { t } = useLang()
 
   return (
-    <section id="offer" data-bg="#F4EFE6" className="relative py-28 text-ink md:py-40">
+    <section id="offer" data-bg="#F3F6EF" className="relative py-28 text-ink md:py-40">
       <div className="container-x">
         <p className="label text-pistachio">{t.offer.eyebrow}</p>
-        <Split as="h2" className="font-display mt-6 max-w-[14ch] text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
+        <Appear as="h2" className="font-display mt-6 max-w-[14ch] text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
           {t.offer.title}
-        </Split>
+        </Appear>
 
         <div className="mt-16 grid gap-12 md:mt-24 md:grid-cols-3 md:gap-8 lg:gap-12">
           {t.offer.items.map((item, i) => (

@@ -55,8 +55,6 @@ function Page() {
           },
         )
       })
-      // Lesefortschritt
-      gsap.to('.scroll-progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } })
     },
     { dependencies: [lang], revertOnUpdate: true },
   )
@@ -78,8 +76,7 @@ function Page() {
 
   return (
     <>
-      <div id="bg" aria-hidden="true" className="fixed inset-0 -z-10 bg-cream" />
-      <div aria-hidden="true" className="scroll-progress fixed inset-x-0 top-0 z-[60] h-[2px] origin-left scale-x-0 bg-gold" />
+      <div id="bg" aria-hidden="true" className="fixed inset-0 -z-10 bg-mint" />
       <Header />
       <main>
         <Hero />

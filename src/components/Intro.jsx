@@ -4,12 +4,10 @@ import { gsap, useGSAP, MOTION } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import GelatoTower from './GelatoTower'
 import Ingredients from './Ingredients'
-
-const first = scoopFlavors[0]
-const last = scoopFlavors.at(-1)
+import WallPanel from './WallPanel'
 
 // Eiskugel-Szene: Beim Scrollen entsteht Kugel für Kugel ein Gelato
-// (Pistazie → Erdbeere → Schokolade). Zutaten schweben herein, der Hintergrund tönt sich,
+// (Pistazie → Erdbeere → Schokolade). Zutaten schweben herein,
 // das Statement leuchtet Wort für Wort auf. Alles hängt direkt am Scroll (scrub: true).
 export default function Intro() {
   const { t } = useLang()
@@ -19,7 +17,6 @@ export default function Intro() {
   useGSAP(
     () => {
       gsap.matchMedia().add(MOTION, () => {
-        const bg = document.getElementById('bg') // liegt außerhalb des Scopes
         const balls = gsap.utils.toArray('.tower-ball')
         const ings = gsap.utils.toArray('.ing')
 
@@ -35,11 +32,11 @@ export default function Intro() {
 
         // „Kamera“ zoomt langsam heraus, während der Turm wächst
         tl.fromTo('.tower-cam', { scale: 1.5, yPercent: 20 }, { scale: 1, yPercent: 0, duration: 3.6, ease: 'power1.inOut' }, 0)
-          .fromTo('.intro-ring', { scale: 0.75, rotate: 0 }, { scale: 1.15, rotate: 120, duration: 4 }, 0)
+          .fromTo('.intro-wall', { yPercent: 6 }, { yPercent: -4, duration: 4 }, 0)
           .to('.ball-tex', { rotate: 300, svgOrigin: '200 215', duration: 4 }, 0)
           .fromTo('.intro-word', { opacity: 0.14 }, { opacity: 1, stagger: 2.4 / words.length, duration: 0.3 }, 0)
 
-        scoopFlavors.forEach((f, i) => {
+        scoopFlavors.forEach((_, i) => {
           const at = 0.1 + i * 1.05
           const items = ings[i].querySelectorAll('.ing-item')
           // Kugel fällt auf die Waffel bzw. die Kugel darunter und federt kurz ein
@@ -54,7 +51,6 @@ export default function Intro() {
           if (i > 0) {
             const prev = ings[i - 1].querySelectorAll('.ing-item')
             tl.to(prev, { autoAlpha: 0, scale: 0.6, y: -120, stagger: 0.03, duration: 0.35 }, at + 0.1)
-              .to(bg, { backgroundColor: f.bg, duration: 0.5 }, at + 0.1)
               .to(`.intro-name-${i - 1}`, { opacity: 0.3, duration: 0.2 }, at + 0.3)
               .to(`.intro-name-${i}`, { opacity: 1, duration: 0.2 }, at + 0.3)
               .fromTo(`.intro-bar-${i}`, { scaleX: 0 }, { scaleX: 1, duration: 0.8 }, at)
@@ -71,7 +67,7 @@ export default function Intro() {
   )
 
   return (
-    <section ref={root} id="intro" data-bg={first.bg} data-bg-end={last.bg} className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
+    <section ref={root} id="intro" data-bg="#DFE7D8" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
       <div className="container-x flex h-full flex-col gap-4 pt-20 pb-6 md:grid md:grid-cols-[1fr_1.1fr] md:items-center md:gap-12 md:pt-24 md:pb-10">
         <div className="relative z-10">
           <p className="label text-gold">{t.intro.eyebrow}</p>
@@ -96,10 +92,9 @@ export default function Intro() {
         </div>
 
         <div className="relative min-h-0 flex-1 overflow-hidden md:h-[80svh] md:flex-none">
-          {/* feine goldene Ringe hinter dem Gelato */}
-          <div aria-hidden="true" className="absolute inset-0 grid place-items-center">
-            <span className="intro-ring absolute aspect-square h-[78%] rounded-full border border-gold/30" />
-            <span className="intro-ring absolute aspect-square h-[58%] rounded-full border border-dashed border-gold/25" />
+          {/* geschwungene, hinterleuchtete Wand mit Efeu – wie im Salon */}
+          <div aria-hidden="true" className="intro-wall absolute inset-0 flex justify-center">
+            <WallPanel className="h-full w-auto" />
           </div>
           <Ingredients />
           <div className="tower-cam absolute inset-0 flex items-end justify-center will-change-transform">

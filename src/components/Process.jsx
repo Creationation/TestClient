@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { gsap, useGSAP, MOTION } from '../lib/gsap'
 import { useLang } from '../lib/lang'
-import Split from './Split'
+import Appear from './Appear'
 
 // Feine Linien-Icons je Arbeitsschritt
 const ICONS = [
@@ -31,12 +31,6 @@ export default function Process() {
   useGSAP(
     () => {
       gsap.matchMedia().add(MOTION, () => {
-        gsap.from('.process-line', {
-          scaleX: 0,
-          transformOrigin: 'left center',
-          ease: 'none',
-          scrollTrigger: { trigger: '.process-grid', start: 'top 92%', end: 'top 45%', scrub: true },
-        })
         gsap.from('.process-step', {
           autoAlpha: 0,
           y: 30,
@@ -49,21 +43,20 @@ export default function Process() {
   )
 
   return (
-    <section ref={root} id="process" data-bg="#EAE2D4" className="relative py-28 text-ink md:py-40">
+    <section ref={root} id="process" data-bg="#DFE7D8" className="relative py-28 text-ink md:py-40">
       <div className="container-x">
         <div className="grid gap-8 md:grid-cols-2 md:items-end">
           <div>
             <p className="label text-pistachio">{t.process.eyebrow}</p>
-            <Split as="h2" className="font-display mt-6 max-w-[13ch] text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
+            <Appear as="h2" className="font-display mt-6 max-w-[13ch] text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
               {t.process.title}
-            </Split>
+            </Appear>
           </div>
         </div>
 
-        <div className="process-grid relative mt-16 grid gap-y-12 sm:grid-cols-2 sm:gap-x-10 md:mt-24 lg:grid-cols-4">
-          <span className="process-line absolute inset-x-0 top-0 h-px bg-ink/15" aria-hidden="true" />
+        <div className="process-grid relative mt-16 grid gap-4 sm:grid-cols-2 md:mt-24 md:gap-6 lg:grid-cols-4">
           {t.process.steps.map((s, i) => (
-            <div key={i} className="process-step pt-10">
+            <div key={i} className="process-step molding bg-paper/40 px-8 pt-10 pb-12">
               <div className="flex items-center justify-between">
                 <span className="font-display text-3xl text-gold italic">0{i + 1}</span>
                 <svg viewBox="0 0 24 24" className="h-7 w-7 text-ink-soft" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

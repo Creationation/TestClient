@@ -1,10 +1,10 @@
 import { useRef } from 'react'
-import { images, unsplash } from '../content'
+import { images, imageSrc } from '../content'
 import { gsap, useGSAP, MOTION } from '../lib/gsap'
 import { useLang } from '../lib/lang'
-import Split from './Split'
+import Appear from './Appear'
 
-const src = (w) => unsplash(images.story.id, w, Math.round(w * 1.3), images.story.crop)
+const src = (w) => imageSrc(images.story, w, Math.round(w * 1.3))
 
 // Sektion bleibt stehen: das Bild ist fix, die drei Absätze lösen einander ab.
 export default function Story() {
@@ -37,12 +37,11 @@ export default function Story() {
   )
 
   return (
-    <section ref={root} id="story" data-bg="#F4EFE6" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
+    <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
       <div className="container-x grid h-full items-center gap-6 pt-20 pb-8 motion-reduce:py-28 md:grid-cols-[1fr_1.05fr] md:gap-16 md:pt-24 md:pb-12 lg:gap-24">
         <figure className="relative h-[34svh] w-full overflow-hidden rounded-[22px] md:mx-auto md:h-[74svh] md:max-h-[780px] md:max-w-[540px] md:rounded-[28px]">
           <img
             src={src(900)}
-            srcSet={`${src(500)} 500w, ${src(900)} 900w, ${src(1300)} 1300w`}
             sizes="(min-width: 768px) 540px, 100vw"
             width={900}
             height={1170}
@@ -54,9 +53,9 @@ export default function Story() {
 
         <div className="flex flex-col">
           <p className="label text-gold">{t.story.eyebrow}</p>
-          <Split as="h2" className="font-display mt-4 text-[clamp(2.3rem,8.5vw,5.2rem)] leading-[0.98] md:mt-6">
+          <Appear as="h2" className="font-display mt-4 text-[clamp(2.3rem,8.5vw,5.2rem)] leading-[0.98] md:mt-6">
             {t.story.title}
-          </Split>
+          </Appear>
 
           <div className="mt-6 flex gap-2 md:mt-10" aria-hidden="true">
             {t.story.paragraphs.map((_, i) => (

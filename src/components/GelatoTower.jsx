@@ -30,8 +30,8 @@ function Ball({ index, f }) {
             <stop offset="1" stopColor={f.dark} />
           </radialGradient>
           <radialGradient id={`${id}-shade`} cx="35%" cy="28%" r="80%">
-            <stop offset="0.55" stopColor="#1E1712" stopOpacity="0" />
-            <stop offset="1" stopColor="#1E1712" stopOpacity="0.28" />
+            <stop offset="0.55" stopColor="#2F3B32" stopOpacity="0" />
+            <stop offset="1" stopColor="#2F3B32" stopOpacity="0.28" />
           </radialGradient>
           <clipPath id={`${id}-clip`}>
             <circle cx="200" cy="215" r="125" />
@@ -84,7 +84,7 @@ export default function GelatoTower({ className = '' }) {
         </clipPath>
       </defs>
 
-      <ellipse className="tower-shadow" cx="200" cy="598" rx="70" ry="6" fill="#1E1712" opacity="0.12" />
+      <ellipse className="tower-shadow" cx="200" cy="598" rx="70" ry="6" fill="#2F3B32" opacity="0.12" />
 
       {/* Waffel */}
       <g className="tower-cone">

@@ -1,34 +1,40 @@
 @import 'tailwindcss';
 @import 'lenis/dist/lenis.css';
 
+/* Farben aus dem Salon: Mint-/Salbeigrün der Wände, Samtgrün der Sessel, Messing-Gold des Logos */
 @theme {
   --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-logo: 'Playfair Display', 'Times New Roman', serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --color-cream: #f4efe6;
-  --color-paper: #faf7f1;
-  --color-espresso: #1e1712;
-  --color-espresso-deep: #16110d;
-  --color-ink: #2a211b;
-  --color-ink-soft: #6e6259;
-  --color-pistachio: #8a9a6b;
-  --color-gold: #b8975a;
+  --color-mist: #f3f6ef;
+  --color-paper: #f8faf5;
+  --color-mint: #dfe7d8;
+  --color-sage: #c4d0bc;
+  --color-sage-deep: #8b9c84;
+  --color-forest: #2f3b32;
+  --color-forest-deep: #242d26;
+  --color-ink: #263028;
+  --color-ink-soft: #5d695f;
+  --color-pistachio: #7f9468;
+  --color-gold: #a98848;
+  --color-gold-light: #d8bd83;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
-    background: var(--color-espresso);
+    background: var(--color-forest);
   }
   body {
-    /* transparent: darunter liegt die animierte Hintergrundebene #bg */
+    /* transparent: darunter liegt die Hintergrundebene #bg */
     @apply font-sans text-ink antialiased;
     font-weight: 300;
   }
   ::selection {
-    background: var(--color-gold);
-    color: var(--color-espresso);
+    background: var(--color-gold-light);
+    color: var(--color-forest);
   }
   img,
   video {
@@ -59,11 +65,30 @@
     @apply h-px w-full bg-current opacity-15;
   }
   .btn {
-    @apply font-sans text-[0.68rem] font-normal tracking-[0.32em] uppercase inline-flex items-center justify-center gap-4 rounded-full border px-8 py-4 transition-[background-color,color,border-color] duration-500 ease-out;
+    @apply inline-flex items-center justify-center gap-4 rounded-full border px-8 py-4 font-sans text-[0.68rem] font-normal tracking-[0.32em] uppercase transition-[background-color,color,border-color] duration-500 ease-out;
   }
-  /* Masken-Zeilen von SplitText: etwas Luft für Unterlängen & Kursive */
-  .split-line-mask {
-    padding-bottom: 0.08em;
-    margin-bottom: -0.08em;
+  /* Messing-Gold wie das Logo an der Wand */
+  .text-gold-metal {
+    background: linear-gradient(180deg, #ecd8a4 0%, #c9a865 45%, #a07f40 70%, #d5b97c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* Wandvertäfelung wie im Salon: feiner Doppelrahmen */
+@layer components {
+  .molding {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--color-forest) 16%, transparent);
+    border-radius: 6px;
+  }
+  .molding::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border: 1px solid color-mix(in srgb, var(--color-forest) 10%, transparent);
+    border-radius: 3px;
+    pointer-events: none;
   }
 }

@@ -7,85 +7,83 @@
 export const unsplash = (id, w, h, crop = '') =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=75${crop}`
 
+// Bildquelle: eigene Fotos aus /public ({ src }) oder Unsplash ({ id })
+export const imageSrc = (img, w, h) => (img.src ? img.src : unsplash(img.id, w, h, img.crop))
+
 export const site = {
   name: 'Gelati am Dom',
   street: 'Schulerstraße 1–3',
   city: '1010 Wien',
-  instagram: 'https://www.instagram.com/', // Platzhalter
+  instagram: 'https://www.instagram.com/gelatiamdom/',
   // hl = Sprache der Karte (sonst übernimmt Google die Browsersprache)
   mapsEmbed: (lang) => `https://www.google.com/maps?q=Schulerstra%C3%9Fe+1-3,+1010+Wien&z=17&hl=${lang}&output=embed`,
   mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
   video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
 }
 
-// Sorten – `tone` = dunkle Hintergrundnuance, während die Sorte sichtbar ist
+// Sorten – Name, Herkunft & Text je Sprache
 export const flavors = [
   {
     key: 'pistazie',
-    tone: '#1D1E16',
     image: { id: '1603736029103-dafad0eb0906' },
     de: { name: 'Pistazie', origin: 'Bronte, Sizilien', text: 'Geröstete Pistazien aus Bronte, fein gemahlen. Nussig, salzig-süß, unverwechselbar.' },
     en: { name: 'Pistachio', origin: 'Bronte, Sicily', text: 'Roasted Bronte pistachios, finely ground. Nutty, sweet and a touch salty.' },
   },
   {
     key: 'stracciatella',
-    tone: '#221B15',
     image: { id: '1628815870980-f416105d89b3' },
     de: { name: 'Stracciatella', origin: 'Bergamo, Lombardei', text: 'Cremiger Fior di Latte mit hauchdünn geraspelter Zartbitterschokolade.' },
     en: { name: 'Stracciatella', origin: 'Bergamo, Lombardy', text: 'Creamy fior di latte with wafer-thin shards of dark chocolate.' },
   },
   {
     key: 'erdbeere',
-    tone: '#251716',
     image: { id: '1650553448920-9432f8086905' },
     de: { name: 'Erdbeere', origin: 'Wachau, Niederösterreich', text: 'Reife Erdbeeren, frisch püriert. Fruchtig, leuchtend, ohne Schnickschnack.' },
     en: { name: 'Strawberry', origin: 'Wachau, Lower Austria', text: 'Ripe strawberries, freshly puréed. Bright, fruity, nothing else needed.' },
   },
   {
     key: 'haselnuss',
-    tone: '#241A12',
     image: { id: '1673551493011-2b5f771013d4' },
     de: { name: 'Haselnuss', origin: 'Langhe, Piemont', text: 'Tonda-Gentile-Haselnüsse aus dem Piemont, langsam geröstet.' },
     en: { name: 'Hazelnut', origin: 'Langhe, Piedmont', text: 'Tonda Gentile hazelnuts from Piedmont, slowly roasted.' },
   },
   {
     key: 'mango',
-    tone: '#251D10',
     image: { id: '1773694725698-89c5a0b2ae1b', crop: '&crop=focalpoint&fp-x=0.55&fp-y=0.3&fp-z=1.6' },
     de: { name: 'Mango', origin: 'Alphonso-Mango', text: 'Sorbetto aus sonnengereiften Alphonso-Mangos. Vegan und herrlich frisch.' },
     en: { name: 'Mango', origin: 'Alphonso mango', text: 'Sorbetto made from sun-ripened Alphonso mangoes. Vegan and wonderfully fresh.' },
   },
   {
     key: 'schokolade',
-    tone: '#1A1310',
     image: { id: '1620197544618-af5f5366abb3' },
     de: { name: 'Schokolade', origin: 'Modica, Sizilien', text: 'Dunkle Schokolade aus Modica, intensiv und samtig. Für echte Kenner.' },
     en: { name: 'Chocolate', origin: 'Modica, Sicily', text: 'Dark chocolate from Modica, intense and velvety. For true connoisseurs.' },
   },
 ]
 
-// Kugel-Szene: Farben der Eiskugel & Hintergrund-Tönung je Sorte
+// Kugel-Szene: Farben der drei Eiskugeln
 export const scoopFlavors = [
-  { key: 'pistazie', bg: '#E6E8D6', light: '#EEF1DC', mid: '#C3CC9C', dark: '#93A06A', lip: '#B5C08C', bit: '#76844A' },
-  { key: 'erdbeere', bg: '#F1DEDA', light: '#FBE4E4', mid: '#ECB0B5', dark: '#CF7D87', lip: '#E29CA4', bit: '#B94A5B' },
-  { key: 'schokolade', bg: '#E8DACB', light: '#B78E76', mid: '#7D5443', dark: '#523226', lip: '#6C4737', bit: '#3A2219' },
+  { key: 'pistazie', light: '#EEF1DC', mid: '#C3CC9C', dark: '#93A06A', lip: '#B5C08C', bit: '#76844A' },
+  { key: 'erdbeere', light: '#FBE4E4', mid: '#ECB0B5', dark: '#CF7D87', lip: '#E29CA4', bit: '#B94A5B' },
+  { key: 'schokolade', light: '#B78E76', mid: '#7D5443', dark: '#523226', lip: '#6C4737', bit: '#3A2219' },
 ]
 
 export const images = {
   offer: [
     { id: '1689076758310-92b693fe6b8b' },
     { id: '1534778101976-62847782c213' },
-    { id: '1611292984550-6dd8def2e668' },
+    { src: '/images/desserts.jpg' },
   ],
-  story: { id: '1516550893923-42d28e5677af', crop: '&crop=focalpoint&fp-x=0.3&fp-y=0.45&fp-z=1.3' },
+  // Fotos aus dem Salon (vom Kunden)
+  story: { src: '/images/salon-wall.jpg' },
   // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
   gallery: [
     { id: '1764337008605-44abfb0f3816', span: 7, ratio: 3 / 2 },
-    { id: '1657502096852-340a75dc56f7', span: 5, ratio: 4 / 5 },
+    { src: '/images/salon-tables.jpg', span: 5, ratio: 4 / 5 },
     { id: '1780340123533-954cef8c7eaa', span: 4, ratio: 4 / 5 },
     { id: '1780444122216-dad92e90090f', span: 4, ratio: 4 / 5 },
     { id: '1674595605055-fa617cb4f8d7', span: 4, ratio: 4 / 5 },
-    { id: '1534706936160-d5ee67737249', span: 5, ratio: 4 / 5 },
+    { src: '/images/vitrine.jpg', span: 5, ratio: 4 / 5 },
     { id: '1760308798378-d1a2e29ce54f', span: 7, ratio: 3 / 2 },
   ],
 }
@@ -94,8 +92,9 @@ export const content = {
   de: {
     nav: { story: 'Geschichte', flavors: 'Sorten', visit: 'Besuch', switchLabel: 'Sprache wählen' },
     hero: {
-      kicker: 'Gelateria artigianale · Wien',
-      tagline: 'Italienisches Gelato, jeden Morgen frisch gerührt – eine Minute vom Stephansdom.',
+      kicker: 'Artisan Gelato · Caffè & Desserts',
+      tagline: 'Hausgemachtes Gelato, feiner Caffè und Desserts – in der Schulerstraße 1–3, eine Minute vom Stephansdom.',
+      status: 'Bald geöffnet',
       cta: 'Sorten entdecken',
       videoLabel: 'Ein Blick in unsere Gelateria in der Schulerstraße',
     },
@@ -120,13 +119,13 @@ export const content = {
       items: [
         { title: 'Gelato', text: 'Vierundzwanzig Sorten, täglich frisch – von Klassikern bis zu saisonalen Ideen.' },
         { title: 'Caffè', text: 'Espresso, Cappuccino und Affogato, zubereitet wie in einer römischen Bar.' },
-        { title: 'Dolci', text: 'Cannoli, Brioche und kleine Pasticceria – perfekt zum Gelato oder Kaffee.' },
+        { title: 'Desserts', text: 'Törtchen, Cheesecakes und feine Patisserie aus unserer Vitrine – perfekt zum Caffè.' },
       ],
     },
     story: {
       eyebrow: 'Unsere Geschichte',
       title: 'Von Sizilien an den Stephansplatz.',
-      imageAlt: 'Blick über die Dächer Wiens auf den Stephansdom',
+      imageAlt: 'Der Salon von Gelati am Dom mit der großen Gelato-Skulptur',
       paragraphs: [
         {
           title: 'Ein Rezept aus Nonnas Küche',
@@ -178,8 +177,8 @@ export const content = {
       mapTitle: 'Karte: Gelati am Dom, Schulerstraße 1–3, 1010 Wien',
     },
     footer: {
-      claim: 'Handgemacht in Wien. Mit Liebe aus Italien.',
-      demo: 'Demo-Website · Bilder: Unsplash',
+      claim: 'Artisan Gelato, Caffè & Desserts – handgemacht in Wien.',
+      demo: 'Demo-Website · Teilweise Bilder: Unsplash',
       top: 'Nach oben',
     },
   },
@@ -187,8 +186,9 @@ export const content = {
   en: {
     nav: { story: 'Story', flavors: 'Flavours', visit: 'Visit', switchLabel: 'Choose language' },
     hero: {
-      kicker: 'Gelateria artigianale · Vienna',
-      tagline: 'Italian gelato, freshly churned every morning – one minute from St. Stephen’s Cathedral.',
+      kicker: 'Artisan Gelato · Caffè & Desserts',
+      tagline: 'Handmade gelato, fine caffè and desserts – at Schulerstraße 1–3, one minute from St. Stephen’s Cathedral.',
+      status: 'Opening soon',
       cta: 'Discover flavours',
       videoLabel: 'A look inside our gelateria in Schulerstraße',
     },
@@ -213,13 +213,13 @@ export const content = {
       items: [
         { title: 'Gelato', text: 'Twenty-four flavours, fresh every day – from classics to seasonal ideas.' },
         { title: 'Caffè', text: 'Espresso, cappuccino and affogato, made like in a Roman bar.' },
-        { title: 'Dolci', text: 'Cannoli, brioche and small pasticceria – perfect with gelato or coffee.' },
+        { title: 'Desserts', text: 'Tartlets, cheesecakes and fine patisserie from our display – perfect with a caffè.' },
       ],
     },
     story: {
       eyebrow: 'Our story',
       title: 'From Sicily to Stephansplatz.',
-      imageAlt: 'View over the rooftops of Vienna towards St. Stephen’s Cathedral',
+      imageAlt: 'The Gelati am Dom salon with its large gelato sculpture',
       paragraphs: [
         {
           title: 'A recipe from Nonna’s kitchen',
@@ -271,8 +271,8 @@ export const content = {
       mapTitle: 'Map: Gelati am Dom, Schulerstraße 1–3, 1010 Vienna',
     },
     footer: {
-      claim: 'Handmade in Vienna. With love from Italy.',
-      demo: 'Demo website · Photos: Unsplash',
+      claim: 'Artisan Gelato, Caffè & Desserts – handmade in Vienna.',
+      demo: 'Demo website · Some photos: Unsplash',
       top: 'Back to top',
     },
   },

@@ -1,32 +1,19 @@
-import { useRef, useState } from 'react'
-import { gsap, ScrollTrigger, useGSAP } from '../lib/gsap'
+import { useState } from 'react'
+import { ScrollTrigger, useGSAP } from '../lib/gsap'
 import { useLang } from '../lib/lang'
+import Logo from './Logo'
 
+// Ruhige, feste Kopfleiste: über dem Hero transparent, danach helle Leiste.
 export default function Header() {
   const { t, lang, setLang } = useLang()
-  const ref = useRef(null)
   const [solid, setSolid] = useState(false)
 
   useGSAP(() => {
-    // Über dem Hero transparent, danach cremefarbene Leiste
     ScrollTrigger.create({
       trigger: '#top',
       start: 'bottom top+=80',
       onEnter: () => setSolid(true),
       onLeaveBack: () => setSolid(false),
-    })
-    // Beim Runterscrollen ausblenden, beim Hochscrollen wieder zeigen
-    // Nur animieren, wenn sich der Zustand ändert – nicht bei jedem Scroll-Frame
-    let hidden = false
-    ScrollTrigger.create({
-      start: 0,
-      end: 'max',
-      onUpdate: (self) => {
-        const hide = self.direction === 1 && self.scroll() > 400
-        if (hide === hidden) return
-        hidden = hide
-        gsap.to(ref.current, { yPercent: hide ? -100 : 0, duration: 0.6, ease: 'power3.out', overwrite: true })
-      },
     })
   })
 
@@ -38,14 +25,13 @@ export default function Header() {
 
   return (
     <header
-      ref={ref}
       className={`fixed inset-x-0 top-0 z-50 transition-[background-color,color,border-color] duration-700 ${
-        solid ? 'border-b border-ink/10 bg-cream/95 text-ink' : 'border-b border-transparent text-cream'
+        solid ? 'border-b border-forest/10 bg-mist/95 text-ink' : 'border-b border-transparent text-mist'
       }`}
     >
       <nav className="container-x flex h-16 items-center justify-between md:h-20">
-        <a href="#top" className="font-display text-[1.6rem] leading-none italic md:text-[1.75rem]">
-          Gelati am Dom
+        <a href="#top" aria-label="Gelati am Dom" className="text-[1.45rem] md:text-[1.7rem]">
+          <Logo city={false} />
         </a>
         <div className="flex items-center gap-8 md:gap-12">
           <ul className="hidden items-center gap-10 md:flex">

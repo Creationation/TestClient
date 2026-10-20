@@ -36,7 +36,7 @@ export default function Marquee() {
   )
 
   return (
-    <div ref={root} data-bg="#1E1712" className="overflow-hidden border-y border-cream/10 py-10 text-cream/85 md:py-16" aria-hidden="true">
+    <div ref={root} data-bg="#C4D0BC" className="overflow-hidden border-y border-forest/10 py-10 text-forest/80 md:py-16" aria-hidden="true">
       <div className="marquee-track flex w-max will-change-transform">
         <Row items={items} />
         <Row items={items} />
