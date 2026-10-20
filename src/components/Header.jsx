@@ -16,11 +16,17 @@ export default function Header() {
       onLeaveBack: () => setSolid(false),
     })
     // Beim Runterscrollen ausblenden, beim Hochscrollen wieder zeigen
-    const move = gsap.quickTo(ref.current, 'yPercent', { duration: 0.6, ease: 'power3.out' })
+    // Nur animieren, wenn sich der Zustand ändert – nicht bei jedem Scroll-Frame
+    let hidden = false
     ScrollTrigger.create({
       start: 0,
       end: 'max',
-      onUpdate: (self) => move(self.direction === 1 && self.scroll() > 400 ? -100 : 0),
+      onUpdate: (self) => {
+        const hide = self.direction === 1 && self.scroll() > 400
+        if (hide === hidden) return
+        hidden = hide
+        gsap.to(ref.current, { yPercent: hide ? -100 : 0, duration: 0.6, ease: 'power3.out', overwrite: true })
+      },
     })
   })
 
