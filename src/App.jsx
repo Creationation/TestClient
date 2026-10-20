@@ -11,6 +11,8 @@ import Marquee from './components/Marquee'
 import Stats from './components/Stats'
 import Process from './components/Process'
 import Offer from './components/Offer'
+import Menu from './components/Menu'
+import Reels from './components/Reels'
 import Gallery from './components/Gallery'
 import Visit from './components/Visit'
 import Footer from './components/Footer'
@@ -87,6 +89,8 @@ function Page() {
         <Stats />
         <Process />
         <Offer />
+        <Menu />
+        <Reels />
         <Gallery />
         <Visit />
       </main>

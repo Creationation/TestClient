@@ -86,7 +86,7 @@ export default function Flavors() {
           </div>
           <p className="font-display shrink-0 text-2xl lining-nums tabular-nums md:text-3xl" aria-hidden="true">
             <span ref={counter}>01</span>
-            <span className="text-ink/30"> — {String(flavors.length).padStart(2, '0')}</span>
+            <span className="text-ink/30"> / {String(flavors.length).padStart(2, '0')}</span>
           </p>
         </div>
 

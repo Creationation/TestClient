@@ -27,7 +27,7 @@ export default function Intro() {
 
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
-          scrollTrigger: { trigger: root.current, start: 'top top', end: '+=300%', scrub: true, pin: true, anticipatePin: 1, refreshPriority: 3 },
+          scrollTrigger: { trigger: root.current, start: 'top top', end: '+=150%', scrub: true, pin: true, anticipatePin: 1, refreshPriority: 3 },
         })
 
         // „Kamera“ zoomt langsam heraus, während der Turm wächst

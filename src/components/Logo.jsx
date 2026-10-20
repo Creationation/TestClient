@@ -5,6 +5,7 @@ export default function Logo({ className = '', city = true }) {
     <span className={`inline-flex flex-col items-center leading-none ${className}`}>
       <span className="text-gold-metal font-logo font-medium tracking-[-0.01em] whitespace-nowrap">
         Gelati <span className="text-[0.52em]">am</span> Dom
+        <sup className="ml-[0.05em] align-super font-sans text-[0.22em] font-normal">®</sup>
       </span>
       {city && <span className="text-gold-metal mt-[0.18em] font-sans text-[0.17em] font-normal tracking-[0.9em] uppercase">Wien</span>}
     </span>

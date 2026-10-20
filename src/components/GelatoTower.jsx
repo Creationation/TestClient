@@ -163,8 +163,8 @@ export default function GelatoTower({ className = '' }) {
       {/* Waffelröllchen steckt hinter der obersten Kugel */}
       <g className="tower-wafer">
         <g transform="rotate(22 250 -190)">
-          <rect x="239" y="-300" width="22" height="130" rx="11" fill="#E9C68C" />
-          <path d="M241 -282 L259 -270 M241 -262 L259 -250 M241 -242 L259 -230 M241 -222 L259 -210" stroke="#B8854A" strokeWidth="2.5" strokeLinecap="round" />
+          <rect x="239" y="-300" width="22" height="240" rx="11" fill="#E9C68C" />
+          <path d="M241 -282 L259 -270 M241 -262 L259 -250 M241 -242 L259 -230 M241 -222 L259 -210 M241 -202 L259 -190" stroke="#B8854A" strokeWidth="2.5" strokeLinecap="round" />
           <ellipse cx="250" cy="-298" rx="11" ry="5" fill="#4A2C21" />
         </g>
       </g>
