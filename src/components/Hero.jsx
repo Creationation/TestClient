@@ -70,7 +70,7 @@ export default function Hero() {
           <Appear immediate delay={0.9} className="mt-6 max-w-[22rem] text-[0.95rem] leading-relaxed text-mist/75 sm:mt-4 sm:max-w-md sm:text-base lg:mt-10">
             {t.hero.tagline}
           </Appear>
-          <a href="#flavors" className="hero-fade btn mt-8 border-mist/40 text-mist hover:border-mist hover:bg-mist hover:text-forest sm:mt-7 lg:mt-12">
+          <a href="#menu" className="hero-fade btn mt-8 border-mist/40 text-mist hover:border-mist hover:bg-mist hover:text-forest sm:mt-7 lg:mt-12">
             {t.hero.cta}
             <span aria-hidden="true">→</span>
           </a>

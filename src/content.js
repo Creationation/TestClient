@@ -19,7 +19,20 @@ export const site = {
   mapsEmbed: (lang) => `https://www.google.com/maps?q=Schulerstra%C3%9Fe+1-3,+1010+Wien&z=17&hl=${lang}&output=embed`,
   mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
   video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
+  // ungefähre Lage des Salons (nur für die Entfernung „Meinen Standort nutzen“)
+  coords: { lat: 48.20866, lng: 16.37434 },
+  // Route von einem Startpunkt (Name oder "lat,lng") zum Salon, zu Fuß oder mit den Öffis
+  routeLink: (origin, lang, mode = 'walking') =>
+    `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&travelmode=${mode}&hl=${lang}`,
 }
+
+// Startpunkte für „Der Weg zu uns“ (Texte je Sprache unter content.*.route.from)
+export const routeOrigins = [
+  { key: 'dom', origin: 'Stephansdom, Stephansplatz, 1010 Wien' },
+  { key: 'u', origin: 'U-Bahn Station Stephansplatz, 1010 Wien' },
+  { key: 'graben', origin: 'Graben, 1010 Wien' },
+  { key: 'stubentor', origin: 'U-Bahn Station Stubentor, 1010 Wien' },
+]
 
 // Sorten – Name, Herkunft & Text je Sprache
 export const flavors = [
@@ -72,6 +85,9 @@ export const images = {
   reels: ['gelato-sorten', 'patisserie-2', 'torten', 'salon'],
   // Fotos aus dem Salon (vom Kunden)
   story: { src: '/images/salon-wall.jpg' },
+  // „Der Weg zu uns“: Bild { src } oder Video { video } (aus /public/videos). Fehlt die Datei,
+  // erscheint automatisch die gezeichnete Karte mit den Wegen.
+  route: { src: '/images/weg-vom-dom.jpg' },
   // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
   gallery: [
     { id: '1764337008605-44abfb0f3816', span: 7, ratio: 3 / 2 },
@@ -92,7 +108,7 @@ export const content = {
     hero: {
       kicker: 'Artisan Gelato · Caffè & Desserts',
       tagline: 'Hausgemachtes Gelato, feiner Kaffee und Desserts, eine Minute vom Stephansdom.',
-      cta: 'Sorten entdecken',
+      cta: 'Unsere Karte entdecken',
       videoLabel: 'Ein Blick in unsere Gelateria in der Schulerstraße',
     },
     process: {
@@ -133,6 +149,26 @@ export const content = {
           text: 'Gelato, Kaffee, Waffeln, Palatschinken und Patisserie bereiten wir frisch und mit Sorgfalt für dich zu.',
         },
       ],
+    },
+    route: {
+      eyebrow: 'Der Weg zu uns',
+      title: 'Zwei Minuten vom Stephansdom.',
+      imageAlt: 'Der Weg vom Stephansdom zu Gelati am Dom in der Schulerstraße',
+      choose: 'Woher kommst du?',
+      walk: 'zu Fuß',
+      from: {
+        dom: { label: 'Stephansdom', time: '2 Min.', text: 'Vom Haupttor einmal am Dom entlang bis hinter den Chor. Dort beginnt die Schulerstraße, wir sind gleich das erste Haus.' },
+        u: { label: 'U1 · U3 Stephansplatz', time: '3 Min.', text: 'Rauf auf den Stephansplatz, am Dom vorbei bis hinter den Chor und hinein in die Schulerstraße.' },
+        graben: { label: 'Graben', time: '4 Min.', text: 'Den Graben entlang zum Stephansplatz, an der Nordseite des Doms vorbei in die Schulerstraße.' },
+        stubentor: { label: 'U3 Stubentor', time: '6 Min.', text: 'Über den Dr. Karl Lueger Platz in die Schulerstraße, Richtung Dom. Wir sind am Ende der Straße.' },
+      },
+      go: 'Route starten',
+      locate: 'Meinen Standort nutzen',
+      locating: 'Standort wird gesucht',
+      near: (dist, min) => `Du bist etwa ${dist} entfernt, rund ${min} Minuten zu Fuß.`,
+      far: (dist) => `Du bist etwa ${dist} entfernt. Wir zeigen dir den Weg mit den Öffis.`,
+      error: 'Standort nicht verfügbar. Wähle einfach oben deinen Startpunkt.',
+      map: { shop: 'Gelati am Dom', dom: 'Stephansdom' },
     },
     flavors: {
       eyebrow: 'Unsere Sorten',
@@ -185,7 +221,7 @@ export const content = {
     hero: {
       kicker: 'Artisan Gelato · Caffè & Desserts',
       tagline: 'Handmade gelato, fine coffee and desserts, one minute from St. Stephen’s Cathedral.',
-      cta: 'Discover flavours',
+      cta: 'Discover our menu',
       videoLabel: 'A look inside our gelateria in Schulerstraße',
     },
     process: {
@@ -226,6 +262,26 @@ export const content = {
           text: 'Gelato, coffee, waffles, Palatschinken and patisserie, freshly prepared with care.',
         },
       ],
+    },
+    route: {
+      eyebrow: 'Finding us',
+      title: 'Two minutes from St. Stephen’s.',
+      imageAlt: 'The way from St. Stephen’s Cathedral to Gelati am Dom in Schulerstraße',
+      choose: 'Where are you coming from?',
+      walk: 'on foot',
+      from: {
+        dom: { label: 'St. Stephen’s', time: '2 min', text: 'From the main gate, walk along the cathedral to the far end behind the choir. Schulerstraße starts right there, we are the very first building.' },
+        u: { label: 'U1 · U3 Stephansplatz', time: '3 min', text: 'Up onto Stephansplatz, past the cathedral to the far end behind the choir and into Schulerstraße.' },
+        graben: { label: 'Graben', time: '4 min', text: 'Stroll down the Graben to Stephansplatz, past the north side of the cathedral and into Schulerstraße.' },
+        stubentor: { label: 'U3 Stubentor', time: '6 min', text: 'Across Dr. Karl Lueger Platz into Schulerstraße, towards the cathedral. We are at the end of the street.' },
+      },
+      go: 'Start route',
+      locate: 'Use my location',
+      locating: 'Finding your location',
+      near: (dist, min) => `You are about ${dist} away, around ${min} minutes on foot.`,
+      far: (dist) => `You are about ${dist} away. We will show you the way by public transport.`,
+      error: 'Location not available. Simply choose your starting point above.',
+      map: { shop: 'Gelati am Dom', dom: 'St. Stephen’s' },
     },
     flavors: {
       eyebrow: 'Our flavours',
