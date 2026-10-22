@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { site } from '../content'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
@@ -6,42 +5,6 @@ import { RouteVisual } from './Route'
 import Sconce from './Sconce'
 
 const FROM_DOM = { active: 'dom' }
-
-// Google Maps erst nach Klick (Zwei-Klick-Lösung): vorher steht unsere eigene Karte da, und es geht nichts an Google
-function GoogleMap() {
-  const { t, lang } = useLang()
-  const [loaded, setLoaded] = useState(false)
-
-  if (loaded)
-    return (
-      <iframe
-        title={t.visit.mapTitle}
-        key={lang}
-        src={site.mapsEmbed(lang)}
-        referrerPolicy="no-referrer-when-downgrade"
-        className="absolute inset-0 h-full w-full border-0 [filter:grayscale(0.8)_contrast(0.95)]"
-      />
-    )
-
-  return (
-    <>
-      <RouteVisual route={FROM_DOM} drawKey={0} />
-      <div className="absolute inset-0 flex items-center justify-center bg-forest/25 p-5 md:p-8">
-        <div className="w-full max-w-[25rem] rounded-[18px] bg-paper/95 p-6 text-center shadow-[0_28px_60px_-24px_rgba(36,45,38,0.5)] md:p-7">
-          <p className="text-[0.85rem] leading-[1.7] text-ink-soft">
-            {t.visit.mapConsent}{' '}
-            <a href="/datenschutz.html#google-maps" className="border-b border-gold/50 text-ink transition-colors hover:border-ink">
-              {t.visit.mapPrivacy}
-            </a>
-          </p>
-          <button type="button" onClick={() => setLoaded(true)} className="btn mt-5 border-forest bg-forest text-mist hover:border-gold hover:bg-gold">
-            {t.visit.mapLoad}
-          </button>
-        </div>
-      </div>
-    </>
-  )
-}
 
 export default function Visit() {
   const { t, lang } = useLang()
@@ -89,9 +52,9 @@ export default function Visit() {
           </div>
         </div>
 
-        {/* Google Maps, erst auf Wunsch geladen */}
+        {/* Eigene Karte (lokal, ohne Google): Weg vom Haupttor des Doms zum Salon */}
         <div className="relative h-[350px] overflow-hidden rounded-[20px] bg-mint md:rounded-[26px] md:h-[450px] lg:sticky lg:top-28 lg:self-start">
-          <GoogleMap />
+          <RouteVisual route={FROM_DOM} drawKey={0} />
         </div>
       </div>
     </section>

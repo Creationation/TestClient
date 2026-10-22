@@ -10,11 +10,7 @@ const need = (value, label) => {
   return <span className="rounded bg-gold-light/40 px-1.5 text-ink">Angabe folgt</span>
 }
 
-const H2 = ({ id, children }) => (
-  <h2 id={id} className="font-display mt-12 text-[1.7rem] leading-tight text-ink md:text-3xl">
-    {children}
-  </h2>
-)
+const H2 = ({ children }) => <h2 className="font-display mt-12 text-[1.7rem] leading-tight text-ink md:text-3xl">{children}</h2>
 const P = ({ children }) => <p className="mt-4 leading-[1.8] text-ink-soft">{children}</p>
 const A = ({ href, children }) => (
   <a href={href} target="_blank" rel="noreferrer" className="border-b border-gold/50 text-ink transition-colors hover:border-ink">
@@ -122,8 +118,8 @@ function Datenschutz() {
     <>
       <h1 className="font-display text-[clamp(2.6rem,8vw,4.4rem)] leading-none">Datenschutzerklärung</h1>
       <P>
-        Der Schutz deiner Daten ist uns wichtig. Auf dieser Website setzen wir keine Cookies und verwenden keine Analyse- oder Trackingdienste, keine Werbenetzwerke und keine eingebetteten
-        Social-Media-Inhalte. Google Maps wird nur geladen, wenn du es ausdrücklich möchtest (siehe unten). Hier erfährst du, welche Daten trotzdem verarbeitet werden und welche Rechte du hast.
+        Der Schutz deiner Daten ist uns wichtig. Auf dieser Website verwenden wir keine Cookies, keine Analyse- oder Trackingdienste, keine Werbenetzwerke und keine eingebetteten Social-Media-Inhalte.
+        Hier erfährst du, welche Daten trotzdem verarbeitet werden und welche Rechte du hast.
       </P>
 
       <H2>Verantwortlicher</H2>
@@ -147,17 +143,8 @@ function Datenschutz() {
 
       <H2>Schriften, Bilder, Videos und Karte</H2>
       <P>
-        Schriften, Fotos, Videos und unsere eigene Karte liegen auf unserem eigenen Server. Beim Besuch werden deshalb keine Verbindungen zu Google Fonts, Bilddiensten oder Kartenanbietern aufgebaut.
-        Die Kartendaten stammen von OpenStreetMap und sind direkt in die Website eingebaut.
-      </P>
-
-      <H2 id="google-maps">Google Maps (nur nach Klick)</H2>
-      <P>
-        Im Abschnitt „Besuch“ kannst du eine Karte von Google Maps einblenden (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland). Sie wird erst geladen, wenn du auf „Karte laden“
-        klickst. Erst dann baut dein Browser eine Verbindung zu Google auf und überträgt dabei unter anderem deine IP-Adresse, die aufgerufene Seite und Angaben zu deinem Browser; Google kann dabei
-        auch Cookies setzen. Rechtsgrundlage ist deine Einwilligung durch den Klick (Art. 6 Abs. 1 lit. a DSGVO, § 165 Abs. 3 TKG 2021). Die Einwilligung gilt nur für den aktuellen Besuch; lädst du
-        die Seite neu, ist die Karte wieder ausgeblendet. Google kann Daten in die USA übermitteln und stützt sich dafür auf das EU-US Data Privacy Framework. Mehr dazu:{' '}
-        <A href="https://policies.google.com/privacy">policies.google.com/privacy</A>.
+        Schriften, Fotos, Videos und die Karte liegen auf unserem eigenen Server. Beim Besuch werden deshalb keine Verbindungen zu Google Fonts, Bilddiensten oder Kartenanbietern aufgebaut. Die
+        Kartendaten stammen von OpenStreetMap und sind direkt in die Website eingebaut.
       </P>
 
       <H2>Links zu Google Maps und Instagram</H2>

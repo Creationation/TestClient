@@ -14,6 +14,8 @@ const HOME = 1
 // Danach wechselt alles (Bild, Titel, Text) zu „Der Weg zu uns“ vom Stephansdom.
 // Jede Scrollbewegung führt genau einen Schritt weiter, auch bei schnellem Wischen.
 // Unter lg bekommt das Bild nur den Platz, der neben dem Text bleibt: nichts rutscht unter den Header.
+// Die Sektion ist so hoch wie der Bildschirm mit eingeklappter Browserleiste (lvh), der Inhalt so hoch wie mit
+// sichtbarer Leiste (svh): der Hintergrund reicht immer bis unten, und der Inhalt wird nie verdeckt.
 export default function Story() {
   const { t } = useLang()
   const root = useRef(null)
@@ -41,6 +43,7 @@ export default function Story() {
         let moving = false
         let quietUntil = 0
         let acc = 0
+        let spent = false
         let navUntil = 0
         const lenis = () => scroller.lenis
         const pos = (k) => tl.scrollTrigger.start + (k / steps) * (tl.scrollTrigger.end - tl.scrollTrigger.start)
@@ -105,8 +108,11 @@ export default function Story() {
           wheelSpeed: -1,
           preventDefault: true,
           allowClicks: true,
+          // ein Finger auf dem Bildschirm = höchstens ein Schritt, auch wenn er lange liegen bleibt
+          onPress: () => (spent = false),
           onChangeY: (self) => {
             const now = performance.now()
+            if (spent) return
             if (moving || now < quietUntil) {
               quietUntil = Math.max(quietUntil, now + 180)
               acc = 0
@@ -117,6 +123,7 @@ export default function Story() {
             const dir = acc < 0 ? 1 : -1
             acc = 0
             quietUntil = now + 400
+            spent = self.event?.type?.startsWith('touch')
             step(dir, Math.abs(self.velocityY))
           },
         })
@@ -211,10 +218,10 @@ export default function Story() {
   const r = t.route
 
   return (
-    <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
+    <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-lvh motion-safe:min-h-[620px]">
       <div className="story-tint invisible pointer-events-none absolute inset-0 bg-forest motion-reduce:hidden" aria-hidden="true" />
       <div className="route-tint invisible pointer-events-none absolute inset-0 bg-sage motion-reduce:hidden" aria-hidden="true" />
-      <div className="container-x relative flex h-full flex-col gap-6 pt-20 pb-8 short:gap-4 short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-24">
+      <div className="container-x relative flex h-full flex-col gap-6 motion-safe:h-svh motion-safe:min-h-[620px] pt-20 pb-8 short:gap-4 short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-24">
         <figure className="relative h-[30svh] w-full short:h-[25svh] overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px] max-lg:motion-safe:h-auto! max-lg:motion-safe:min-h-[140px] max-lg:motion-safe:flex-1">
           <img
             src={src(900)}

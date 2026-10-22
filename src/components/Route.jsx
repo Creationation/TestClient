@@ -14,26 +14,33 @@ export function useRoute() {
   return { active, select }
 }
 
-// Bildausschnitt im Seitenverhältnis des Rahmens: Weg, Dom und Salon mit Luft, rechts Platz für das Salon-Schild,
-// nie über den Kartenrand hinaus
+// Bildausschnitt im Seitenverhältnis des Rahmens: Startpunkt mit Namen, Weg, Dom und Salon mit Schild sind immer
+// ganz im Bild. Lieber etwas weiter herausgezoomt als ein abgeschnittener Start; nie über den Kartenrand hinaus.
+const PAD = 36 // Rand in Bildschirmpixeln (Marker, Namen)
+const TOP = 44 // oben: der Name steht über dem Startpunkt
+const SIGN = 150 // Schild „Gelati am Dom“ rechts vom Salon
+// Meter, damit `span` Meter plus `px` Bildschirmpixel Rand in `size` Pixel passen
+const fit = (span, size, px) => span / Math.max(0.2, 1 - px / size)
 const frame = ([x0, y0, x1, y1], cw, ch) => {
   const aspect = cw / ch
   const [cx, cy] = map.cathedral
-  const minX = Math.min(x0, cx - 70, -70)
-  const maxX = Math.max(x1, cx + 70, 70)
-  const minY = Math.min(y0, cy - 40, -40)
-  const maxY = Math.max(y1, cy + 40, 40)
-  let w = Math.max((maxX - minX) * 1.4, (maxY - minY) * 1.4 * aspect, 260)
+  const minX = Math.min(x0, cx - 60, 0)
+  const maxX = Math.max(x1, cx + 60, 0)
+  const minY = Math.min(y0, cy - 40, 0)
+  const maxY = Math.max(y1, cy + 40, 0)
+  let w = Math.max(fit(maxX - minX, cw, 2 * PAD), fit(maxY - minY, ch, TOP + PAD) * aspect, fit(-minX, cw, PAD + SIGN), 260)
   w = Math.min(w, map.box.w, map.box.h * aspect)
   const h = w / aspect
   const s = w / cw
-  let x = (minX + maxX) / 2 - w / 2
-  // das Schild „Gelati am Dom“ (rechts vom Punkt, ~150 px) muss ganz ins Bild
-  x = Math.max(x, 158 * s - w)
-  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi)
+  // links muss der Start, rechts der Weg und das Schild Platz haben; sonst mittig
+  const lo = Math.max(maxX + PAD * s, SIGN * s) - w
+  const hi = minX - PAD * s
+  const x = Math.min(Math.max((minX + maxX) / 2 - w / 2, lo), hi)
+  const y = (minY - TOP * s + maxY + PAD * s) / 2 - h / 2
+  const clamp = (v, a, b) => Math.min(Math.max(v, a), b)
   return {
     x: clamp(x, map.box.x, map.box.x + map.box.w - w),
-    y: clamp((minY + maxY) / 2 - h / 2, map.box.y, map.box.y + map.box.h - h),
+    y: clamp(y, map.box.y, map.box.y + map.box.h - h),
     w,
     h,
   }
@@ -84,6 +91,14 @@ function RouteMap({ route: { active }, drawKey }) {
   const tween = useRef(null)
   const route = map.routes[active]
   const focusKey = route.bbox.join(',')
+  // Neuer Startpunkt: Weg und Startmarker erscheinen erst, wenn die Kamera fast angekommen ist
+  const drawId = `${active}-${drawKey}`
+  const drawn = useRef({ id: null, delay: '0.15s' })
+  if (drawn.current.id !== drawId) {
+    const switched = drawn.current.id && !drawn.current.id.startsWith(`${active}-`)
+    drawn.current = { id: drawId, delay: switched ? '1s' : '0.15s' }
+  }
+  const delay = drawn.current.delay
 
   // Die Grundkarte wird einmal scharf in ein Canvas gezeichnet und danach nur noch verschoben und skaliert
   // (das macht die Grafikkarte, nichts wird neu gezeichnet: der Zoom bleibt flüssig, auch auf dem Handy)
@@ -178,7 +193,7 @@ function RouteMap({ route: { active }, drawKey }) {
           {/* Der Weg wird vom Start zum Salon aufgedeckt, darin wandern die Tirets weiter */}
           <mask id={`${uid}-reveal`} maskUnits="userSpaceOnUse" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h}>
             <path
-              key={`${active}-${drawKey}`}
+              key={drawId}
               d={route.d}
               pathLength="1"
               fill="none"
@@ -186,7 +201,7 @@ function RouteMap({ route: { active }, drawKey }) {
               strokeLinecap="round"
               strokeLinejoin="round"
               className="route-draw"
-              style={{ strokeWidth: px(16) }}
+              style={{ strokeWidth: px(16), animationDelay: delay }}
             />
           </mask>
         </defs>
@@ -209,7 +224,7 @@ function RouteMap({ route: { active }, drawKey }) {
           dominantBaseline="middle"
           {...halo}
           // weit herausgezoomt ist der Dom zu klein für seinen Namen → blendet aus
-          style={{ font: `italic 500 ${px(15)} var(--font-display)`, strokeWidth: px(4), letterSpacing: px(0.4), opacity: 'calc(2.2 - var(--s, 1) * 1.5)' }}
+          style={{ font: `italic 500 ${px(15)} var(--font-display)`, strokeWidth: px(4), letterSpacing: px(0.4), opacity: 'calc(3.4 - var(--s, 1) * 1.2)' }}
         >
           {r.map.dom}
         </text>
@@ -220,7 +235,7 @@ function RouteMap({ route: { active }, drawKey }) {
         </g>
 
         {/* Startpunkt mit Namen, der zur Kartenmitte hin läuft */}
-        <g style={pin(...route.start)}>
+        <g key={drawId} className="route-pop" style={{ ...pin(...route.start), animationDelay: delay }}>
           <circle r="7" fill="#f8faf5" stroke="#a98848" strokeWidth="2" />
           <circle r="2.6" fill="#a98848" />
           <text

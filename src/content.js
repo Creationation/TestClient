@@ -24,8 +24,7 @@ export const site = {
   registeredMark: false,
   // Teilweise Unsplash-Bilder im Einsatz → Hinweis „Teilweise Symbolfotos“ in der Fußzeile
   stockPhotos: true,
-  // Google Maps: als Link, und als Karte in „Besuch“, die erst nach Klick auf „Karte laden“ geladen wird (Einwilligung)
-  mapsEmbed: (lang) => `https://www.google.com/maps?q=Schulerstra%C3%9Fe+1-3,+1010+Wien&z=17&hl=${lang}&output=embed`,
+  // Google Maps nur als Link (öffnet erst auf Klick, keine eingebettete Karte ohne Einwilligung)
   mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
   video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
   // Eingang laut OpenStreetMap (Mittelpunkt der Karte)
@@ -229,10 +228,6 @@ export const content = {
       hoursNote: 'Platzhalter, die genauen Öffnungszeiten folgen',
       addressTitle: 'Adresse',
       directions: 'Route planen',
-      mapTitle: 'Karte: Gelati am Dom, Schulerstraße 1-3, 1010 Wien',
-      mapLoad: 'Karte laden',
-      mapConsent: 'Die Karte kommt von Google Maps. Erst wenn du sie lädst, werden Daten wie deine IP-Adresse an Google übertragen.',
-      mapPrivacy: 'Datenschutz',
       instagram: 'Instagram',
     },
     footer: {
@@ -345,10 +340,6 @@ export const content = {
       hoursNote: 'Placeholder, exact opening hours to follow',
       addressTitle: 'Address',
       directions: 'Get directions',
-      mapTitle: 'Map: Gelati am Dom, Schulerstraße 1-3, 1010 Vienna',
-      mapLoad: 'Load map',
-      mapConsent: 'The map is provided by Google Maps. Only once you load it is data such as your IP address sent to Google.',
-      mapPrivacy: 'Privacy',
       instagram: 'Instagram',
     },
     footer: {
