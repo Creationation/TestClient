@@ -28,6 +28,20 @@ export default function Story() {
         gsap.set('.route-media', { autoAlpha: 0 })
         gsap.set(fills[0], { scaleX: 1 })
 
+        // Zuletzt eingerasteter Schritt: -1 = noch oberhalb, steps + 1 = schon darunter.
+        // Ein schneller Wisch darf nie mehr als einen Schritt weiter, und wer hineinscrollt, landet immer auf dem ersten
+        // (bzw. von unten auf dem letzten) Schritt.
+        let at = -1
+        const snapTo = (value, self) => {
+          const x = value * steps
+          const k = self.direction > 0 ? Math.ceil(x - 0.02) : Math.floor(x + 0.02)
+          const to = gsap.utils.clamp(Math.max(0, at - 1), Math.min(steps, at + 1), k)
+          // schon genau auf dem Schritt: es gibt keine Einrast-Animation, also hier merken
+          if (self.isActive && Math.abs(to - x) < 0.01) at = to
+          return to / steps
+        }
+        const settle = (self) => (at = Math.round(self.progress * steps))
+
         // Schritt k liegt genau bei Zeit k; die Wechsel passieren dazwischen
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
@@ -39,7 +53,9 @@ export default function Story() {
             pin: true,
             anticipatePin: 1,
             refreshPriority: 2,
-            snap: { snapTo: 1 / steps, directional: true, duration: { min: 0.35, max: 0.8 }, delay: 0.04, ease: 'power2.inOut' },
+            snap: { snapTo, duration: { min: 0.35, max: 0.8 }, delay: 0.04, ease: 'power2.inOut', onComplete: settle },
+            onLeave: () => (at = steps + 1),
+            onLeaveBack: () => (at = -1),
           },
         })
         tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: steps - 0.5 }, 0)

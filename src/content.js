@@ -155,16 +155,17 @@ export const content = {
     },
     story: {
       eyebrow: 'Unsere Geschichte',
-      title: 'Mitten in Wien, gleich beim Stephansdom.',
+      title: 'Willkommen in unserem Salon.',
       imageAlt: 'Der Salon von Gelati am Dom mit der großen Gelato Skulptur',
+      // zuerst der Salon, danach das Gelato; wo wir sind, zeigt erst der letzte Schritt „Der Weg zu uns“
       paragraphs: [
+        {
+          title: 'Ein Salon zum Verweilen',
+          text: 'Salbeigrün, Messing und warmes Licht: ein Salon, in dem du in Ruhe Platz nimmst und genießt.',
+        },
         {
           title: 'Hausgemacht mit Liebe',
           text: 'Unser Gelato machen wir selbst: mit guten Zutaten, viel Geduld und Freude an dem, was wir tun.',
-        },
-        {
-          title: 'Ein Salon zum Verweilen',
-          text: 'In der Schulerstraße, nur wenige Schritte vom Stephansdom entfernt, erwartet dich ein Salon aus Salbeigrün, Messing und warmem Licht.',
         },
         {
           title: 'Für dich zubereitet',
@@ -266,16 +267,16 @@ export const content = {
     },
     story: {
       eyebrow: 'Our story',
-      title: 'In the heart of Vienna, right by St. Stephen’s.',
+      title: 'Welcome to our salon.',
       imageAlt: 'The Gelati am Dom salon with its large gelato sculpture',
       paragraphs: [
         {
-          title: 'Homemade with love',
-          text: 'We make our gelato ourselves: with good ingredients, plenty of patience and real joy in what we do.',
+          title: 'A salon to linger in',
+          text: 'Sage green, brass and warm light: a salon where you can sit down, take your time and enjoy.',
         },
         {
-          title: 'A salon to linger in',
-          text: 'In Schulerstraße, just a few steps from St. Stephen’s Cathedral, a salon of sage green, brass and warm light awaits you.',
+          title: 'Homemade with love',
+          text: 'We make our gelato ourselves: with good ingredients, plenty of patience and real joy in what we do.',
         },
         {
           title: 'Made for you',
