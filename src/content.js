@@ -3,9 +3,11 @@
 //  Texte bearbeiten: einfach den Wert in "de" bzw. "en" ändern.
 // ─────────────────────────────────────────────────────────────
 
-// Unsplash-Platzhalter. `crop` = optionaler Bildausschnitt (Fokuspunkt).
-export const unsplash = (id, w, h, crop = '') =>
-  `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=75${crop}`
+// Unsplash-Platzhalter (Symbolfotos), lokal gespeichert in /public/images/stock:
+// keine Anfrage an Unsplash beim Besuch. Neue Bilder → `node scripts/stock-images.mjs`.
+// `crop` = optionaler Bildausschnitt (Fokuspunkt), wird beim Herunterladen angewendet.
+export const stockName = (id, w, h) => `${id}-${w}x${h}.jpg`
+export const unsplash = (id, w, h) => `/images/stock/${stockName(id, w, h)}`
 
 // Bildquelle: eigene Fotos aus /public ({ src }) oder Unsplash ({ id })
 export const imageSrc = (img, w, h) => (img.src ? img.src : unsplash(img.id, w, h, img.crop))
@@ -15,8 +17,14 @@ export const site = {
   street: 'Schulerstraße 1–3',
   city: '1010 Wien',
   instagram: 'https://www.instagram.com/gelatiamdom/',
-  // hl = Sprache der Karte (sonst übernimmt Google die Browsersprache)
-  mapsEmbed: (lang) => `https://www.google.com/maps?q=Schulerstra%C3%9Fe+1-3,+1010+Wien&z=17&hl=${lang}&output=embed`,
+  // Gelato wird im Salon selbst gemacht (vom Kunden bestätigt, Okt. 2026); die Patisserie NICHT.
+  // „Hausgemacht“ daher nur beim Gelato verwenden (sonst irreführende Werbung, UWG).
+  madeInHouse: true,
+  // ® am Logo nur, wenn „Gelati am Dom“ als Marke eingetragen ist (Registernummer beim Kunden erfragen)
+  registeredMark: false,
+  // Teilweise Unsplash-Bilder im Einsatz → Hinweis „Teilweise Symbolfotos“ in der Fußzeile
+  stockPhotos: true,
+  // Google Maps nur als Link (öffnet erst auf Klick, keine eingebettete Karte ohne Einwilligung)
   mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
   video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
   // Eingang laut OpenStreetMap (Entfernung „Meinen Standort nutzen“ und Mittelpunkt der Karte)
@@ -24,6 +32,24 @@ export const site = {
   // Route von einem Startpunkt (Name oder "lat,lng") zum Salon, zu Fuß oder mit den Öffis
   routeLink: (origin, lang, mode = 'walking') =>
     `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&travelmode=${mode}&hl=${lang}`,
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Impressum (§ 5 ECG, § 25 MedienG) und Datenschutz.
+//  ⚠ Vor dem Livegang vom Kunden ausfüllen lassen. Leere Pflichtangaben erscheinen
+//  auf der Seite als „Angabe folgt“ und in der Konsole als Warnung.
+// ─────────────────────────────────────────────────────────────
+export const legal = {
+  owner: '', // Pflicht: Firma bzw. Name der Inhaberin / des Inhabers, z. B. „Muster Gastro e.U.“
+  legalForm: '', // Pflicht: e.U., GmbH, OG, KG …
+  email: '', // Pflicht: E-Mail-Adresse für Anfragen
+  phone: '', // empfohlen
+  vat: '', // UID-Nummer (ATU…), falls vorhanden
+  register: '', // Firmenbuchnummer und Firmenbuchgericht, falls im Firmenbuch eingetragen, z. B. „FN 123456a, Handelsgericht Wien“
+  business: 'Gastgewerbe (Eissalon und Café)',
+  chamber: 'Wirtschaftskammer Wien, Fachgruppe Gastronomie',
+  authority: 'Magistratisches Bezirksamt für den 1. und 8. Bezirk',
+  updated: 'Oktober 2026',
 }
 
 // Startpunkte für „Der Weg zu uns“ (Texte je Sprache unter content.*.route.from)
@@ -39,8 +65,8 @@ export const flavors = [
   {
     key: 'pistazie',
     image: { id: '1603736029103-dafad0eb0906' },
-    de: { name: 'Pistazie', note: 'Nussig & cremig', text: 'Cremiges Pistazieneis mit fein gemahlenen Pistazien. Nussig, mild und unverwechselbar.' },
-    en: { name: 'Pistachio', note: 'Nutty & creamy', text: 'Creamy pistachio gelato with finely ground pistachios. Nutty, mild and unmistakable.' },
+    de: { name: 'Pistazie', note: 'Nussig & cremig', text: 'Cremiges Pistazieneis, nussig, mild und unverwechselbar.' },
+    en: { name: 'Pistachio', note: 'Nutty & creamy', text: 'Creamy pistachio gelato, nutty, mild and unmistakable.' },
   },
   {
     key: 'stracciatella',
@@ -51,20 +77,20 @@ export const flavors = [
   {
     key: 'erdbeere',
     image: { id: '1650553448920-9432f8086905' },
-    de: { name: 'Erdbeere', note: 'Fruchtig & leuchtend', text: 'Reife Erdbeeren, fruchtig und leuchtend. Einfach gut, ohne Schnickschnack.' },
-    en: { name: 'Strawberry', note: 'Fruity & bright', text: 'Ripe strawberries, fruity and bright. Simply good, nothing else needed.' },
+    de: { name: 'Erdbeere', note: 'Fruchtig & leuchtend', text: 'Fruchtig und leuchtend. Einfach gut, ohne Schnickschnack.' },
+    en: { name: 'Strawberry', note: 'Fruity & bright', text: 'Fruity and bright. Simply good, nothing else needed.' },
   },
   {
     key: 'haselnuss',
     image: { id: '1673551493011-2b5f771013d4' },
-    de: { name: 'Haselnuss', note: 'Geröstet & fein', text: 'Geröstete Haselnüsse, fein gemahlen. Warm, nussig und wunderbar cremig.' },
-    en: { name: 'Hazelnut', note: 'Roasted & smooth', text: 'Roasted hazelnuts, finely ground. Warm, nutty and wonderfully creamy.' },
+    de: { name: 'Haselnuss', note: 'Nussig & fein', text: 'Warm, nussig und wunderbar cremig. Ein Liebling für Nussfans.' },
+    en: { name: 'Hazelnut', note: 'Nutty & smooth', text: 'Warm, nutty and wonderfully creamy. A favourite for nut lovers.' },
   },
   {
     key: 'mango',
     image: { id: '1773694725698-89c5a0b2ae1b', crop: '&crop=focalpoint&fp-x=0.55&fp-y=0.3&fp-z=1.6' },
-    de: { name: 'Mango', note: 'Fruchtig & erfrischend', text: 'Sonnengereifte Mango als erfrischendes Sorbet. Leicht und herrlich fruchtig.' },
-    en: { name: 'Mango', note: 'Fruity & refreshing', text: 'Sun ripened mango as a refreshing sorbet. Light and wonderfully fruity.' },
+    de: { name: 'Mango', note: 'Fruchtig & erfrischend', text: 'Fruchtig, leicht und herrlich erfrischend.' },
+    en: { name: 'Mango', note: 'Fruity & refreshing', text: 'Fruity, light and wonderfully refreshing.' },
   },
   {
     key: 'schokolade',
@@ -112,7 +138,7 @@ export const content = {
       title: 'So entsteht unser Gelato.',
       steps: [
         { title: 'Auswählen', text: 'Gute Zutaten sind die Basis: reife Früchte, feine Nüsse und frische Milch.' },
-        { title: 'Rühren', text: 'In Ruhe gerührt, langsam und mit wenig Luft, damit es schön cremig wird.' },
+        { title: 'Rühren', text: 'In Ruhe gerührt, damit es schön cremig wird.' },
         { title: 'Verfeinern', text: 'Jede Sorte wird abgeschmeckt, bis Geschmack und Konsistenz stimmen.' },
         { title: 'Servieren', text: 'Mit der Spatel serviert, cremig und mit Liebe angerichtet.' },
       ],
@@ -134,15 +160,15 @@ export const content = {
       paragraphs: [
         {
           title: 'Hausgemacht mit Liebe',
-          text: 'Bei uns entsteht Gelato in echter Handarbeit: mit guten Zutaten, viel Geduld und Freude an dem, was wir tun.',
+          text: 'Unser Gelato machen wir selbst: mit guten Zutaten, viel Geduld und Freude an dem, was wir tun.',
         },
         {
           title: 'Ein Salon zum Verweilen',
           text: 'In der Schulerstraße, nur wenige Schritte vom Stephansdom entfernt, erwartet dich ein Salon aus Salbeigrün, Messing und warmem Licht.',
         },
         {
-          title: 'Frisch zubereitet',
-          text: 'Gelato, Kaffee, Waffeln, Palatschinken und Patisserie bereiten wir frisch und mit Sorgfalt für dich zu.',
+          title: 'Für dich zubereitet',
+          text: 'Waffeln, Palatschinken und Kaffee bereiten wir für dich zu, dazu Gelato und feine Patisserie aus der Vitrine.',
         },
       ],
     },
@@ -177,9 +203,9 @@ export const content = {
     },
     stats: {
       eyebrow: 'Hausgemacht',
-      title: 'Mit Sorgfalt gemacht.',
+      title: 'Unser Gelato machen wir selbst.',
       items: [
-        { value: 100, suffix: '%', label: 'hausgemacht', note: 'Mit Liebe in Wien zubereitet' },
+        { value: 8, suffix: '', label: 'Limonaden', note: 'Hausgemacht, still oder prickelnd' },
         { value: 10, suffix: '', label: 'Eisbecher', note: 'Von Amarena bis Lotus' },
         { value: 1, suffix: '', label: 'Minute zum Stephansdom', note: 'Zu Fuß, versprochen' },
       ],
@@ -202,11 +228,12 @@ export const content = {
       addressTitle: 'Adresse',
       directions: 'Route planen',
       instagram: 'Instagram',
-      mapTitle: 'Karte: Gelati am Dom, Schulerstraße 1–3, 1010 Wien',
     },
     footer: {
-      claim: 'Gelato, Kaffee und Genuss, handgemacht in Wien.',
-      demo: 'Demowebsite · Teilweise Bilder von Unsplash',
+      claim: 'Hausgemachtes Gelato, Kaffee und Genuss, mitten in Wien.',
+      photos: 'Teilweise Symbolfotos',
+      imprint: 'Impressum',
+      privacy: 'Datenschutz',
       top: 'Nach oben',
     },
   },
@@ -217,7 +244,7 @@ export const content = {
     reels: { eyebrow: 'Inside', title: 'Fresh from the display.', labels: ['Our flavours', 'Patisserie', 'Cakes & cheesecakes', 'The salon'] },
     hero: {
       kicker: 'Artisan Gelato · Caffè & Desserts',
-      tagline: 'Handmade gelato, fine coffee and desserts, one minute from St. Stephen’s Cathedral.',
+      tagline: 'Homemade gelato, fine coffee and desserts, one minute from St. Stephen’s Cathedral.',
       cta: 'Discover our menu',
       videoLabel: 'A look inside our gelateria in Schulerstraße',
     },
@@ -226,7 +253,7 @@ export const content = {
       title: 'How our gelato is made.',
       steps: [
         { title: 'Select', text: 'Good ingredients are the basis: ripe fruit, fine nuts and fresh milk.' },
-        { title: 'Churn', text: 'Churned slowly and with little air, so it turns out lovely and creamy.' },
+        { title: 'Churn', text: 'Churned with patience, so it turns out lovely and creamy.' },
         { title: 'Refine', text: 'Every flavour is tasted and adjusted until taste and texture are just right.' },
         { title: 'Serve', text: 'Served with a spatula, creamy and lovingly presented.' },
       ],
@@ -248,15 +275,15 @@ export const content = {
       paragraphs: [
         {
           title: 'Homemade with love',
-          text: 'Our gelato is made by hand: with good ingredients, plenty of patience and real joy in what we do.',
+          text: 'We make our gelato ourselves: with good ingredients, plenty of patience and real joy in what we do.',
         },
         {
           title: 'A salon to linger in',
           text: 'In Schulerstraße, just a few steps from St. Stephen’s Cathedral, a salon of sage green, brass and warm light awaits you.',
         },
         {
-          title: 'Freshly prepared',
-          text: 'Gelato, coffee, waffles, Palatschinken and patisserie, freshly prepared with care.',
+          title: 'Made for you',
+          text: 'Waffles, Palatschinken and coffee prepared for you, plus gelato and fine patisserie from the display.',
         },
       ],
     },
@@ -291,9 +318,9 @@ export const content = {
     },
     stats: {
       eyebrow: 'Homemade',
-      title: 'Made with care.',
+      title: 'We make our gelato ourselves.',
       items: [
-        { value: 100, suffix: '%', label: 'homemade', note: 'Lovingly made in Vienna' },
+        { value: 8, suffix: '', label: 'lemonades', note: 'Homemade, still or sparkling' },
         { value: 10, suffix: '', label: 'sundaes', note: 'From amarena to Lotus' },
         { value: 1, suffix: '', label: 'minute to St. Stephen’s', note: 'On foot, promise' },
       ],
@@ -316,11 +343,12 @@ export const content = {
       addressTitle: 'Address',
       directions: 'Get directions',
       instagram: 'Instagram',
-      mapTitle: 'Map: Gelati am Dom, Schulerstraße 1–3, 1010 Vienna',
     },
     footer: {
-      claim: 'Gelato, coffee and indulgence, handmade in Vienna.',
-      demo: 'Demo website · Some photos from Unsplash',
+      claim: 'Homemade gelato, coffee and indulgence, in the heart of Vienna.',
+      photos: 'Some photos are illustrative',
+      imprint: 'Imprint',
+      privacy: 'Privacy',
       top: 'Back to top',
     },
   },
@@ -534,6 +562,7 @@ export const menu = {
       ],
     },
   ],
+  prices: t2('Alle Preise in Euro inklusive Mehrwertsteuer.', 'All prices in euros including VAT.'),
   allergens: {
     de: 'Allergene: A Gluten · C Ei · E Erdnüsse · G Milch · H Schalenfrüchte · O Sulfite. Trotz sorgfältiger Herstellung können Spuren anderer Stoffe enthalten sein, die in unserer Küche verwendet werden.',
     en: 'Allergens: A gluten · C egg · E peanuts · G milk · H tree nuts · O sulphites. Despite careful preparation, traces of other ingredients used in our kitchen may be present.',

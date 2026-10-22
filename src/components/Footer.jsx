@@ -4,6 +4,8 @@ import { gsap, useGSAP, MOTION } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Logo from './Logo'
 
+const YEAR = new Date().getFullYear()
+
 export default function Footer() {
   const { t } = useLang()
   const root = useRef(null)
@@ -41,7 +43,17 @@ export default function Footer() {
           <a href="#top" className="transition-colors hover:text-mist">
             {t.footer.top} ↑
           </a>
-          <p className="mt-6 text-xs text-mist/40">© 2026 Gelati am Dom · {t.footer.demo}</p>
+          <p className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-mist/55">
+            <a href="/impressum.html" className="transition-colors hover:text-mist">
+              {t.footer.imprint}
+            </a>
+            <a href="/datenschutz.html" className="transition-colors hover:text-mist">
+              {t.footer.privacy}
+            </a>
+          </p>
+          <p className="text-xs text-mist/40">
+            © {YEAR} Gelati am Dom{site.stockPhotos && ` · ${t.footer.photos}`}
+          </p>
         </div>
       </div>
       <div className="container-x">

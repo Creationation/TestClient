@@ -87,6 +87,8 @@ const frame = ([x0, y0, x1, y1], cw, ch) => {
 function RouteMap({ route: { active, loc }, drawKey }) {
   const { t } = useLang()
   const r = t.route
+  // eindeutige IDs, die Karte steht zweimal auf der Seite
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
   const svg = useRef(null)
   const cam = useRef(null)
   const tween = useRef(null)
@@ -130,14 +132,14 @@ function RouteMap({ route: { active, loc }, drawKey }) {
 
       <defs>
         {map.labels.map((l, i) => (
-          <path key={l.name} id={`street-${i}`} d={l.d} />
+          <path key={l.name} id={`${uid}-street-${i}`} d={l.d} />
         ))}
       </defs>
       <g fill="#5d695f" style={{ font: `400 ${px(9)} var(--font-sans)`, letterSpacing: px(2.4) }}>
         {map.labels.map((l, i) =>
           LABELS.includes(l.name) ? (
             <text key={l.name} dominantBaseline="central">
-              <textPath href={`#street-${i}`} startOffset="50%" textAnchor="middle">
+              <textPath href={`#${uid}-street-${i}`} startOffset="50%" textAnchor="middle">
                 {l.name.toUpperCase()}
               </textPath>
             </text>

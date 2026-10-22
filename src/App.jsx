@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { gsap, ScrollTrigger, useGSAP, prefersReduced } from './lib/gsap'
+import { site } from './content'
 import { LangProvider, useLang } from './lib/lang'
 import Header from './components/Header'
 import Hero from './components/Hero'
@@ -85,7 +86,7 @@ function Page() {
         <Flavors />
         <Marquee />
         <Stats />
-        <Process />
+        {site.madeInHouse && <Process />}
         <Offer />
         <Menu />
         <Reels />

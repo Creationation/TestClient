@@ -1,7 +1,10 @@
 import { site } from '../content'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
+import { RouteVisual } from './Route'
 import Sconce from './Sconce'
+
+const FROM_DOM = { active: 'dom', loc: { state: 'idle' } }
 
 export default function Visit() {
   const { t, lang } = useLang()
@@ -49,16 +52,9 @@ export default function Visit() {
           </div>
         </div>
 
-        {/* Karte: vollständig sichtbar, ruhig entsättigt */}
+        {/* Eigene Karte (lokal, ohne Google): Weg vom Haupttor des Doms zum Salon */}
         <div className="relative h-[350px] overflow-hidden rounded-[20px] bg-mint md:rounded-[26px] md:h-[450px] lg:sticky lg:top-28 lg:self-start">
-          <iframe
-            title={t.visit.mapTitle}
-            key={lang}
-            src={site.mapsEmbed(lang)}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="absolute inset-0 h-full w-full border-0 [filter:grayscale(0.8)_contrast(0.95)]"
-          />
+          <RouteVisual route={FROM_DOM} drawKey={0} />
         </div>
       </div>
     </section>

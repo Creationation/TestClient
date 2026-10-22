@@ -21,3 +21,19 @@ npm run preview  # Produktions-Build lokal ansehen
 ## Deployment
 
 `main` auf GitHub (`Creationation/TestClient`) → Vercel-Projekt `testclient`.
+Eigene Domain: in Vercel die Umgebungsvariable `SITE_URL` (z. B. `https://www.gelatiamdom.at`) setzen,
+sie landet in Vorschaubild, Canonical und Google-Eintrag.
+
+## Rechtliches (Österreich, DSGVO)
+
+- Keine Anfragen an Dritte beim Besuch: Schriften (`src/fonts.js`), Symbolfotos (`public/images/stock`,
+  neu laden mit `node scripts/stock-images.mjs`) und Karte (`scripts/build-map.mjs`) liegen lokal.
+  Google Maps und Instagram nur als Links. Keine Cookies, kein Tracking → kein Cookie-Banner nötig.
+- Impressum `/impressum`, Datenschutz `/datenschutz` (`src/Legal.jsx`). Angaben in `src/content.js` → `legal`.
+- Schalter in `src/content.js` → `site`: `madeInHouse` (Gelato hausgemacht, Patisserie nicht),
+  `registeredMark` (® nur bei eingetragener Marke), `stockPhotos` (Hinweis „Teilweise Symbolfotos“).
+
+### Vor dem Livegang
+
+- [ ] `legal.owner`, `legal.legalForm`, `legal.email` ausfüllen (Pflicht), `phone`, `vat`, `register` falls vorhanden
+- [ ] Auftragsverarbeitungsvertrag (AVV) mit dem Kunden, da die Website über unser Vercel-Konto läuft

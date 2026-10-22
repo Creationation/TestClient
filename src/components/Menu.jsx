@@ -126,7 +126,9 @@ export default function Menu() {
 
             <div className="mt-12 flex flex-col items-center gap-4 border-t border-gold/25 pt-8 text-center">
               <Tagline text={tr(menu.tagline, lang)} />
-              <p className="max-w-3xl text-xs leading-relaxed text-ink-soft">{menu.allergens[lang]}</p>
+              <p className="max-w-3xl text-xs leading-relaxed text-ink-soft">
+                {tr(menu.prices, lang)} {menu.allergens[lang]}
+              </p>
             </div>
           </div>
         </div>

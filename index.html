@@ -5,16 +5,46 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#2F3B32" />
-    <title>Gelati am Dom · Artisan Gelato, Caffè &amp; Desserts · Wien</title>
-    <meta name="description" content="Gelati am Dom: Gelato, Kaffee und Genuss. Artisan Gelato, Caffè &amp; Desserts in der Schulerstraße 1–3, 1010 Wien, eine Minute vom Stephansdom." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://images.unsplash.com" />
+    <title>Gelati am Dom · Gelato, Caffè &amp; Desserts · Wien</title>
+    <meta name="description" content="Gelati am Dom: Gelato, Kaffee und Desserts in der Schulerstraße 1–3, 1010 Wien, gleich hinter dem Stephansdom." />
+    <link rel="canonical" href="%SITE_URL%/" />
+
+    <!-- Vorschau beim Teilen (WhatsApp, Instagram, Facebook …) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gelati am Dom" />
+    <meta property="og:locale" content="de_AT" />
+    <meta property="og:url" content="%SITE_URL%/" />
+    <meta property="og:title" content="Gelati am Dom · Gelato, Caffè &amp; Desserts · Wien" />
+    <meta property="og:description" content="Gelato, Kaffee und Desserts gleich hinter dem Stephansdom. Schulerstraße 1–3, 1010 Wien." />
+    <meta property="og:image" content="%SITE_URL%/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Der Salon von Gelati am Dom in Wien" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Eintrag für Google (lokales Geschäft). Öffnungszeiten erst ergänzen, wenn sie feststehen. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "IceCreamShop",
+        "name": "Gelati am Dom",
+        "url": "%SITE_URL%/",
+        "image": "%SITE_URL%/og.jpg",
+        "servesCuisine": ["Gelato", "Kaffee", "Desserts"],
+        "priceRange": "€€",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Schulerstraße 1-3",
+          "postalCode": "1010",
+          "addressLocality": "Wien",
+          "addressCountry": "AT"
+        },
+        "geo": { "@type": "GeoCoordinates", "latitude": 48.2085676, "longitude": 16.3746127 },
+        "sameAs": ["https://www.instagram.com/gelatiamdom/"]
+      }
+    </script>
+
     <link rel="preload" as="image" href="/hero-poster.jpg" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:wght@500&family=Inter:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <div id="root"></div>
