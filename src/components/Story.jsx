@@ -10,7 +10,7 @@ const src = (w) => imageSrc(images.story, w, Math.round(w * 1.3))
 const HOME = 1
 
 // Sektion bleibt stehen: das Bild ist fix, die drei Absätze lösen einander ab.
-// Schritt 02 bekommt ein eigenes Bild, einen dunklen Grund und eine andere Schrift.
+// Schritt 02 bekommt ein eigenes Bild, einen dunklen Grund und eine andere Schrift, der Weg einen Salbeigrund.
 // Danach wechselt alles (Bild, Titel, Text) zu „Der Weg zu uns“ vom Stephansdom.
 // Jede Scrollbewegung führt genau einen Schritt weiter, auch bei schnellem Wischen.
 // Unter lg bekommt das Bild nur den Platz, der neben dem Text bleibt: nichts rutscht unter den Header.
@@ -30,7 +30,7 @@ export default function Story() {
         gsap.set(panels.slice(1), { autoAlpha: 0, y: 24 })
         gsap.set('.route-swap', { autoAlpha: 0, y: 24 })
         gsap.set('.route-media', { autoAlpha: 0 })
-        gsap.set('.story-home, .story-tint', { autoAlpha: 0 })
+        gsap.set('.story-home, .story-tint, .route-tint', { autoAlpha: 0 })
         gsap.set(fills[0], { scaleX: 1 })
 
         // Schritt-Steuerung: Wer in die Sektion scrollt (auch mit viel Schwung), wird auf dem ersten Schritt
@@ -88,7 +88,12 @@ export default function Story() {
             const dist = gsap.utils.clamp(80, vh * 1.5, speed ? speed * 0.3 : vh * 0.4)
             const y = window.scrollY + dir * dist
             const l = lenis()
-            return l ? l.scrollTo(y, { duration: 0.5 + (dist / vh) * 0.5, easing: (t) => 1 - Math.pow(1 - t, 3) }) : scrollTo(y)
+            return l
+              ? l.scrollTo(y, {
+                  duration: 0.5 + (dist / vh) * 0.5,
+                  easing: (t) => 1 - Math.pow(1 - t, 3),
+                })
+              : scrollTo(y)
           }
           index = k
           scrollTo(pos(k))
@@ -123,7 +128,13 @@ export default function Story() {
         const onKey = (e) => {
           if (!locked || e.defaultPrevented || moving) return
           const field = e.target.closest?.('a, button, input, select, textarea, [role="listbox"]')
-          const dir = { ArrowDown: 1, PageDown: 1, ArrowUp: -1, PageUp: -1, ' ': field ? 0 : e.shiftKey ? -1 : 1 }[e.key]
+          const dir = {
+            ArrowDown: 1,
+            PageDown: 1,
+            ArrowUp: -1,
+            PageUp: -1,
+            ' ': field ? 0 : e.shiftKey ? -1 : 1,
+          }[e.key]
           if (!dir) return
           e.preventDefault()
           step(dir)
@@ -161,8 +172,14 @@ export default function Story() {
         }
 
         // Schritt 02: Bild, Grund und Schriftfarben blenden mit dem Text um (Tailwind liest die Farben aus Variablen)
-        const dark = { '--color-ink': '#F3F6EF', '--color-ink-soft': '#C4D0BC' }
-        const light = { '--color-ink': '#263028', '--color-ink-soft': '#5D695F' }
+        const dark = {
+          '--color-ink': '#F3F6EF',
+          '--color-ink-soft': '#C4D0BC',
+        }
+        const light = {
+          '--color-ink': '#263028',
+          '--color-ink-soft': '#5D695F',
+        }
         tl.to('.story-home, .story-tint', { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }, HOME - 0.7)
           .fromTo('.story-home img', { scale: 1.12 }, { scale: 1, duration: 1.3 }, HOME - 0.7)
           .fromTo(root.current, light, { ...dark, duration: 0.3, ease: 'power2.out' }, HOME - 0.7)
@@ -174,6 +191,7 @@ export default function Story() {
         tl.to('.story-swap', { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, s + 0.3)
           .to('.route-swap', { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, s + 0.5)
           .to('.story-img', { autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, s + 0.3)
+          .to('.route-tint', { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }, s + 0.3)
           .fromTo('.route-media', { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'power2.out' }, s + 0.4)
           .call(() => setDrawKey((k) => k + 1), null, s + 0.6)
           .set({}, {}, steps)
@@ -195,6 +213,7 @@ export default function Story() {
   return (
     <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
       <div className="story-tint invisible pointer-events-none absolute inset-0 bg-forest motion-reduce:hidden" aria-hidden="true" />
+      <div className="route-tint invisible pointer-events-none absolute inset-0 bg-sage motion-reduce:hidden" aria-hidden="true" />
       <div className="container-x relative flex h-full flex-col gap-6 pt-20 pb-8 short:gap-4 short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-24">
         <figure className="relative h-[30svh] w-full short:h-[25svh] overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px] max-lg:motion-safe:h-auto! max-lg:motion-safe:min-h-[140px] max-lg:motion-safe:flex-1">
           <img
@@ -235,7 +254,7 @@ export default function Story() {
             <Appear as="h2" className="font-display text-[clamp(2.1rem,8vw,5.2rem)] leading-[0.98] [grid-area:1/1]">
               <span className="story-swap block">{t.story.title}</span>
             </Appear>
-            <h2 className="route-swap font-display text-[clamp(2.1rem,8vw,5.2rem)] leading-[0.98] [grid-area:1/1] motion-reduce:hidden">{r.title}</h2>
+            <h2 className="route-swap font-logo text-[clamp(1.9rem,7vw,4.4rem)] leading-[1.04] tracking-[-0.01em] [grid-area:1/1] motion-reduce:hidden">{r.title}</h2>
           </div>
 
           <div className="mt-6 flex gap-2 short:mt-4 md:mt-10" aria-hidden="true">

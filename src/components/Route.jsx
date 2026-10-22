@@ -39,33 +39,120 @@ const frame = ([x0, y0, x1, y1], cw, ch) => {
   }
 }
 
+// Grundkarte als Bild, einmal geladen für beide Karten der Seite
+let baseImage
+const loadBase = () =>
+  (baseImage ??= new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.src = '/images/carte-dom.svg'
+  }))
+
+// Bildschirmpixel pro Meter im engsten Ausschnitt aller Wege: so scharf wird die Grundkarte gezeichnet
+const sharpest = (cw, ch) => Math.max(...Object.values(map.routes).map((r) => cw / frame(r.bbox, cw, ch).w))
+
+// Kameraflug zwischen zwei Ausschnitten: Mitte gleitet, der Zoom geht kurz heraus, damit Start und Ziel
+// gemeinsam im Bild sind, und wieder hinein (logarithmisch, wirkt gleichmäßig)
+const flight = (a, b, aspect) => {
+  const [ax, ay] = [a.x + a.w / 2, a.y + a.h / 2]
+  const [bx, by] = [b.x + b.w / 2, b.y + b.h / 2]
+  const both = Math.max(Math.max(a.x + a.w, b.x + b.w) - Math.min(a.x, b.x), (Math.max(a.y + a.h, b.y + b.h) - Math.min(a.y, b.y)) * aspect)
+  const mid = Math.sqrt(a.w * b.w)
+  const bump = Math.max(0.06, (both * 0.85) / mid - 1)
+  const maxW = Math.min(map.box.w, map.box.h * aspect)
+  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi)
+  return (t) => {
+    const w = Math.min(Math.exp(Math.log(a.w) + (Math.log(b.w) - Math.log(a.w)) * t) * (1 + bump * Math.sin(Math.PI * t)), maxW)
+    const h = w / aspect
+    return {
+      x: clamp(ax + (bx - ax) * t - w / 2, map.box.x, map.box.x + map.box.w - w),
+      y: clamp(ay + (by - ay) * t - h / 2, map.box.y, map.box.y + map.box.h - h),
+      w,
+      h,
+    }
+  }
+}
+
 function RouteMap({ route: { active }, drawKey }) {
   const { t } = useLang()
   const r = t.route
   // eindeutige IDs, die Karte steht zweimal auf der Seite
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
   const svg = useRef(null)
+  const base = useRef(null)
   const cam = useRef(null)
   const tween = useRef(null)
   const route = map.routes[active]
   const focusKey = route.bbox.join(',')
 
-  // Kamera gleitet zum Ziel. --s = Karteneinheiten pro Bildschirmpixel (Schrift, Tirets & Marker bleiben gleich groß)
+  // Die Grundkarte wird einmal scharf in ein Canvas gezeichnet und danach nur noch verschoben und skaliert
+  // (das macht die Grafikkarte, nichts wird neu gezeichnet: der Zoom bleibt flüssig, auch auf dem Handy)
+  const place = () => {
+    const el = svg.current
+    const c = cam.current
+    if (!c || !el.clientWidth) return
+    el.setAttribute('viewBox', `${c.x} ${c.y} ${c.w} ${c.h}`)
+    el.style.setProperty('--s', c.w / el.clientWidth)
+    const d = el.clientWidth / c.w
+    const k = d / sharpest(el.clientWidth, el.clientHeight)
+    base.current.style.transform = `translate3d(${(map.box.x - c.x) * d}px, ${(map.box.y - c.y) * d}px, 0) scale(${k})`
+  }
+
   useEffect(() => {
     const el = svg.current
-    const apply = () => {
-      const c = cam.current
-      el.setAttribute('viewBox', `${c.x} ${c.y} ${c.w} ${c.h}`)
-      if (el.clientWidth) el.style.setProperty('--s', c.w / el.clientWidth)
+    const canvas = base.current
+    let size = ''
+    let frameId = 0
+    const paint = async () => {
+      const cw = el.clientWidth
+      const ch = el.clientHeight
+      if (!cw || !ch || size === `${cw}x${ch}`) return
+      size = `${cw}x${ch}`
+      const q = sharpest(cw, ch)
+      // Gerätepixel pro Meter, gedeckelt, damit das Canvas auf jedem Handy in den Grafikspeicher passt
+      const px = Math.min(q * Math.min(window.devicePixelRatio || 1, 3), 3200 / map.box.w, 3200 / map.box.h)
+      const img = await loadBase()
+      canvas.width = Math.round(map.box.w * px)
+      canvas.height = Math.round(map.box.h * px)
+      canvas.style.width = `${map.box.w * q}px`
+      canvas.style.height = `${map.box.h * q}px`
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+      place()
     }
+    paint()
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(frameId)
+      frameId = requestAnimationFrame(paint)
+    })
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      cancelAnimationFrame(frameId)
+    }
+  }, [])
+
+  // Kamera fliegt zum Ziel. --s = Karteneinheiten pro Bildschirmpixel (Schrift, Tirets & Marker bleiben gleich groß)
+  useEffect(() => {
+    const el = svg.current
     const move = (animate) => {
       if (!el.clientWidth || !el.clientHeight) return
       const target = frame(focusKey.split(',').map(Number), el.clientWidth, el.clientHeight)
       tween.current?.kill()
       if (!cam.current || !animate || prefersReduced()) {
-        cam.current = { ...target }
-        apply()
-      } else tween.current = gsap.to(cam.current, { ...target, duration: 1.6, ease: 'power3.inOut', onUpdate: apply })
+        cam.current = target
+        return place()
+      }
+      const path = flight(cam.current, target, el.clientWidth / el.clientHeight)
+      const p = { t: 0 }
+      tween.current = gsap.to(p, {
+        t: 1,
+        duration: 1.9,
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          cam.current = path(p.t)
+          place()
+        },
+      })
     }
     move(true)
     const ro = new ResizeObserver(() => move(false))
@@ -81,84 +168,85 @@ function RouteMap({ route: { active }, drawKey }) {
   const halo = { fill: '#2f3b32', stroke: '#f3f6ef', strokeWidth: 4, paintOrder: 'stroke' }
 
   return (
-    <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full bg-[#EEF2E9]" role="img" aria-label={r.imageAlt}>
-      <image href="/images/carte-dom.svg" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h} />
+    <div className="absolute inset-0 overflow-hidden bg-[#EEF2E9]">
+      <canvas ref={base} aria-hidden="true" className="absolute top-0 left-0 origin-top-left will-change-transform" />
+      <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" role="img" aria-label={r.imageAlt}>
+        <defs>
+          {map.labels.map((l, i) => (
+            <path key={l.name} id={`${uid}-street-${i}`} d={l.d} />
+          ))}
+          {/* Der Weg wird vom Start zum Salon aufgedeckt, darin wandern die Tirets weiter */}
+          <mask id={`${uid}-reveal`} maskUnits="userSpaceOnUse" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h}>
+            <path
+              key={`${active}-${drawKey}`}
+              d={route.d}
+              pathLength="1"
+              fill="none"
+              stroke="#fff"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="route-draw"
+              style={{ strokeWidth: px(16) }}
+            />
+          </mask>
+        </defs>
+        <g fill="#5d695f" style={{ font: `400 ${px(9)} var(--font-sans)`, letterSpacing: px(2.4) }}>
+          {map.labels.map((l, i) =>
+            LABELS.includes(l.name) ? (
+              <text key={l.name} dominantBaseline="central">
+                <textPath href={`#${uid}-street-${i}`} startOffset="50%" textAnchor="middle">
+                  {l.name.toUpperCase()}
+                </textPath>
+              </text>
+            ) : null,
+          )}
+        </g>
 
-      <defs>
-        {map.labels.map((l, i) => (
-          <path key={l.name} id={`${uid}-street-${i}`} d={l.d} />
-        ))}
-        {/* Der Weg wird vom Start zum Salon aufgedeckt, darin wandern die Tirets weiter */}
-        <mask id={`${uid}-reveal`} maskUnits="userSpaceOnUse" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h}>
-          <path
-            key={`${active}-${drawKey}`}
-            d={route.d}
-            pathLength="1"
-            fill="none"
-            stroke="#fff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="route-draw"
-            style={{ strokeWidth: px(16) }}
-          />
-        </mask>
-      </defs>
-      <g fill="#5d695f" style={{ font: `400 ${px(9)} var(--font-sans)`, letterSpacing: px(2.4) }}>
-        {map.labels.map((l, i) =>
-          LABELS.includes(l.name) ? (
-            <text key={l.name} dominantBaseline="central">
-              <textPath href={`#${uid}-street-${i}`} startOffset="50%" textAnchor="middle">
-                {l.name.toUpperCase()}
-              </textPath>
-            </text>
-          ) : null,
-        )}
-      </g>
-
-      <text
-        x={map.cathedral[0]}
-        y={map.cathedral[1]}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        {...halo}
-        // weit herausgezoomt ist der Dom zu klein für seinen Namen → blendet aus
-        style={{ font: `italic 500 ${px(15)} var(--font-display)`, strokeWidth: px(4), letterSpacing: px(0.4), opacity: 'calc(2.2 - var(--s, 1) * 1.5)' }}
-      >
-        {r.map.dom}
-      </text>
-
-      <g fill="none" strokeLinecap="round" strokeLinejoin="round" mask={`url(#${uid}-reveal)`}>
-        <path d={route.d} stroke="#f8faf5" strokeOpacity="0.85" style={{ strokeWidth: px(8) }} />
-        <path d={route.d} stroke="#a98848" className="route-march" style={{ strokeWidth: px(3.2) }} />
-      </g>
-
-      {/* Startpunkt mit Namen, der zur Kartenmitte hin läuft */}
-      <g style={pin(...route.start)}>
-        <circle r="7" fill="#f8faf5" stroke="#a98848" strokeWidth="2" />
-        <circle r="2.6" fill="#a98848" />
         <text
-          x={route.start[0] < 0 ? -8 : 8}
-          y="-15"
-          textAnchor={route.start[0] < 0 ? 'start' : 'end'}
+          x={map.cathedral[0]}
+          y={map.cathedral[1]}
+          textAnchor="middle"
+          dominantBaseline="middle"
           {...halo}
-          style={{ font: '400 12px var(--font-sans)' }}
+          // weit herausgezoomt ist der Dom zu klein für seinen Namen → blendet aus
+          style={{ font: `italic 500 ${px(15)} var(--font-display)`, strokeWidth: px(4), letterSpacing: px(0.4), opacity: 'calc(2.2 - var(--s, 1) * 1.5)' }}
         >
-          {active === 'dom' ? r.map.gate : r.from[active].label}
+          {r.map.dom}
         </text>
-      </g>
 
-      {/* Salon, das Schild steht rechts daneben und verdeckt nie den Dom */}
-      <g style={pin(0, 0)}>
-        <circle r="18" fill="#a98848" className="route-pulse" />
-        <circle r="8" fill="#2f3b32" stroke="#d8bd83" strokeWidth="2.5" />
-        <g transform="translate(16 0)">
-          <rect x="0" y="-14" width="124" height="28" rx="14" fill="#2f3b32" />
-          <text x="62" y="1" textAnchor="middle" dominantBaseline="middle" fill="#d8bd83" style={{ font: 'italic 400 14px var(--font-logo)' }}>
-            {r.map.shop}
+        <g fill="none" strokeLinecap="round" strokeLinejoin="round" mask={`url(#${uid}-reveal)`}>
+          <path d={route.d} stroke="#f8faf5" strokeOpacity="0.85" style={{ strokeWidth: px(8) }} />
+          <path d={route.d} stroke="#a98848" className="route-march" style={{ strokeWidth: px(3.2) }} />
+        </g>
+
+        {/* Startpunkt mit Namen, der zur Kartenmitte hin läuft */}
+        <g style={pin(...route.start)}>
+          <circle r="7" fill="#f8faf5" stroke="#a98848" strokeWidth="2" />
+          <circle r="2.6" fill="#a98848" />
+          <text
+            x={route.start[0] < 0 ? -8 : 8}
+            y="-15"
+            textAnchor={route.start[0] < 0 ? 'start' : 'end'}
+            {...halo}
+            style={{ font: '400 12px var(--font-sans)' }}
+          >
+            {active === 'dom' ? r.map.gate : r.from[active].label}
           </text>
         </g>
-      </g>
-    </svg>
+
+        {/* Salon, das Schild steht rechts daneben und verdeckt nie den Dom */}
+        <g style={pin(0, 0)}>
+          <circle r="18" fill="#a98848" className="route-pulse" />
+          <circle r="8" fill="#2f3b32" stroke="#d8bd83" strokeWidth="2.5" />
+          <g transform="translate(16 0)">
+            <rect x="0" y="-14" width="124" height="28" rx="14" fill="#2f3b32" />
+            <text x="62" y="1" textAnchor="middle" dominantBaseline="middle" fill="#d8bd83" style={{ font: 'italic 400 14px var(--font-logo)' }}>
+              {r.map.shop}
+            </text>
+          </g>
+        </g>
+      </svg>
+    </div>
   )
 }
 
