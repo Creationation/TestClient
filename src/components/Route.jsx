@@ -217,9 +217,21 @@ function RouteMap({ route: { active, loc }, drawKey }) {
 }
 
 export function RouteVisual(props) {
+  const { t, lang } = useLang()
   return (
     <>
       <RouteMap {...props} />
+      {/* Direkt zu Google Maps: ohne Startpunkt nimmt Google den aktuellen Standort (wir fragen ihn nicht ab) */}
+      <a
+        href={site.mapsLink(lang)}
+        target="_blank"
+        rel="noreferrer"
+        className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full bg-forest/95 px-4 py-2.5 text-[0.72rem] tracking-[0.04em] text-mist shadow-[0_10px_24px_-12px_rgba(36,45,38,0.7)] backdrop-blur transition-colors duration-500 hover:bg-gold md:bottom-4 md:left-4 md:px-5 md:py-3 md:text-[0.78rem]"
+      >
+        <Locate />
+        {t.route.mapsHere}
+        <span aria-hidden="true">↗</span>
+      </a>
       {/* Pflichtnachweis der Kartendaten (ODbL) */}
       <a
         href="https://www.openstreetmap.org/copyright"
@@ -388,9 +400,9 @@ export function RoutePanel({ route: { active, loc, select } }) {
     <>
       <OriginSelect active={active} onSelect={select} />
 
-      <div key={`${active}-${loc.state}`} className="mt-5 max-w-[30rem] animate-[menuIn_0.6s_ease-out] md:mt-7" aria-live="polite">
+      <div key={`${active}-${loc.state}`} className="mt-5 max-w-[30rem] short:mt-3 animate-[menuIn_0.6s_ease-out] md:mt-7" aria-live="polite">
         <p className="font-display text-xl text-gold italic">{head}</p>
-        <p className="mt-2 text-[0.95rem] leading-[1.7] text-ink-soft md:text-base">
+        <p className="mt-2 text-[0.95rem] leading-[1.7] short:mt-1 short:text-[0.9rem] short:leading-[1.6] text-ink-soft md:text-base">
           {text}
           {active === HERE && loc.state === 'busy' && <span aria-hidden="true" className="ml-2 inline-block h-1.5 w-1.5 animate-ping rounded-full bg-gold align-middle" />}
         </p>
@@ -400,7 +412,7 @@ export function RoutePanel({ route: { active, loc, select } }) {
         href={href}
         target="_blank"
         rel="noreferrer"
-        className="btn mt-6 self-start border-forest bg-forest px-7 py-3.5 text-mist hover:border-gold hover:bg-gold md:mt-8 md:px-8 md:py-4"
+        className="btn mt-6 short:mt-4 self-start border-forest bg-forest px-7 py-3.5 text-mist hover:border-gold hover:bg-gold md:mt-8 md:px-8 md:py-4"
       >
         {r.go}
         <span aria-hidden="true">→</span>

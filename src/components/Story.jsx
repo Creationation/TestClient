@@ -67,8 +67,8 @@ export default function Story() {
 
   return (
     <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
-      <div className="container-x grid h-full content-center items-center gap-6 pt-20 pb-8 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid-cols-[1fr_1.05fr] lg:content-normal lg:gap-24">
-        <figure className="relative h-[30svh] w-full overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px]">
+      <div className="container-x grid h-full content-center items-center gap-6 pt-20 pb-8 short:gap-4 short:pt-[4.5rem] short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid-cols-[1fr_1.05fr] lg:content-normal lg:gap-24">
+        <figure className="relative h-[30svh] w-full short:h-[25svh] overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px]">
           <img
             src={src(900)}
             sizes="(min-width: 768px) 540px, 100vw"
@@ -97,7 +97,7 @@ export default function Story() {
             <h2 className="route-swap font-display text-[clamp(2.1rem,8vw,5.2rem)] leading-[0.98] [grid-area:1/1] motion-reduce:hidden">{r.title}</h2>
           </div>
 
-          <div className="mt-6 flex gap-2 md:mt-10" aria-hidden="true">
+          <div className="mt-6 flex gap-2 short:mt-4 md:mt-10" aria-hidden="true">
             {[...t.story.paragraphs, r].map((_, i) => (
               <span key={i} className="h-px w-12 bg-ink/15 md:w-16">
                 <span className="story-fill block h-full origin-left bg-gold motion-reduce:scale-x-100" />
@@ -105,7 +105,7 @@ export default function Story() {
             ))}
           </div>
 
-          <div className="mt-5 grid min-w-0 grid-cols-1 motion-reduce:gap-10 md:mt-10">
+          <div className="mt-5 grid min-w-0 short:mt-4 grid-cols-1 motion-reduce:gap-10 md:mt-10">
             {t.story.paragraphs.map((p, i) => (
               <article key={i} className="story-p motion-safe:[grid-area:1/1]">
                 <p className="font-display text-xl text-gold italic">0{i + 1}</p>

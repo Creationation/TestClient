@@ -21,6 +21,9 @@
   --color-gold-light: #d8bd83;
 }
 
+/* Niedrige Handybildschirme (z. B. iPhone SE): angeheftete Abschnitte etwas kompakter */
+@custom-variant short (@media (max-height: 740px) and (max-width: 1023px));
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
