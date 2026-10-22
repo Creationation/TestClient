@@ -19,8 +19,8 @@ export const site = {
   mapsEmbed: (lang) => `https://www.google.com/maps?q=Schulerstra%C3%9Fe+1-3,+1010+Wien&z=17&hl=${lang}&output=embed`,
   mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
   video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
-  // ungefähre Lage des Salons (nur für die Entfernung „Meinen Standort nutzen“)
-  coords: { lat: 48.20866, lng: 16.37434 },
+  // Eingang laut OpenStreetMap (Entfernung „Meinen Standort nutzen“ und Mittelpunkt der Karte)
+  coords: { lat: 48.2085676, lng: 16.3746127 },
   // Route von einem Startpunkt (Name oder "lat,lng") zum Salon, zu Fuß oder mit den Öffis
   routeLink: (origin, lang, mode = 'walking') =>
     `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&travelmode=${mode}&hl=${lang}`,
@@ -159,12 +159,13 @@ export const content = {
         stubentor: { label: 'U3 Stubentor', time: '5 Min.', text: 'Vom Ausgang Dr. Karl Lueger Platz die Schulerstraße entlang Richtung Dom. Wir sind am Ende der Straße, direkt am Stephansplatz.' },
       },
       go: 'Route starten',
-      locate: 'Meinen Standort nutzen',
-      locating: 'Standort wird gesucht',
+      locate: 'Mein Standort',
+      here: 'Von deinem Standort',
+      locating: 'Einen Moment, wir suchen deinen Standort.',
       near: (dist, min) => `Du bist etwa ${dist} entfernt, rund ${min} Minuten zu Fuß.`,
       far: (dist) => `Du bist etwa ${dist} entfernt. Wir zeigen dir den Weg mit den Öffis.`,
-      error: 'Standort nicht verfügbar. Wähle einfach oben deinen Startpunkt.',
-      map: { shop: 'Gelati am Dom', dom: 'Stephansdom' },
+      error: 'Standort nicht verfügbar. Wähle einfach oben einen Startpunkt.',
+      map: { shop: 'Gelati am Dom', dom: 'Stephansdom', you: 'Du bist hier' },
     },
     flavors: {
       eyebrow: 'Unsere Sorten',
@@ -272,12 +273,13 @@ export const content = {
         stubentor: { label: 'U3 Stubentor', time: '5 min', text: 'From the Dr. Karl Lueger Platz exit, walk up Schulerstraße towards the cathedral. We are at the end of the street, right on Stephansplatz.' },
       },
       go: 'Start route',
-      locate: 'Use my location',
-      locating: 'Finding your location',
+      locate: 'My location',
+      here: 'From where you are',
+      locating: 'One moment, we are finding your location.',
       near: (dist, min) => `You are about ${dist} away, around ${min} minutes on foot.`,
       far: (dist) => `You are about ${dist} away. We will show you the way by public transport.`,
-      error: 'Location not available. Simply choose your starting point above.',
-      map: { shop: 'Gelati am Dom', dom: 'St. Stephen’s' },
+      error: 'Location not available. Simply choose a starting point above.',
+      map: { shop: 'Gelati am Dom', dom: 'St. Stephen’s', you: 'You are here' },
     },
     flavors: {
       eyebrow: 'Our flavours',

@@ -3,16 +3,17 @@ import { images, imageSrc } from '../content'
 import { gsap, useGSAP, MOTION } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
-import { RoutePanel, RouteVisual } from './Route'
+import { RoutePanel, RouteVisual, useRoute } from './Route'
 
 const src = (w) => imageSrc(images.story, w, Math.round(w * 1.3))
 
 // Sektion bleibt stehen: das Bild ist fix, die drei Absätze lösen einander ab.
 // Danach wechselt alles (Bild, Titel, Text) zu „Der Weg zu uns“ vom Stephansdom.
+// Jede Scrollbewegung führt genau einen Schritt weiter (Einrasten in Scrollrichtung).
 export default function Story() {
   const { t } = useLang()
   const root = useRef(null)
-  const [route, setRoute] = useState('dom')
+  const route = useRoute()
   // erhöht sich, sobald die Karte erscheint → der Weg zeichnet sich neu
   const [drawKey, setDrawKey] = useState(0)
 
@@ -21,30 +22,42 @@ export default function Story() {
       gsap.matchMedia().add(MOTION, () => {
         const panels = gsap.utils.toArray('.story-p')
         const fills = gsap.utils.toArray('.story-fill')
+        const steps = panels.length - 1
         gsap.set(panels.slice(1), { autoAlpha: 0, y: 24 })
         gsap.set('.route-swap', { autoAlpha: 0, y: 24 })
         gsap.set('.route-media', { autoAlpha: 0 })
+        gsap.set(fills[0], { scaleX: 1 })
 
+        // Schritt k liegt genau bei Zeit k; die Wechsel passieren dazwischen
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
-          scrollTrigger: { trigger: root.current, start: 'top top', end: '+=330%', scrub: true, pin: true, anticipatePin: 1, refreshPriority: 2 },
+          scrollTrigger: {
+            trigger: root.current,
+            start: 'top top',
+            end: `+=${steps * 80}%`,
+            scrub: true,
+            pin: true,
+            anticipatePin: 1,
+            refreshPriority: 2,
+            snap: { snapTo: 1 / steps, directional: true, duration: { min: 0.35, max: 0.8 }, delay: 0.04, ease: 'power2.inOut' },
+          },
         })
-        tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: 3 }, 0)
-        fills.forEach((fill, i) => {
-          tl.fromTo(fill, { scaleX: 0 }, { scaleX: 1, duration: 1 }, i)
-          if (i < panels.length - 1) {
-            // erst ausblenden, dann einblenden – Texte überlagern sich nie
-            tl.to(panels[i], { autoAlpha: 0, y: -24, duration: 0.18, ease: 'power2.in' }, i + 0.78)
-            tl.to(panels[i + 1], { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power2.out' }, i + 0.98)
-          }
-        })
+        tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: steps - 0.5 }, 0)
+        for (let k = 0; k < steps; k++) {
+          // erst ausblenden, dann einblenden – Texte überlagern sich nie
+          tl.to(panels[k], { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, k + 0.3)
+          tl.to(panels[k + 1], { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, k + 0.5)
+          tl.fromTo(fills[k + 1], { scaleX: 0 }, { scaleX: 1, duration: 0.4 }, k + 0.3)
+        }
 
-        // Szenenwechsel: Bild, Kicker und Titel komplett tauschen
-        tl.to('.story-swap', { autoAlpha: 0, y: -24, duration: 0.18, ease: 'power2.in' }, 2.78)
-          .to('.route-swap', { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power2.out' }, 2.98)
-          .to('.story-img', { autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, 2.75)
-          .fromTo('.route-media', { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: 'power2.out' }, 2.9)
-          .call(() => setDrawKey((k) => k + 1), null, 3)
+        // Szenenwechsel zum letzten Schritt: Bild, Kicker und Titel komplett tauschen
+        const s = steps - 1
+        tl.to('.story-swap', { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, s + 0.3)
+          .to('.route-swap', { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, s + 0.5)
+          .to('.story-img', { autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, s + 0.3)
+          .fromTo('.route-media', { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'power2.out' }, s + 0.4)
+          .call(() => setDrawKey((k) => k + 1), null, s + 0.6)
+          .set({}, {}, steps)
       })
     },
     { scope: root },
@@ -66,7 +79,7 @@ export default function Story() {
             className="story-img absolute inset-0 h-full w-full object-cover will-change-transform"
           />
           <div className="route-media absolute inset-0 motion-reduce:hidden">
-            <RouteVisual active={route} drawKey={drawKey} />
+            <RouteVisual route={route} drawKey={drawKey} />
           </div>
         </figure>
 
@@ -103,7 +116,7 @@ export default function Story() {
             <article className="story-p motion-safe:[grid-area:1/1]">
               {/* ohne Animation steht der Weg einfach als vierter Abschnitt da */}
               <h3 className="font-display mb-6 hidden text-[clamp(1.7rem,5vw,2.6rem)] leading-[1.1] motion-reduce:block">{r.title}</h3>
-              <RoutePanel active={route} onChange={setRoute} />
+              <RoutePanel route={route} />
             </article>
           </div>
         </div>
