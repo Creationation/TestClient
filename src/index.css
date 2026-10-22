@@ -110,6 +110,19 @@
     stroke-dashoffset: 0;
   }
 }
+/* kleine Tirets, die ruhig Richtung Salon wandern (Länge in Bildschirmpixeln, unabhängig vom Zoom) */
+.route-march {
+  stroke-dasharray: calc(var(--s, 1) * 4px) calc(var(--s, 1) * 8px);
+  animation: routeMarch 0.9s linear infinite;
+}
+@keyframes routeMarch {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: calc(var(--s, 1) * -12px);
+  }
+}
 .route-pulse {
   transform-box: fill-box;
   transform-origin: center;
@@ -129,6 +142,9 @@
   .route-draw {
     animation: none;
     stroke-dashoffset: 0;
+  }
+  .route-march {
+    animation: none;
   }
   .route-pulse {
     animation: none;

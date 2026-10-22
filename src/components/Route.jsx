@@ -7,59 +7,14 @@ import { useLang } from '../lib/lang'
 // Echte Karte: Gebäude, Dom und Fußwege aus OpenStreetMap (© OpenStreetMap-Mitwirkende, ODbL),
 // in Metern, Salon-Eingang = 0 0, Norden oben. Erzeugt von scripts/build-map.mjs.
 const LABELS = ['Graben', 'Kärntner Straße', 'Rotenturmstraße', 'Wollzeile', 'Singerstraße', 'Schulerstraße', 'Bäckerstraße', 'Stubenring', 'Domgasse']
-const HERE = 'here'
 
-const distance = (a, b) => {
-  const rad = Math.PI / 180
-  const h =
-    Math.sin(((b.lat - a.lat) * rad) / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(((b.lng - a.lng) * rad) / 2) ** 2
-  return 2 * 6371000 * Math.asin(Math.sqrt(h))
-}
-
-// Position in Kartenmetern (gleiche Projektion wie scripts/build-map.mjs)
-const toMap = ({ lat, lng }) => {
-  const rad = Math.PI / 180
-  return [(lng - site.coords.lng) * rad * 6371000 * Math.cos(site.coords.lat * rad), -(lat - site.coords.lat) * rad * 6371000]
-}
-const onMap = ([x, y]) => x > map.box.x && x < map.box.x + map.box.w && y > map.box.y && y < map.box.y + map.box.h
-
-// Gewählter Startpunkt und Standort, geteilt von Karte und Auswahl
+// Gewählter Startpunkt, geteilt von Karte und Auswahl
 export function useRoute() {
-  const [active, setActive] = useState('dom')
-  const [loc, setLoc] = useState({ state: 'idle' })
-
-  const locate = () => {
-    if (!navigator.geolocation) return setLoc({ state: 'error' })
-    setLoc({ state: 'busy' })
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        const here = { lat: coords.latitude, lng: coords.longitude }
-        setLoc({ state: 'done', here, meters: distance(here, site.coords), xy: toMap(here) })
-      },
-      () => setLoc({ state: 'error' }),
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 },
-    )
-  }
-
-  const select = (key) => {
-    setActive(key)
-    if (key === HERE && loc.state !== 'done' && loc.state !== 'busy') locate()
-  }
-
-  return { active, loc, select }
+  const [active, select] = useState('dom')
+  return { active, select }
 }
 
-// Bereich, den die Kamera zeigen soll
-const focusOf = (active, loc) => {
-  if (active !== HERE) return map.routes[active].bbox
-  if (loc.state === 'done' && onMap(loc.xy)) {
-    const [x, y] = loc.xy
-    return [Math.min(x, 0), Math.min(y, 0), Math.max(x, 0), Math.max(y, 0)]
-  }
-  return map.routes.dom.bbox
-}
-
-// Bildausschnitt im Seitenverhältnis des Rahmens: Ziel, Dom und Salon mit Luft, rechts Platz für das Salon-Schild,
+// Bildausschnitt im Seitenverhältnis des Rahmens: Weg, Dom und Salon mit Luft, rechts Platz für das Salon-Schild,
 // nie über den Kartenrand hinaus
 const frame = ([x0, y0, x1, y1], cw, ch) => {
   const aspect = cw / ch
@@ -84,7 +39,7 @@ const frame = ([x0, y0, x1, y1], cw, ch) => {
   }
 }
 
-function RouteMap({ route: { active, loc }, drawKey }) {
+function RouteMap({ route: { active }, drawKey }) {
   const { t } = useLang()
   const r = t.route
   // eindeutige IDs, die Karte steht zweimal auf der Seite
@@ -92,10 +47,10 @@ function RouteMap({ route: { active, loc }, drawKey }) {
   const svg = useRef(null)
   const cam = useRef(null)
   const tween = useRef(null)
-  const focus = focusOf(active, loc)
-  const focusKey = focus.join(',')
+  const route = map.routes[active]
+  const focusKey = route.bbox.join(',')
 
-  // Kamera gleitet zum Ziel. --s = Karteneinheiten pro Bildschirmpixel (Schrift & Marker bleiben gleich groß)
+  // Kamera gleitet zum Ziel. --s = Karteneinheiten pro Bildschirmpixel (Schrift, Tirets & Marker bleiben gleich groß)
   useEffect(() => {
     const el = svg.current
     const apply = () => {
@@ -123,17 +78,30 @@ function RouteMap({ route: { active, loc }, drawKey }) {
 
   const px = (n) => `calc(var(--s, 1) * ${n}px)`
   const pin = (x, y) => ({ transform: `translate(${x}px, ${y}px) scale(var(--s, 1))` })
-  const route = map.routes[active]
-  const you = active === HERE && loc.state === 'done' && onMap(loc.xy) ? loc.xy : null
+  const halo = { fill: '#2f3b32', stroke: '#f3f6ef', strokeWidth: 4, paintOrder: 'stroke' }
 
   return (
-    <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full bg-[#E9EFE4]" role="img" aria-label={r.imageAlt}>
+    <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full bg-[#EEF2E9]" role="img" aria-label={r.imageAlt}>
       <image href="/images/carte-dom.svg" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h} />
 
       <defs>
         {map.labels.map((l, i) => (
           <path key={l.name} id={`${uid}-street-${i}`} d={l.d} />
         ))}
+        {/* Der Weg wird vom Start zum Salon aufgedeckt, darin wandern die Tirets weiter */}
+        <mask id={`${uid}-reveal`} maskUnits="userSpaceOnUse" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h}>
+          <path
+            key={`${active}-${drawKey}`}
+            d={route.d}
+            pathLength="1"
+            fill="none"
+            stroke="#fff"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="route-draw"
+            style={{ strokeWidth: px(16) }}
+          />
+        </mask>
       </defs>
       <g fill="#5d695f" style={{ font: `400 ${px(9)} var(--font-sans)`, letterSpacing: px(2.4) }}>
         {map.labels.map((l, i) =>
@@ -147,59 +115,37 @@ function RouteMap({ route: { active, loc }, drawKey }) {
         )}
       </g>
 
-      {/* Alle Wege ganz leise, der gewählte zeichnet sich in Gold */}
-      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-        {routeOrigins.map((o) => (
-          <path key={o.key} d={map.routes[o.key].d} stroke="#a98848" strokeOpacity="0.22" style={{ strokeWidth: px(1.5) }} />
-        ))}
-        {route && (
-          <>
-            <path d={route.d} stroke="#f8faf5" strokeOpacity="0.9" style={{ strokeWidth: px(7) }} />
-            <path key={`${active}-${drawKey}`} d={route.d} pathLength="1" stroke="#a98848" className="route-draw" style={{ strokeWidth: px(3.5) }} />
-          </>
-        )}
-      </g>
-
       <text
         x={map.cathedral[0]}
         y={map.cathedral[1]}
         textAnchor="middle"
         dominantBaseline="middle"
-        fill="#d8bd83"
+        {...halo}
         // weit herausgezoomt ist der Dom zu klein für seinen Namen → blendet aus
-        style={{ font: `italic 400 ${px(15)} var(--font-display)`, letterSpacing: px(0.4), opacity: 'calc(2.2 - var(--s, 1) * 1.5)' }}
+        style={{ font: `italic 500 ${px(15)} var(--font-display)`, strokeWidth: px(4), letterSpacing: px(0.4), opacity: 'calc(2.2 - var(--s, 1) * 1.5)' }}
       >
         {r.map.dom}
       </text>
 
-      {/* Startpunkt (nur der gewählte trägt seinen Namen) */}
-      {route && (
-        <g style={pin(...route.start)}>
-          <circle r="6" fill="#a98848" stroke="#f8faf5" strokeWidth="2" />
-          {/* Name läuft zur Kartenmitte hin, nie über den Rand */}
-          <text
-            x={route.start[0] < 0 ? -8 : 8}
-            y="-14"
-            textAnchor={route.start[0] < 0 ? 'start' : 'end'}
-            fill="#2f3b32"
-            stroke="#f3f6ef"
-            strokeWidth="4"
-            paintOrder="stroke"
-            style={{ font: '400 12px var(--font-sans)' }}
-          >
-            {r.from[active].label}
-          </text>
-        </g>
-      )}
-      {you && (
-        <g style={pin(...you)}>
-          <circle r="14" fill="#a98848" className="route-pulse" />
-          <circle r="6" fill="#a98848" stroke="#f8faf5" strokeWidth="2" />
-          <text y="-14" textAnchor="middle" fill="#2f3b32" stroke="#f3f6ef" strokeWidth="4" paintOrder="stroke" style={{ font: '400 12px var(--font-sans)' }}>
-            {r.map.you}
-          </text>
-        </g>
-      )}
+      <g fill="none" strokeLinecap="round" strokeLinejoin="round" mask={`url(#${uid}-reveal)`}>
+        <path d={route.d} stroke="#f8faf5" strokeOpacity="0.85" style={{ strokeWidth: px(8) }} />
+        <path d={route.d} stroke="#a98848" className="route-march" style={{ strokeWidth: px(3.2) }} />
+      </g>
+
+      {/* Startpunkt mit Namen, der zur Kartenmitte hin läuft */}
+      <g style={pin(...route.start)}>
+        <circle r="7" fill="#f8faf5" stroke="#a98848" strokeWidth="2" />
+        <circle r="2.6" fill="#a98848" />
+        <text
+          x={route.start[0] < 0 ? -8 : 8}
+          y="-15"
+          textAnchor={route.start[0] < 0 ? 'start' : 'end'}
+          {...halo}
+          style={{ font: '400 12px var(--font-sans)' }}
+        >
+          {active === 'dom' ? r.map.gate : r.from[active].label}
+        </text>
+      </g>
 
       {/* Salon, das Schild steht rechts daneben und verdeckt nie den Dom */}
       <g style={pin(0, 0)}>
@@ -217,21 +163,9 @@ function RouteMap({ route: { active, loc }, drawKey }) {
 }
 
 export function RouteVisual(props) {
-  const { t, lang } = useLang()
   return (
     <>
       <RouteMap {...props} />
-      {/* Direkt zu Google Maps: ohne Startpunkt nimmt Google den aktuellen Standort (wir fragen ihn nicht ab) */}
-      <a
-        href={site.mapsLink(lang)}
-        target="_blank"
-        rel="noreferrer"
-        className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full bg-forest/95 px-4 py-2.5 text-[0.72rem] tracking-[0.04em] text-mist shadow-[0_10px_24px_-12px_rgba(36,45,38,0.7)] backdrop-blur transition-colors duration-500 hover:bg-gold md:bottom-4 md:left-4 md:px-5 md:py-3 md:text-[0.78rem]"
-      >
-        <Locate />
-        {t.route.mapsHere}
-        <span aria-hidden="true">↗</span>
-      </a>
       {/* Pflichtnachweis der Kartendaten (ODbL) */}
       <a
         href="https://www.openstreetmap.org/copyright"
@@ -258,9 +192,11 @@ const Locate = () => (
   </svg>
 )
 
-// Auswahl des Startpunkts: ein ruhiges Feld, das eine Liste öffnet (nach unten oder, wenn kein Platz ist, nach oben)
+// Auswahl des Startpunkts: ein ruhiges Feld, das eine Liste öffnet (nach unten oder, wenn kein Platz ist, nach oben).
+// Ganz unten: „Von meinem Standort“ öffnet Google Maps im neuen Tab. Ohne Startpunkt nimmt Google den
+// aktuellen Standort selbst; die Website fragt ihn nie ab.
 function OriginSelect({ active, onSelect }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const r = t.route
   const id = useId()
   const root = useRef(null)
@@ -268,8 +204,7 @@ function OriginSelect({ active, onSelect }) {
   const list = useRef(null)
   const [open, setOpen] = useState(false)
   const [up, setUp] = useState(false)
-  const options = [...routeOrigins.map((o) => o.key), HERE]
-  const name = (key) => (key === HERE ? r.locate : r.from[key].label)
+  const options = routeOrigins.map((o) => o.key)
 
   useEffect(() => {
     if (!open) return
@@ -282,7 +217,7 @@ function OriginSelect({ active, onSelect }) {
   const toggle = () => {
     if (!open) {
       const box = button.current.getBoundingClientRect()
-      setUp(window.innerHeight - box.bottom < options.length * 54 + 24 && box.top > window.innerHeight - box.bottom)
+      setUp(window.innerHeight - box.bottom < (options.length + 1) * 54 + 32 && box.top > window.innerHeight - box.bottom)
     }
     setOpen((o) => !o)
   }
@@ -294,7 +229,7 @@ function OriginSelect({ active, onSelect }) {
   }
 
   const onListKey = (e) => {
-    const items = [...list.current.querySelectorAll('[role="option"]')]
+    const items = [...list.current.querySelectorAll('[data-item]')]
     const i = items.indexOf(document.activeElement)
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault()
@@ -302,9 +237,10 @@ function OriginSelect({ active, onSelect }) {
     } else if (e.key === 'Escape' || e.key === 'Tab') {
       setOpen(false)
       if (e.key === 'Escape') button.current.focus({ preventScroll: true })
-    } else if (e.key === 'Enter' || e.key === ' ') {
+    } else if ((e.key === 'Enter' || e.key === ' ') && i >= 0 && i < options.length) {
+      // auf dem Link löst Enter den Link selbst aus
       e.preventDefault()
-      if (i >= 0) pick(options[i])
+      pick(options[i])
     }
   }
 
@@ -324,92 +260,83 @@ function OriginSelect({ active, onSelect }) {
       >
         <span className="min-w-0 flex-1">
           <span className="label block text-[0.6rem] text-ink-soft">{r.choose}</span>
-          <span className="font-display mt-1 flex items-center gap-2 truncate text-[1.35rem] leading-tight text-ink">
-            {active === HERE && <Locate />}
-            {name(active)}
-          </span>
+          <span className="font-display mt-1 block truncate text-[1.35rem] leading-tight text-ink">{r.from[active].label}</span>
         </span>
         <span className="text-ink-soft group-hover:text-ink">
           <Chevron open={open} />
         </span>
       </button>
 
-      <ul
+      <div
         ref={list}
-        id={`${id}-list`}
-        role="listbox"
-        aria-label={r.choose}
         onKeyDown={onListKey}
         className={`absolute inset-x-0 z-30 overflow-hidden rounded-[16px] border border-forest/10 bg-paper py-2 shadow-[0_28px_60px_-24px_rgba(36,45,38,0.5)] transition-[opacity,transform,visibility] duration-300 ease-out ${
           up ? 'bottom-full mb-2 origin-bottom' : 'top-full mt-2 origin-top'
         } ${open ? 'visible translate-y-0 scale-100 opacity-100' : `invisible scale-[0.98] opacity-0 ${up ? 'translate-y-1' : '-translate-y-1'}`}`}
       >
-        {options.map((key) => {
-          const on = key === active
-          return (
-            <li
-              key={key}
-              role="option"
-              tabIndex={-1}
-              aria-selected={on}
-              onClick={() => pick(key)}
-              className={`flex cursor-pointer items-center gap-3 px-5 py-3 outline-none transition-colors duration-300 hover:bg-mint/70 focus-visible:bg-mint/70 ${
-                key === HERE ? 'mt-1 border-t border-forest/10 pt-3.5' : ''
-              }`}
-            >
-              <span aria-hidden="true" className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors ${on ? 'bg-gold' : 'bg-transparent'}`} />
-              <span className={`flex min-w-0 flex-1 items-center gap-2 truncate text-[0.92rem] ${on ? 'text-ink' : 'text-ink-soft'}`}>
-                {key === HERE && <Locate />}
-                {name(key)}
-              </span>
-              {key !== HERE && <span className="font-display shrink-0 text-base text-gold italic">{r.from[key].time}</span>}
-            </li>
-          )
-        })}
-      </ul>
+        <ul id={`${id}-list`} role="listbox" aria-label={r.choose}>
+          {options.map((key) => {
+            const on = key === active
+            return (
+              <li
+                key={key}
+                data-item
+                role="option"
+                tabIndex={-1}
+                aria-selected={on}
+                onClick={() => pick(key)}
+                className="flex cursor-pointer items-center gap-3 px-5 py-3 outline-none transition-colors duration-300 hover:bg-mint/70 focus-visible:bg-mint/70"
+              >
+                <span aria-hidden="true" className={`h-1.5 w-1.5 shrink-0 rounded-full transition-colors ${on ? 'bg-gold' : 'bg-transparent'}`} />
+                <span className={`min-w-0 flex-1 truncate text-[0.92rem] ${on ? 'text-ink' : 'text-ink-soft'}`}>{r.from[key].label}</span>
+                <span className="font-display shrink-0 text-base text-gold italic">{r.from[key].time}</span>
+              </li>
+            )
+          })}
+        </ul>
+        <a
+          data-item
+          tabIndex={-1}
+          href={site.mapsLink(lang)}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => setOpen(false)}
+          className="mt-1 flex items-center gap-3 border-t border-forest/10 px-5 pt-3.5 pb-3 text-ink outline-none transition-colors duration-300 hover:bg-mint/70 focus-visible:bg-mint/70"
+        >
+          <span className="text-gold">
+            <Locate />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[0.92rem]">{r.mapsHere}</span>
+            <span className="block truncate text-[0.72rem] text-ink-soft">{r.mapsHint}</span>
+          </span>
+          <span aria-hidden="true" className="shrink-0 text-gold">
+            ↗
+          </span>
+        </a>
+      </div>
     </div>
   )
 }
 
-export function RoutePanel({ route: { active, loc, select } }) {
+export function RoutePanel({ route: { active, select } }) {
   const { t, lang } = useLang()
   const r = t.route
-
-  // Text und Link: fester Startpunkt oder eigener Standort (bis 3 km zu Fuß, darüber mit den Öffis)
-  let head = null
-  let text
-  let href
-  if (active !== HERE) {
-    head = `${r.from[active].time} ${r.walk}`
-    text = r.from[active].text
-    href = site.routeLink(routeOrigins.find((o) => o.key === active).origin, lang)
-  } else if (loc.state === 'done') {
-    const m = loc.meters
-    const dist = m < 1000 ? `${Math.max(10, Math.round(m / 10) * 10)} m` : `${(m / 1000).toFixed(1).replace('.', lang === 'de' ? ',' : '.')} km`
-    const far = m > 3000
-    head = r.here
-    text = far ? r.far(dist) : r.near(dist, Math.max(1, Math.round((m * 1.25) / 80)))
-    href = site.routeLink(`${loc.here.lat},${loc.here.lng}`, lang, far ? 'transit' : 'walking')
-  } else {
-    head = r.here
-    text = loc.state === 'error' ? r.error : r.locating
-    href = site.mapsLink(lang)
-  }
+  const origin = routeOrigins.find((o) => o.key === active).origin
 
   return (
     <>
       <OriginSelect active={active} onSelect={select} />
 
-      <div key={`${active}-${loc.state}`} className="mt-5 max-w-[30rem] short:mt-3 animate-[menuIn_0.6s_ease-out] md:mt-7" aria-live="polite">
-        <p className="font-display text-xl text-gold italic">{head}</p>
-        <p className="mt-2 text-[0.95rem] leading-[1.7] short:mt-1 short:text-[0.9rem] short:leading-[1.6] text-ink-soft md:text-base">
-          {text}
-          {active === HERE && loc.state === 'busy' && <span aria-hidden="true" className="ml-2 inline-block h-1.5 w-1.5 animate-ping rounded-full bg-gold align-middle" />}
+      <div key={active} className="mt-5 max-w-[30rem] short:mt-3 animate-[menuIn_0.6s_ease-out] md:mt-7" aria-live="polite">
+        <p className="font-display text-xl text-gold italic">
+          {r.from[active].time} {r.walk}
         </p>
+        <p className="mt-2 text-[0.95rem] leading-[1.7] short:mt-1 short:text-[0.9rem] short:leading-[1.6] text-ink-soft md:text-base">{r.from[active].text}</p>
       </div>
 
       <a
-        href={href}
+        href={site.routeLink(origin, lang)}
         target="_blank"
         rel="noreferrer"
         className="btn mt-6 short:mt-4 self-start border-forest bg-forest px-7 py-3.5 text-mist hover:border-gold hover:bg-gold md:mt-8 md:px-8 md:py-4"

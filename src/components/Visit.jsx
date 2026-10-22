@@ -4,7 +4,7 @@ import Appear from './Appear'
 import { RouteVisual } from './Route'
 import Sconce from './Sconce'
 
-const FROM_DOM = { active: 'dom', loc: { state: 'idle' } }
+const FROM_DOM = { active: 'dom' }
 
 export default function Visit() {
   const { t, lang } = useLang()

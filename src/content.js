@@ -27,7 +27,7 @@ export const site = {
   // Google Maps nur als Link (öffnet erst auf Klick, keine eingebettete Karte ohne Einwilligung)
   mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
   video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
-  // Eingang laut OpenStreetMap (Entfernung „Meinen Standort nutzen“ und Mittelpunkt der Karte)
+  // Eingang laut OpenStreetMap (Mittelpunkt der Karte)
   coords: { lat: 48.2085676, lng: 16.3746127 },
   // Route von einem Startpunkt (Name oder "lat,lng") zum Salon, zu Fuß oder mit den Öffis
   routeLink: (origin, lang, mode = 'walking') =>
@@ -185,14 +185,9 @@ export const content = {
         stubentor: { label: 'U3 Stubentor', time: '5 Min.', text: 'Vom Ausgang Dr. Karl Lueger Platz die Schulerstraße entlang Richtung Dom. Wir sind am Ende der Straße, direkt am Stephansplatz.' },
       },
       go: 'Route starten',
-      mapsHere: 'Route ab meinem Standort',
-      locate: 'Mein Standort',
-      here: 'Von deinem Standort',
-      locating: 'Einen Moment, wir suchen deinen Standort.',
-      near: (dist, min) => `Du bist etwa ${dist} entfernt, rund ${min} Minuten zu Fuß.`,
-      far: (dist) => `Du bist etwa ${dist} entfernt. Wir zeigen dir den Weg mit den Öffis.`,
-      error: 'Standort nicht verfügbar. Wähle einfach oben einen Startpunkt.',
-      map: { shop: 'Gelati am Dom', dom: 'Stephansdom', you: 'Du bist hier' },
+      mapsHere: 'Von meinem Standort',
+      mapsHint: 'Route in Google Maps',
+      map: { shop: 'Gelati am Dom', dom: 'Stephansdom', gate: 'Riesentor' },
     },
     flavors: {
       eyebrow: 'Unsere Sorten',
@@ -301,14 +296,9 @@ export const content = {
         stubentor: { label: 'U3 Stubentor', time: '5 min', text: 'From the Dr. Karl Lueger Platz exit, walk up Schulerstraße towards the cathedral. We are at the end of the street, right on Stephansplatz.' },
       },
       go: 'Start route',
-      mapsHere: 'Directions from my location',
-      locate: 'My location',
-      here: 'From where you are',
-      locating: 'One moment, we are finding your location.',
-      near: (dist, min) => `You are about ${dist} away, around ${min} minutes on foot.`,
-      far: (dist) => `You are about ${dist} away. We will show you the way by public transport.`,
-      error: 'Location not available. Simply choose a starting point above.',
-      map: { shop: 'Gelati am Dom', dom: 'St. Stephen’s', you: 'You are here' },
+      mapsHere: 'From my location',
+      mapsHint: 'Directions in Google Maps',
+      map: { shop: 'Gelati am Dom', dom: 'St. Stephen’s', gate: 'Main portal' },
     },
     flavors: {
       eyebrow: 'Our flavours',

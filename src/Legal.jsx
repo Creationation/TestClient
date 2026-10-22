@@ -147,20 +147,13 @@ function Datenschutz() {
         Kartendaten stammen von OpenStreetMap und sind direkt in die Website eingebaut.
       </P>
 
-      <H2>Standort („Mein Standort“)</H2>
-      <P>
-        Nur wenn du in „Der Weg zu uns“ die Option „Mein Standort“ wählst, fragt dein Browser um deine Erlaubnis, den Standort zu verwenden. Erlaubst du es, wird deine Position ausschließlich in deinem
-        Browser verwendet, um Entfernung und Gehzeit zu uns anzuzeigen. Sie wird nicht an uns übertragen und nicht gespeichert. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die
-        du jederzeit in den Einstellungen deines Browsers widerrufen kannst.
-      </P>
-      <P>
-        Tippst du danach auf „Route starten“, öffnet sich Google Maps mit deiner Position als Startpunkt. Ab dann gilt die Datenschutzerklärung von Google (Google Ireland Limited, Gordon House, Barrow
-        Street, Dublin 4, Irland): <A href="https://policies.google.com/privacy">policies.google.com/privacy</A>.
-      </P>
-
       <H2>Links zu Google Maps und Instagram</H2>
       <P>
-        Die Links „Route starten“, „Route ab meinem Standort“, „Route planen“ und „Instagram“ führen zu Google Maps bzw. Instagram (Meta Platforms Ireland Limited, Merrion Road, Dublin 4, Irland). Daten werden erst übertragen, wenn
+        Unsere Website fragt deinen Standort nicht ab. Wählst du in „Der Weg zu uns“ die Option „Von meinem Standort“, öffnet sich Google Maps nur mit unserer Adresse als Ziel; den Startpunkt
+        ermittelt dann Google Maps selbst, sofern du es dort erlaubst.
+      </P>
+      <P>
+        Die Links „Route starten“, „Von meinem Standort“, „Route planen“ und „Instagram“ führen zu Google Maps bzw. Instagram (Meta Platforms Ireland Limited, Merrion Road, Dublin 4, Irland). Daten werden erst übertragen, wenn
         du einen dieser Links anklickst; dann gelten die Datenschutzerklärungen dieser Anbieter: <A href="https://policies.google.com/privacy">Google</A>,{' '}
         <A href="https://privacycenter.instagram.com/policy">Instagram</A>.
       </P>
