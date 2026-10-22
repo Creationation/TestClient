@@ -110,7 +110,10 @@ export const images = {
   // „Einblicke“: kurze Videos aus dem Salon
   reels: ['gelato-sorten', 'patisserie-2', 'torten', 'salon'],
   // Fotos aus dem Salon (vom Kunden)
-  story: { src: '/images/salon-wall.jpg' },  // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
+  story: { src: '/images/salon-wall.jpg' },
+  // Schritt 02 „Hausgemacht mit Liebe“: eigenes Bild (Symbolfoto Pistazie)
+  storyHomemade: { id: '1780340123533-954cef8c7eaa' },
+  // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
   gallery: [
     { id: '1764337008605-44abfb0f3816', span: 7, ratio: 3 / 2 },
     { src: '/images/salon-tables.jpg', span: 5, ratio: 4 / 5 },
@@ -165,6 +168,7 @@ export const content = {
         },
         {
           title: 'Hausgemacht mit Liebe',
+          imageAlt: 'Pistazieneis mit frischen Pistazien',
           text: 'Unser Gelato machen wir selbst: mit guten Zutaten, viel Geduld und Freude an dem, was wir tun.',
         },
         {
@@ -276,6 +280,7 @@ export const content = {
         },
         {
           title: 'Homemade with love',
+          imageAlt: 'Pistachio gelato with fresh pistachios',
           text: 'We make our gelato ourselves: with good ingredients, plenty of patience and real joy in what we do.',
         },
         {

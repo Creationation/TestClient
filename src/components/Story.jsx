@@ -6,8 +6,11 @@ import Appear from './Appear'
 import { RoutePanel, RouteVisual, useRoute } from './Route'
 
 const src = (w) => imageSrc(images.story, w, Math.round(w * 1.3))
+// Schritt 02 hat ein eigenes Gesicht: Pistazienbild, samtgrüner Grund, helle Schrift, Playfair
+const HOME = 1
 
 // Sektion bleibt stehen: das Bild ist fix, die drei Absätze lösen einander ab.
+// Schritt 02 bekommt ein eigenes Bild, einen dunklen Grund und eine andere Schrift.
 // Danach wechselt alles (Bild, Titel, Text) zu „Der Weg zu uns“ vom Stephansdom.
 // Jede Scrollbewegung führt genau einen Schritt weiter, auch bei schnellem Wischen.
 export default function Story() {
@@ -26,6 +29,7 @@ export default function Story() {
         gsap.set(panels.slice(1), { autoAlpha: 0, y: 24 })
         gsap.set('.route-swap', { autoAlpha: 0, y: 24 })
         gsap.set('.route-media', { autoAlpha: 0 })
+        gsap.set('.story-home, .story-tint', { autoAlpha: 0 })
         gsap.set(fills[0], { scaleX: 1 })
 
         // Schritt-Steuerung: Wer in die Sektion scrollt (auch mit viel Schwung), wird auf dem ersten Schritt
@@ -153,6 +157,15 @@ export default function Story() {
           tl.fromTo(fills[k + 1], { scaleX: 0 }, { scaleX: 1, duration: 0.4 }, k + 0.3)
         }
 
+        // Schritt 02: Bild, Grund und Schriftfarben blenden mit dem Text um (Tailwind liest die Farben aus Variablen)
+        const dark = { '--color-ink': '#F3F6EF', '--color-ink-soft': '#C4D0BC' }
+        const light = { '--color-ink': '#263028', '--color-ink-soft': '#5D695F' }
+        tl.to('.story-home, .story-tint', { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }, HOME - 0.7)
+          .fromTo('.story-home img', { scale: 1.12 }, { scale: 1, duration: 1.3 }, HOME - 0.7)
+          .fromTo(root.current, light, { ...dark, duration: 0.3, ease: 'power2.out' }, HOME - 0.7)
+          .to('.story-home, .story-tint', { autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, HOME + 0.3)
+          .to(root.current, { ...light, duration: 0.3, ease: 'power2.in' }, HOME + 0.3)
+
         // Szenenwechsel zum letzten Schritt: Bild, Kicker und Titel komplett tauschen
         const s = steps - 1
         tl.to('.story-swap', { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, s + 0.3)
@@ -178,7 +191,8 @@ export default function Story() {
 
   return (
     <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-svh motion-safe:min-h-[620px]">
-      <div className="container-x grid h-full content-center items-center gap-6 pt-20 pb-8 short:gap-4 short:pt-[4.5rem] short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid-cols-[1fr_1.05fr] lg:content-normal lg:gap-24">
+      <div className="story-tint invisible pointer-events-none absolute inset-0 bg-forest motion-reduce:hidden" aria-hidden="true" />
+      <div className="container-x relative grid h-full content-center items-center gap-6 pt-20 pb-8 short:gap-4 short:pt-[4.5rem] short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid-cols-[1fr_1.05fr] lg:content-normal lg:gap-24">
         <figure className="relative h-[30svh] w-full short:h-[25svh] overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px]">
           <img
             src={src(900)}
@@ -189,6 +203,19 @@ export default function Story() {
             decoding="async"
             className="story-img absolute inset-0 h-full w-full object-cover will-change-transform"
           />
+          <div className="story-home invisible absolute inset-0 overflow-hidden motion-reduce:hidden">
+            <img
+              src={imageSrc(images.storyHomemade, 900, 1125)}
+              srcSet={[500, 900, 1400].map((w) => `${imageSrc(images.storyHomemade, w, w * 1.25)} ${w}w`).join(', ')}
+              sizes="(min-width: 768px) 540px, 100vw"
+              width={900}
+              height={1125}
+              alt={t.story.paragraphs[HOME].imageAlt}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover will-change-transform"
+            />
+          </div>
           <div className="route-media absolute inset-0 motion-reduce:hidden">
             <RouteVisual route={route} drawKey={drawKey} />
           </div>
@@ -219,8 +246,8 @@ export default function Story() {
           <div className="mt-5 grid min-w-0 short:mt-4 grid-cols-1 motion-reduce:gap-10 md:mt-10">
             {t.story.paragraphs.map((p, i) => (
               <article key={i} className="story-p motion-safe:[grid-area:1/1]">
-                <p className="font-display text-xl text-gold italic">0{i + 1}</p>
-                <h3 className="font-display mt-2 text-[clamp(1.7rem,5vw,2.6rem)] leading-[1.1]">{p.title}</h3>
+                <p className={`text-xl text-gold ${i === HOME ? 'font-logo' : 'font-display italic'}`}>0{i + 1}</p>
+                <h3 className={`${i === HOME ? 'font-logo tracking-[-0.01em]' : 'font-display'} mt-2 text-[clamp(1.7rem,5vw,2.6rem)] leading-[1.1]`}>{p.title}</h3>
                 <p className="mt-3 max-w-[32rem] text-[0.95rem] leading-[1.8] text-ink-soft md:mt-5 md:text-base">{p.text}</p>
               </article>
             ))}
