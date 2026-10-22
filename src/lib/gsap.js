@@ -13,4 +13,7 @@ export const MOTION = '(prefers-reduced-motion: no-preference)'
 export const REDUCE = '(prefers-reduced-motion: reduce)'
 export const prefersReduced = () => window.matchMedia(REDUCE).matches
 
+// Die Lenis-Instanz (gesetzt in App), damit Abschnitte den Scroll kurz anhalten können
+export const scroller = { lenis: null }
+
 export { gsap, ScrollTrigger, SplitText, useGSAP }

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { images, imageSrc } from '../content'
-import { gsap, useGSAP, MOTION } from '../lib/gsap'
+import { gsap, ScrollTrigger, useGSAP, MOTION, scroller } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
 import { RoutePanel, RouteVisual, useRoute } from './Route'
@@ -9,7 +9,7 @@ const src = (w) => imageSrc(images.story, w, Math.round(w * 1.3))
 
 // Sektion bleibt stehen: das Bild ist fix, die drei Absätze lösen einander ab.
 // Danach wechselt alles (Bild, Titel, Text) zu „Der Weg zu uns“ vom Stephansdom.
-// Jede Scrollbewegung führt genau einen Schritt weiter (Einrasten in Scrollrichtung).
+// Jede Scrollbewegung führt genau einen Schritt weiter, auch bei schnellem Wischen.
 export default function Story() {
   const { t } = useLang()
   const root = useRef(null)
@@ -28,19 +28,107 @@ export default function Story() {
         gsap.set('.route-media', { autoAlpha: 0 })
         gsap.set(fills[0], { scaleX: 1 })
 
-        // Zuletzt eingerasteter Schritt: -1 = noch oberhalb, steps + 1 = schon darunter.
-        // Ein schneller Wisch darf nie mehr als einen Schritt weiter, und wer hineinscrollt, landet immer auf dem ersten
-        // (bzw. von unten auf dem letzten) Schritt.
-        let at = -1
-        const snapTo = (value, self) => {
-          const x = value * steps
-          const k = self.direction > 0 ? Math.ceil(x - 0.02) : Math.floor(x + 0.02)
-          const to = gsap.utils.clamp(Math.max(0, at - 1), Math.min(steps, at + 1), k)
-          // schon genau auf dem Schritt: es gibt keine Einrast-Animation, also hier merken
-          if (self.isActive && Math.abs(to - x) < 0.01) at = to
-          return to / steps
+        // Schritt-Steuerung: Wer in die Sektion scrollt (auch mit viel Schwung), wird auf dem ersten Schritt
+        // angehalten (von unten: auf dem letzten). Der Schwung verpufft, danach führt jede Geste genau einen Schritt
+        // weiter. Nach dem letzten Schritt (bzw. vor dem ersten) scrollt die Seite wieder ganz normal.
+        let index = 0
+        let locked = false
+        let moving = false
+        let quietUntil = 0
+        let acc = 0
+        let navUntil = 0
+        const lenis = () => scroller.lenis
+        const pos = (k) => tl.scrollTrigger.start + (k / steps) * (tl.scrollTrigger.end - tl.scrollTrigger.start)
+        // Während der Sperre steht Lenis still, deshalb gleitet die Seite hier selbst (nativer Scroll, per GSAP)
+        const glide = { y: 0 }
+        const scrollTo = (y, immediate) => {
+          gsap.killTweensOf(glide)
+          if (immediate) {
+            moving = false
+            return window.scrollTo(0, y)
+          }
+          moving = true
+          glide.y = window.scrollY
+          gsap.to(glide, {
+            y,
+            duration: 0.9,
+            ease: 'power2.inOut',
+            onUpdate: () => window.scrollTo(0, glide.y),
+            onComplete: () => (moving = false),
+          })
         }
-        const settle = (self) => (at = Math.round(self.progress * steps))
+        const lock = (k) => {
+          // schon gesperrt (z. B. genau am Anfang: GSAP meldet beim ersten Pixel erneut „Eintritt“)
+          if (locked || performance.now() < navUntil) return
+          locked = true
+          index = k
+          acc = 0
+          // der Schwung, der uns hierher gebracht hat, zählt nicht als Geste
+          quietUntil = performance.now() + 500
+          lenis()?.stop()
+          intent.enable()
+          scrollTo(pos(k), true)
+        }
+        const release = () => {
+          locked = false
+          intent.disable()
+          lenis()?.start()
+        }
+        const step = (dir) => {
+          const k = index + dir
+          if (k < 0 || k > steps) {
+            // raus aus der Sektion: ein Stück weiter, damit die Geste spürbar etwas bewirkt
+            release()
+            const y = dir > 0 ? pos(steps) + window.innerHeight * 0.4 : pos(0) - window.innerHeight * 0.4
+            const l = lenis()
+            return l ? l.scrollTo(y, { duration: 0.9 }) : scrollTo(y)
+          }
+          index = k
+          scrollTo(pos(k))
+        }
+        // Rad, Trackpad und Wischen: Ausschwingen eines Trackpads oder ein langer Wisch zählen als eine Geste
+        const intent = ScrollTrigger.observe({
+          target: window,
+          type: 'wheel,touch',
+          wheelSpeed: -1,
+          preventDefault: true,
+          allowClicks: true,
+          onChangeY: (self) => {
+            const now = performance.now()
+            if (moving || now < quietUntil) {
+              quietUntil = Math.max(quietUntil, now + 180)
+              acc = 0
+              return
+            }
+            acc += self.deltaY
+            if (Math.abs(acc) < 24) return
+            const dir = acc < 0 ? 1 : -1
+            acc = 0
+            quietUntil = now + 400
+            step(dir)
+          },
+        })
+        intent.disable()
+        // Restschwung (z. B. iOS) hält die Seite nicht auf: zurück auf den aktuellen Schritt
+        const hold = () => locked && !moving && Math.abs(window.scrollY - pos(index)) > 2 && scrollTo(pos(index), true)
+        window.addEventListener('scroll', hold, { passive: true })
+        // Tastatur: Pfeile, Bild auf/ab und Leertaste blättern ebenfalls Schritt für Schritt
+        const onKey = (e) => {
+          if (!locked || e.defaultPrevented || moving) return
+          const field = e.target.closest?.('a, button, input, select, textarea, [role="listbox"]')
+          const dir = { ArrowDown: 1, PageDown: 1, ArrowUp: -1, PageUp: -1, ' ': field ? 0 : e.shiftKey ? -1 : 1 }[e.key]
+          if (!dir) return
+          e.preventDefault()
+          step(dir)
+        }
+        window.addEventListener('keydown', onKey)
+        // Menü- und Ankerlinks springen ungebremst durch die Sektion
+        const onAnchor = (e) => {
+          if (!e.target.closest?.('a[href^="#"]')) return
+          navUntil = performance.now() + 3000
+          if (locked) release()
+        }
+        document.addEventListener('click', onAnchor, true)
 
         // Schritt k liegt genau bei Zeit k; die Wechsel passieren dazwischen
         const tl = gsap.timeline({
@@ -53,9 +141,8 @@ export default function Story() {
             pin: true,
             anticipatePin: 1,
             refreshPriority: 2,
-            snap: { snapTo, duration: { min: 0.35, max: 0.8 }, delay: 0.04, ease: 'power2.inOut', onComplete: settle },
-            onLeave: () => (at = steps + 1),
-            onLeaveBack: () => (at = -1),
+            onEnter: () => lock(0),
+            onEnterBack: () => lock(steps),
           },
         })
         tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: steps - 0.5 }, 0)
@@ -74,6 +161,14 @@ export default function Story() {
           .fromTo('.route-media', { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'power2.out' }, s + 0.4)
           .call(() => setDrawKey((k) => k + 1), null, s + 0.6)
           .set({}, {}, steps)
+
+        return () => {
+          if (locked) release()
+          intent.kill()
+          window.removeEventListener('scroll', hold)
+          window.removeEventListener('keydown', onKey)
+          document.removeEventListener('click', onAnchor, true)
+        }
       })
     },
     { scope: root },

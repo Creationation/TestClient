@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
-import { gsap, ScrollTrigger, useGSAP, prefersReduced } from './lib/gsap'
+import { gsap, ScrollTrigger, useGSAP, prefersReduced, scroller } from './lib/gsap'
 import { site } from './content'
 import { LangProvider, useLang } from './lib/lang'
 import Header from './components/Header'
@@ -24,6 +24,7 @@ function useSmoothScroll() {
   useEffect(() => {
     if (prefersReduced()) return
     const lenis = new Lenis({ wrapper: window, content: document.documentElement, anchors: true, lerp: 0.15 })
+    scroller.lenis = lenis
     lenis.on('scroll', ScrollTrigger.update)
     const raf = (time) => lenis.raf(time * 1000)
     gsap.ticker.add(raf)
@@ -31,6 +32,7 @@ function useSmoothScroll() {
     return () => {
       gsap.ticker.remove(raf)
       lenis.destroy()
+      scroller.lenis = null
     }
   }, [])
 }
