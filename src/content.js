@@ -84,11 +84,7 @@ export const images = {
   // „Einblicke“: kurze Videos aus dem Salon
   reels: ['gelato-sorten', 'patisserie-2', 'torten', 'salon'],
   // Fotos aus dem Salon (vom Kunden)
-  story: { src: '/images/salon-wall.jpg' },
-  // „Der Weg zu uns“: Bild { src } oder Video { video } (aus /public/videos). Fehlt die Datei,
-  // erscheint automatisch die gezeichnete Karte mit den Wegen.
-  route: { src: '/images/weg-vom-dom.jpg' },
-  // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
+  story: { src: '/images/salon-wall.jpg' },  // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
   gallery: [
     { id: '1764337008605-44abfb0f3816', span: 7, ratio: 3 / 2 },
     { src: '/images/salon-tables.jpg', span: 5, ratio: 4 / 5 },
@@ -152,15 +148,15 @@ export const content = {
     },
     route: {
       eyebrow: 'Der Weg zu uns',
-      title: 'Zwei Minuten vom Stephansdom.',
+      title: 'Gleich hinter dem Stephansdom.',
       imageAlt: 'Der Weg vom Stephansdom zu Gelati am Dom in der Schulerstraße',
       choose: 'Woher kommst du?',
       walk: 'zu Fuß',
       from: {
-        dom: { label: 'Stephansdom', time: '2 Min.', text: 'Vom Haupttor einmal am Dom entlang bis hinter den Chor. Dort beginnt die Schulerstraße, wir sind gleich das erste Haus.' },
-        u: { label: 'U1 · U3 Stephansplatz', time: '3 Min.', text: 'Rauf auf den Stephansplatz, am Dom vorbei bis hinter den Chor und hinein in die Schulerstraße.' },
-        graben: { label: 'Graben', time: '4 Min.', text: 'Den Graben entlang zum Stephansplatz, an der Nordseite des Doms vorbei in die Schulerstraße.' },
-        stubentor: { label: 'U3 Stubentor', time: '6 Min.', text: 'Über den Dr. Karl Lueger Platz in die Schulerstraße, Richtung Dom. Wir sind am Ende der Straße.' },
+        dom: { label: 'Stephansdom', time: '3 Min.', text: 'Vom Haupttor links halten und an der Nordseite des Doms entlang. Wo der Platz endet, beginnt die Schulerstraße. Dort sind wir.' },
+        u: { label: 'U1 · U3 Stephansplatz', time: '3 Min.', text: 'Aus der U-Bahn auf den Stephansplatz, am Dom vorbei bis ans andere Ende des Platzes. Dort beginnt die Schulerstraße.' },
+        graben: { label: 'Graben', time: '5 Min.', text: 'Den Graben entlang bis zum Stephansplatz, am Dom vorbei bis ans andere Ende des Platzes und in die Schulerstraße.' },
+        stubentor: { label: 'U3 Stubentor', time: '5 Min.', text: 'Vom Ausgang Dr. Karl Lueger Platz die Schulerstraße entlang Richtung Dom. Wir sind am Ende der Straße, direkt am Stephansplatz.' },
       },
       go: 'Route starten',
       locate: 'Meinen Standort nutzen',
@@ -265,15 +261,15 @@ export const content = {
     },
     route: {
       eyebrow: 'Finding us',
-      title: 'Two minutes from St. Stephen’s.',
+      title: 'Just behind St. Stephen’s.',
       imageAlt: 'The way from St. Stephen’s Cathedral to Gelati am Dom in Schulerstraße',
       choose: 'Where are you coming from?',
       walk: 'on foot',
       from: {
-        dom: { label: 'St. Stephen’s', time: '2 min', text: 'From the main gate, walk along the cathedral to the far end behind the choir. Schulerstraße starts right there, we are the very first building.' },
-        u: { label: 'U1 · U3 Stephansplatz', time: '3 min', text: 'Up onto Stephansplatz, past the cathedral to the far end behind the choir and into Schulerstraße.' },
-        graben: { label: 'Graben', time: '4 min', text: 'Stroll down the Graben to Stephansplatz, past the north side of the cathedral and into Schulerstraße.' },
-        stubentor: { label: 'U3 Stubentor', time: '6 min', text: 'Across Dr. Karl Lueger Platz into Schulerstraße, towards the cathedral. We are at the end of the street.' },
+        dom: { label: 'St. Stephen’s', time: '3 min', text: 'From the main gate keep left and walk along the north side of the cathedral. Where the square ends, Schulerstraße begins. That is where you find us.' },
+        u: { label: 'U1 · U3 Stephansplatz', time: '3 min', text: 'Up onto Stephansplatz and past the cathedral to the far end of the square, where Schulerstraße begins.' },
+        graben: { label: 'Graben', time: '5 min', text: 'Stroll down the Graben to Stephansplatz, past the cathedral to the far end of the square and into Schulerstraße.' },
+        stubentor: { label: 'U3 Stubentor', time: '5 min', text: 'From the Dr. Karl Lueger Platz exit, walk up Schulerstraße towards the cathedral. We are at the end of the street, right on Stephansplatz.' },
       },
       go: 'Start route',
       locate: 'Use my location',

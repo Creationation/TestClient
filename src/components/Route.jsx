@@ -1,89 +1,159 @@
-import { useState } from 'react'
-import { images, routeOrigins, site } from '../content'
+import { useEffect, useRef, useState } from 'react'
+import { routeOrigins, site } from '../content'
+import map from '../data/carte-dom.json'
+import { gsap, prefersReduced } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 
-// Gezeichnete Wege auf der Karte (viewBox 400 × 520, Norden oben). Alle enden am Salon.
-const SHOP = [262, 257]
-const PATHS = {
-  dom: { d: 'M112 260 C118 236 150 226 190 226 S246 234 262 257', start: [112, 260] },
-  u: { d: 'M96 300 C130 306 160 304 196 300 S246 286 262 257', start: [96, 300] },
-  graben: { d: 'M18 214 L108 232 C140 226 210 222 236 232 S258 248 262 257', start: [18, 214] },
-  stubentor: { d: 'M386 228 C350 236 320 244 300 249 S272 255 262 257', start: [386, 228] },
+// Echte Karte: Gebäude, Dom und Fußwege aus OpenStreetMap (© OpenStreetMap-Mitwirkende, ODbL),
+// in Metern, Salon-Eingang = 0 0, Norden oben. Erzeugt von scripts/build-map.mjs.
+const LABELS = ['Graben', 'Kärntner Straße', 'Rotenturmstraße', 'Wollzeile', 'Singerstraße', 'Schulerstraße', 'Bäckerstraße', 'Stubenring', 'Domgasse']
+
+// Bildausschnitt im Seitenverhältnis des Rahmens: Weg, Dom und Salon mit Luft, nie über den Kartenrand hinaus
+const frame = (key, aspect) => {
+  const [x0, y0, x1, y1] = map.routes[key].bbox
+  const [cx, cy] = map.cathedral
+  const minX = Math.min(x0, cx - 70, -70)
+  const maxX = Math.max(x1, cx + 70, 70)
+  const minY = Math.min(y0, cy - 40, 0)
+  // unter dem Salon steht sein Name
+  const maxY = Math.max(y1, cy + 40, 50)
+  const pad = 1.45
+  let w = Math.max((maxX - minX) * pad, (maxY - minY) * pad * aspect, 260)
+  w = Math.min(w, map.box.w, map.box.h * aspect)
+  const h = w / aspect
+  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi)
+  return {
+    x: clamp((minX + maxX) / 2 - w / 2, map.box.x, map.box.x + map.box.w - w),
+    y: clamp((minY + maxY) / 2 - h / 2, map.box.y, map.box.y + map.box.h - h),
+    w,
+    h,
+  }
 }
 
 function RouteMap({ active, drawKey }) {
   const { t } = useLang()
   const r = t.route
+  const svg = useRef(null)
+  const cam = useRef(null)
+  const tween = useRef(null)
+
+  // Kamera gleitet zum gewählten Weg. --s = Karteneinheiten pro Bildschirmpixel (Schrift & Marker bleiben gleich groß)
+  useEffect(() => {
+    const el = svg.current
+    const apply = () => {
+      const c = cam.current
+      el.setAttribute('viewBox', `${c.x} ${c.y} ${c.w} ${c.h}`)
+      if (el.clientWidth) el.style.setProperty('--s', c.w / el.clientWidth)
+    }
+    const move = (animate) => {
+      if (!el.clientWidth || !el.clientHeight) return
+      const target = frame(active, el.clientWidth / el.clientHeight)
+      tween.current?.kill()
+      if (!cam.current || !animate || prefersReduced()) {
+        cam.current = { ...target }
+        apply()
+      } else tween.current = gsap.to(cam.current, { ...target, duration: 1.8, ease: 'power3.inOut', onUpdate: apply })
+    }
+    move(true)
+    const ro = new ResizeObserver(() => move(false))
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      tween.current?.kill()
+    }
+  }, [active])
+
+  const px = (n) => `calc(var(--s, 1) * ${n}px)`
+  const pin = (x, y) => ({ transform: `translate(${x}px, ${y}px) scale(var(--s, 1))` })
+  const route = map.routes[active]
+
   return (
-    <svg viewBox="0 0 400 520" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full bg-mint" role="img" aria-label={r.imageAlt}>
-      {/* Straßen */}
-      <g fill="none" stroke="#f8faf5" strokeLinecap="round" strokeWidth="14">
-        <path d="M0 212 L112 234" />
-        <path d="M128 296 L108 520" />
-        <path d="M206 214 L262 40" />
-        <path d="M236 226 L400 168" />
-        <path d="M246 300 L400 354" />
-        <path d="M250 258 L400 226" />
-        <path d="M0 420 L120 400" />
+    <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full bg-[#E9EFE4]" role="img" aria-label={r.imageAlt}>
+      <image href="/images/carte-dom.svg" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h} />
+
+      <defs>
+        {map.labels.map((l, i) => (
+          <path key={l.name} id={`street-${i}`} d={l.d} />
+        ))}
+      </defs>
+      <g fill="#5d695f" style={{ font: `400 ${px(9)} var(--font-sans)`, letterSpacing: px(2.4) }}>
+        {map.labels.map((l, i) =>
+          LABELS.includes(l.name) ? (
+            <text key={l.name} dominantBaseline="central">
+              <textPath href={`#street-${i}`} startOffset="50%" textAnchor="middle">
+                {l.name.toUpperCase()}
+              </textPath>
+            </text>
+          ) : null,
+        )}
       </g>
-      {/* Stephansplatz */}
-      <rect x="92" y="208" width="176" height="104" rx="18" fill="#f8faf5" />
-      {/* Der Dom: Langhaus, Chor im Osten, Südturm */}
-      <g fill="#c4d0bc" stroke="#8b9c84" strokeWidth="1.2">
-        <path d="M122 246 H214 C230 246 238 254 238 262 C238 270 230 278 214 278 H122 Z" />
-        <rect x="170" y="278" width="20" height="18" rx="3" />
+
+      {/* Alle Wege ganz leise, der gewählte zeichnet sich in Gold */}
+      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+        {routeOrigins.map((o) => (
+          <path key={o.key} d={map.routes[o.key].d} stroke="#a98848" strokeOpacity="0.28" style={{ strokeWidth: px(1.5) }} />
+        ))}
+        <path d={route.d} stroke="#f8faf5" strokeOpacity="0.9" style={{ strokeWidth: px(7) }} />
+        <path key={`${active}-${drawKey}`} d={route.d} pathLength="1" stroke="#a98848" className="route-draw" style={{ strokeWidth: px(3.5) }} />
       </g>
-      <text x="176" y="265" textAnchor="middle" className="fill-forest" style={{ font: '400 8.5px var(--font-sans)', letterSpacing: '0.18em' }}>
-        {r.map.dom.toUpperCase()}
+
+      <text
+        x={map.cathedral[0]}
+        y={map.cathedral[1]}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill="#d8bd83"
+        style={{ font: `italic 400 ${px(15)} var(--font-display)`, letterSpacing: px(0.4) }}
+      >
+        {r.map.dom}
       </text>
 
-      {/* Alle Wege leise, der gewählte in Gold, der sich zeichnet */}
-      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-        {Object.entries(PATHS).map(([key, p]) => (
-          <path key={key} d={p.d} stroke="#a98848" strokeOpacity="0.22" strokeWidth="2" strokeDasharray="2 6" />
-        ))}
-        <path
-          key={`${active}-${drawKey}`}
-          d={PATHS[active].d}
-          pathLength="1"
-          stroke="#a98848"
-          strokeWidth="3.2"
-          className="route-draw"
-        />
-      </g>
-      {Object.entries(PATHS).map(([key, p]) => (
-        <circle key={key} cx={p.start[0]} cy={p.start[1]} r={key === active ? 6 : 4} fill={key === active ? '#a98848' : '#8b9c84'} />
-      ))}
+      {/* Startpunkte */}
+      {routeOrigins.map((o) => {
+        const [x, y] = map.routes[o.key].start
+        const on = o.key === active
+        return (
+          <g key={o.key} style={pin(x, y)} className="transition-opacity duration-700" opacity={on ? 1 : 0.55}>
+            <circle r={on ? 6 : 4} fill={on ? '#a98848' : '#8b9c84'} stroke="#f8faf5" strokeWidth="2" />
+            {on && (
+              <text y="-14" textAnchor="middle" fill="#2f3b32" stroke="#f3f6ef" strokeWidth="4" paintOrder="stroke" style={{ font: '400 12px var(--font-sans)' }}>
+                {r.from[o.key].label}
+              </text>
+            )}
+          </g>
+        )
+      })}
 
       {/* Salon */}
-      <circle cx={SHOP[0]} cy={SHOP[1]} r="16" fill="#a98848" className="route-pulse" />
-      <circle cx={SHOP[0]} cy={SHOP[1]} r="8" fill="#2f3b32" stroke="#d8bd83" strokeWidth="2" />
-      <g transform={`translate(${SHOP[0] + 14} ${SHOP[1] + 30})`}>
-        <rect x="-6" y="-15" width="122" height="24" rx="12" fill="#2f3b32" />
-        <text x="55" y="1" textAnchor="middle" fill="#d8bd83" style={{ font: 'italic 400 13px var(--font-logo)' }}>
-          {r.map.shop}
-        </text>
+      <g style={pin(0, 0)}>
+        <circle r="18" fill="#a98848" className="route-pulse" />
+        <circle r="8" fill="#2f3b32" stroke="#d8bd83" strokeWidth="2.5" />
+        <g transform="translate(-62 34)">
+          <rect x="0" y="-14" width="124" height="28" rx="14" fill="#2f3b32" />
+          <text x="62" y="1" textAnchor="middle" dominantBaseline="middle" fill="#d8bd83" style={{ font: 'italic 400 14px var(--font-logo)' }}>
+            {r.map.shop}
+          </text>
+        </g>
       </g>
     </svg>
   )
 }
 
-// Bild bzw. Video aus content.images.route. Fehlt die Datei, bleibt die gezeichnete Karte.
-export function RouteVisual({ active, drawKey }) {
-  const { t } = useLang()
-  const [missing, setMissing] = useState(false)
-  const media = images.route
-
-  if (media?.video && !missing)
-    return (
-      <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="metadata" poster={`/videos/${media.video}.jpg`} aria-label={t.route.imageAlt} onError={() => setMissing(true)}>
-        <source src={`/videos/${media.video}.webm`} type="video/webm" />
-        <source src={`/videos/${media.video}.mp4`} type="video/mp4" onError={() => setMissing(true)} />
-      </video>
-    )
-  if (media?.src && !missing)
-    return <img src={media.src} alt={t.route.imageAlt} decoding="async" onError={() => setMissing(true)} className="absolute inset-0 h-full w-full object-cover" />
-  return <RouteMap active={active} drawKey={drawKey} />
+export function RouteVisual(props) {
+  return (
+    <>
+      <RouteMap {...props} />
+      {/* Pflichtnachweis der Kartendaten (ODbL) */}
+      <a
+        href="https://www.openstreetmap.org/copyright"
+        target="_blank"
+        rel="noreferrer"
+        className="absolute right-3 bottom-2 text-[0.6rem] text-ink-soft/70 transition-colors hover:text-ink md:right-4 md:bottom-3"
+      >
+        © OpenStreetMap
+      </a>
+    </>
+  )
 }
 
 const distance = (a, b) => {
