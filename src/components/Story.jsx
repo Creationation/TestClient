@@ -32,9 +32,10 @@ export default function Story() {
         gsap.set('.story-home, .story-tint', { autoAlpha: 0 })
         gsap.set(fills[0], { scaleX: 1 })
 
-        // Schritt-Steuerung: Wer in die Sektion scrollt (auch mit viel Schwung), wird auf dem ersten Schritt
-        // angehalten (von unten: auf dem letzten). Der Schwung verpufft, danach führt jede Geste genau einen Schritt
-        // weiter. Nach dem letzten Schritt (bzw. vor dem ersten) scrollt die Seite wieder ganz normal.
+        // Schritt-Steuerung: Sobald die Sektion ins Bild kommt (auch mit viel Schwung), gleitet die Seite ganz auf den
+        // ersten Schritt (von unten: auf den letzten), das Bild wird nie angeschnitten. Der Schwung verpufft, danach führt
+        // jede Geste genau einen Schritt weiter. Nach dem letzten Schritt gleitet die Seite ganz zur nächsten Sektion
+        // (vor dem ersten: zurück zum Hero) und scrollt dort wieder ganz normal.
         let index = 0
         let locked = false
         let moving = false
@@ -61,6 +62,9 @@ export default function Story() {
             onComplete: () => (moving = false),
           })
         }
+        // Rand der Zone: eine Bildschirmhöhe vor dem Anfang und nach dem Ende der Sektion
+        const before = () => Math.max(0, tl.scrollTrigger.start - window.innerHeight)
+        const after = () => tl.scrollTrigger.end + root.current.offsetHeight
         const lock = (k) => {
           // schon gesperrt (z. B. genau am Anfang: GSAP meldet beim ersten Pixel erneut „Eintritt“)
           if (locked || performance.now() < navUntil) return
@@ -71,7 +75,7 @@ export default function Story() {
           quietUntil = performance.now() + 500
           lenis()?.stop()
           intent.enable()
-          scrollTo(pos(k), true)
+          scrollTo(pos(k))
         }
         const release = () => {
           locked = false
@@ -81,11 +85,11 @@ export default function Story() {
         const step = (dir) => {
           const k = index + dir
           if (k < 0 || k > steps) {
-            // raus aus der Sektion: ein Stück weiter, damit die Geste spürbar etwas bewirkt
+            // raus aus der Sektion: ganz zur nächsten Sektion (bzw. zurück zum Hero), nichts bleibt angeschnitten
             release()
-            const y = dir > 0 ? pos(steps) + window.innerHeight * 0.4 : pos(0) - window.innerHeight * 0.4
+            const y = dir > 0 ? after() : before()
             const l = lenis()
-            return l ? l.scrollTo(y, { duration: 0.9 }) : scrollTo(y)
+            return l ? l.scrollTo(y, { duration: 1, lock: true }) : scrollTo(y)
           }
           index = k
           scrollTo(pos(k))
@@ -145,8 +149,6 @@ export default function Story() {
             pin: true,
             anticipatePin: 1,
             refreshPriority: 2,
-            onEnter: () => lock(0),
-            onEnterBack: () => lock(steps),
           },
         })
         tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: steps - 0.5 }, 0)
@@ -175,9 +177,19 @@ export default function Story() {
           .call(() => setDrawKey((k) => k + 1), null, s + 0.6)
           .set({}, {}, steps)
 
+        // Die Zone beginnt, sobald die Sektion unten ins Bild kommt, und endet, wenn sie oben ganz verschwunden ist
+        const zone = ScrollTrigger.create({
+          start: () => before() + 2,
+          end: () => after() - 2,
+          refreshPriority: 1,
+          onEnter: () => lock(0),
+          onEnterBack: () => lock(steps),
+        })
+
         return () => {
           if (locked) release()
           intent.kill()
+          zone.kill()
           window.removeEventListener('scroll', hold)
           window.removeEventListener('keydown', onKey)
           document.removeEventListener('click', onAnchor, true)
