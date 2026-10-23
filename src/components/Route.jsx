@@ -181,7 +181,15 @@ function RouteMap({ route: { active }, drawKey }) {
       })
     }
     move(true)
-    const ro = new ResizeObserver(() => move(false))
+    // nur bei echter Größenänderung neu ausrichten: der ResizeObserver meldet sich auch sofort beim Beobachten,
+    // das würde den Flug im ersten Bild abbrechen und die Karte ans Ziel springen lassen
+    let size = `${el.clientWidth}x${el.clientHeight}`
+    const ro = new ResizeObserver(() => {
+      const now = `${el.clientWidth}x${el.clientHeight}`
+      if (now === size) return
+      size = now
+      move(false)
+    })
     ro.observe(el)
     return () => {
       ro.disconnect()
