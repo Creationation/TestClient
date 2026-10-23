@@ -123,6 +123,24 @@
     stroke-dashoffset: calc(var(--s, 1) * -12px);
   }
 }
+/* Kameraflug: Weg und Straßennamen blenden aus, ihre Animationen warten, bis die Kamera angekommen ist */
+.route-map svg {
+  transition: opacity 0.2s ease;
+}
+.route-map[data-flying] svg {
+  opacity: 0;
+}
+.route-map[data-flying] svg *,
+.route-map[data-flying] .route-pop {
+  animation-play-state: paused;
+}
+/* heller Rand um den Namen des Startpunkts, wie bei den Straßennamen */
+.route-halo {
+  text-shadow:
+    0 0 2px #f3f6ef,
+    0 0 3px #f3f6ef,
+    0 0 4px #f3f6ef;
+}
 /* Startmarker blendet mit dem Weg ein */
 .route-pop {
   animation: routePop 0.6s ease-out both;

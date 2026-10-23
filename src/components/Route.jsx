@@ -89,28 +89,34 @@ function RouteMap({ route: { active }, drawKey }) {
   const base = useRef(null)
   const cam = useRef(null)
   const tween = useRef(null)
+  const root = useRef(null)
+  const shop = useRef(null)
+  const start = useRef(null)
   const route = map.routes[active]
   const focusKey = route.bbox.join(',')
-  // Neuer Startpunkt: Weg und Startmarker erscheinen erst, wenn die Kamera fast angekommen ist
   const drawId = `${active}-${drawKey}`
-  const drawn = useRef({ id: null, delay: '0.15s' })
-  if (drawn.current.id !== drawId) {
-    const switched = drawn.current.id && !drawn.current.id.startsWith(`${active}-`)
-    drawn.current = { id: drawId, delay: switched ? '1s' : '0.15s' }
-  }
-  const delay = drawn.current.delay
 
-  // Die Grundkarte wird einmal scharf in ein Canvas gezeichnet und danach nur noch verschoben und skaliert
-  // (das macht die Grafikkarte, nichts wird neu gezeichnet: der Zoom bleibt flüssig, auch auf dem Handy)
+  // Während eines Kameraflugs wird nichts neu gezeichnet: Grundkarte (Canvas) und Marker (HTML) werden nur verschoben,
+  // das macht die Grafikkarte. Weg und Straßennamen (SVG) blenden kurz aus und stehen erst am Ziel wieder da.
   const place = () => {
+    const el = svg.current
+    const c = cam.current
+    if (!c || !el.clientWidth) return
+    const d = el.clientWidth / c.w
+    const k = d / sharpest(el.clientWidth, el.clientHeight)
+    const at = (mx, my) => `translate3d(${(mx - c.x) * d}px, ${(my - c.y) * d}px, 0)`
+    base.current.style.transform = `${at(map.box.x, map.box.y)} scale(${k})`
+    shop.current.style.transform = at(0, 0)
+    if (start.current) start.current.style.transform = at(...map.routes[start.current.dataset.origin].start)
+  }
+  // Ziel erreicht: SVG auf den neuen Ausschnitt, --s = Karteneinheiten pro Bildschirmpixel (Schrift & Tirets gleich groß)
+  const settle = () => {
     const el = svg.current
     const c = cam.current
     if (!c || !el.clientWidth) return
     el.setAttribute('viewBox', `${c.x} ${c.y} ${c.w} ${c.h}`)
     el.style.setProperty('--s', c.w / el.clientWidth)
-    const d = el.clientWidth / c.w
-    const k = d / sharpest(el.clientWidth, el.clientHeight)
-    base.current.style.transform = `translate3d(${(map.box.x - c.x) * d}px, ${(map.box.y - c.y) * d}px, 0) scale(${k})`
+    delete root.current.dataset.flying
   }
 
   useEffect(() => {
@@ -146,7 +152,7 @@ function RouteMap({ route: { active }, drawKey }) {
     }
   }, [])
 
-  // Kamera fliegt zum Ziel. --s = Karteneinheiten pro Bildschirmpixel (Schrift, Tirets & Marker bleiben gleich groß)
+  // Kamera fliegt zum Ziel: kurz heraus, hinüber, wieder hinein
   useEffect(() => {
     const el = svg.current
     const move = (animate) => {
@@ -155,18 +161,23 @@ function RouteMap({ route: { active }, drawKey }) {
       tween.current?.kill()
       if (!cam.current || !animate || prefersReduced()) {
         cam.current = target
+        settle()
         return place()
       }
       const path = flight(cam.current, target, el.clientWidth / el.clientHeight)
       const p = { t: 0 }
+      root.current.dataset.flying = ''
+      place()
       tween.current = gsap.to(p, {
         t: 1,
-        duration: 1.9,
+        duration: 1.6,
+        delay: 0.15,
         ease: 'power2.inOut',
         onUpdate: () => {
           cam.current = path(p.t)
           place()
         },
+        onComplete: settle,
       })
     }
     move(true)
@@ -179,11 +190,11 @@ function RouteMap({ route: { active }, drawKey }) {
   }, [focusKey])
 
   const px = (n) => `calc(var(--s, 1) * ${n}px)`
-  const pin = (x, y) => ({ transform: `translate(${x}px, ${y}px) scale(var(--s, 1))` })
   const halo = { fill: '#2f3b32', stroke: '#f3f6ef', strokeWidth: 4, paintOrder: 'stroke' }
+  const left = route.start[0] < 0
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#EEF2E9]">
+    <div ref={root} className="route-map absolute inset-0 overflow-hidden bg-[#EEF2E9]">
       <canvas ref={base} aria-hidden="true" className="absolute top-0 left-0 origin-top-left will-change-transform" />
       <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" role="img" aria-label={r.imageAlt}>
         <defs>
@@ -201,7 +212,7 @@ function RouteMap({ route: { active }, drawKey }) {
               strokeLinecap="round"
               strokeLinejoin="round"
               className="route-draw"
-              style={{ strokeWidth: px(16), animationDelay: delay }}
+              style={{ strokeWidth: px(16) }}
             />
           </mask>
         </defs>
@@ -233,34 +244,30 @@ function RouteMap({ route: { active }, drawKey }) {
           <path d={route.d} stroke="#f8faf5" strokeOpacity="0.85" style={{ strokeWidth: px(8) }} />
           <path d={route.d} stroke="#a98848" className="route-march" style={{ strokeWidth: px(3.2) }} />
         </g>
+      </svg>
 
-        {/* Startpunkt mit Namen, der zur Kartenmitte hin läuft */}
-        <g key={drawId} className="route-pop" style={{ ...pin(...route.start), animationDelay: delay }}>
-          <circle r="7" fill="#f8faf5" stroke="#a98848" strokeWidth="2" />
-          <circle r="2.6" fill="#a98848" />
-          <text
-            x={route.start[0] < 0 ? -8 : 8}
-            y="-15"
-            textAnchor={route.start[0] < 0 ? 'start' : 'end'}
-            {...halo}
-            style={{ font: '400 12px var(--font-sans)' }}
+      {/* Startpunkt mit Namen, der zur Kartenmitte hin läuft; erscheint, wenn die Kamera angekommen ist */}
+      <div key={drawId} ref={start} data-origin={active} aria-hidden="true" className="absolute top-0 left-0 will-change-transform">
+        <div className="route-pop">
+          <span className="absolute -top-[7px] -left-[7px] grid h-[14px] w-[14px] place-items-center rounded-full border-2 border-gold bg-paper">
+            <span className="h-[5px] w-[5px] rounded-full bg-gold" />
+          </span>
+          <span
+            className={`route-halo absolute bottom-[9px] text-[12px] leading-none whitespace-nowrap text-forest ${left ? '-left-2' : '-right-2'}`}
           >
             {active === 'dom' ? r.map.gate : r.from[active].label}
-          </text>
-        </g>
+          </span>
+        </div>
+      </div>
 
-        {/* Salon, das Schild steht rechts daneben und verdeckt nie den Dom */}
-        <g style={pin(0, 0)}>
-          <circle r="18" fill="#a98848" className="route-pulse" />
-          <circle r="8" fill="#2f3b32" stroke="#d8bd83" strokeWidth="2.5" />
-          <g transform="translate(16 0)">
-            <rect x="0" y="-14" width="124" height="28" rx="14" fill="#2f3b32" />
-            <text x="62" y="1" textAnchor="middle" dominantBaseline="middle" fill="#d8bd83" style={{ font: 'italic 400 14px var(--font-logo)' }}>
-              {r.map.shop}
-            </text>
-          </g>
-        </g>
-      </svg>
+      {/* Salon, das Schild steht rechts daneben und verdeckt nie den Dom */}
+      <div ref={shop} aria-hidden="true" className="absolute top-0 left-0 will-change-transform">
+        <span className="route-pulse absolute -top-[18px] -left-[18px] h-9 w-9 rounded-full bg-gold" />
+        <span className="absolute -top-2 -left-2 h-4 w-4 rounded-full border-[2.5px] border-gold-light bg-forest" />
+        <span className="font-logo absolute -top-[14px] left-4 grid h-7 w-[124px] place-items-center rounded-full bg-forest text-[14px] text-gold-light italic">
+          {r.map.shop}
+        </span>
+      </div>
     </div>
   )
 }
