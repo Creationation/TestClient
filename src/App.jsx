@@ -41,24 +41,30 @@ function Page() {
   const { lang } = useLang()
   useSmoothScroll()
 
-  // Hintergrund: Farbe gleitet beim Scrollen von Sektion zu Sektion (läuft nach den Pins der Kinder)
+  // Hintergrund: Farbe gleitet beim Scrollen von Sektion zu Sektion (läuft nach den Pins der Kinder).
+  // Eine einzige Rechnung aus allen Übergängen statt eines Tweens pro Sektion: die Tweens überschrieben sich
+  // gegenseitig, beim Hochscrollen blieb die Farbe stehen und sprang dann. So ist es in beide Richtungen gleich weich.
   useGSAP(
     () => {
       const sections = gsap.utils.toArray('[data-bg]')
-      gsap.set('#bg', { backgroundColor: sections[0].dataset.bg })
-      sections.slice(1).forEach((sec, i) => {
-        const prev = sections[i]
-        gsap.fromTo(
-          '#bg',
-          { backgroundColor: prev.dataset.bgEnd || prev.dataset.bg },
-          {
-            backgroundColor: sec.dataset.bg,
-            ease: 'none',
-            immediateRender: false,
-            scrollTrigger: { trigger: sec, start: 'top 85%', end: 'top 30%', scrub: true },
-          },
-        )
-      })
+      const setBg = gsap.quickSetter('#bg', 'backgroundColor')
+      let steps = []
+      const render = () => {
+        // die letzte Sektion, deren Übergang begonnen hat, bestimmt die Farbe
+        let color = sections[0].dataset.bg
+        for (const [i, st] of steps.entries()) {
+          if (st.progress <= 0) break
+          const prev = sections[i]
+          color = gsap.utils.interpolate(prev.dataset.bgEnd || prev.dataset.bg, sections[i + 1].dataset.bg, st.progress)
+        }
+        setBg(color)
+      }
+      steps = sections
+        .slice(1)
+        .map((sec) => ScrollTrigger.create({ trigger: sec, start: 'top 85%', end: 'top 30%', onUpdate: render }))
+      render()
+      ScrollTrigger.addEventListener('refresh', render)
+      return () => ScrollTrigger.removeEventListener('refresh', render)
     },
     { dependencies: [lang], revertOnUpdate: true },
   )

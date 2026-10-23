@@ -87,14 +87,15 @@
   .molding {
     position: relative;
     border: 1px solid color-mix(in srgb, var(--color-forest) 16%, transparent);
-    border-radius: 6px;
+    /* weich gerundet wie die Knöpfe; der innere Rahmen läuft im Abstand von 10px parallel mit */
+    border-radius: 32px;
   }
   .molding::after {
     content: '';
     position: absolute;
     inset: 10px;
     border: 1px solid color-mix(in srgb, var(--color-forest) 10%, transparent);
-    border-radius: 3px;
+    border-radius: 22px;
     pointer-events: none;
   }
 }
