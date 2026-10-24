@@ -43,9 +43,9 @@ export const legal = {
   owner: 'Gelati Am Dom GmbH', // Firma laut Firmenbuch
   legalForm: 'GmbH',
   address: 'Wlassakstraße 75, 1130 Wien', // Sitz der Gesellschaft (der Salon steht unter site.street)
-  manager: 'Arijeta Ahmeti', // Inhaberin
+  manager: 'Arijeta Ahmeti', // Inhaberin und Geschäftsführerin
   email: 'office@gelatiamdom.at',
-  phone: '', // empfohlen
+  phone: '+43 664 1747393',
   vat: 'ATU83468846',
   register: 'FN 674694y, Handelsgericht Wien',
   business: 'Gastgewerbe (Eissalon und Café)',

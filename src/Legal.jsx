@@ -28,7 +28,7 @@ function Address() {
       {legal.manager && (
         <>
           <br />
-          Inhaberin: {legal.manager}
+          Inhaberin und Geschäftsführerin: {legal.manager}
         </>
       )}
       {legal.address && (
