@@ -40,12 +40,14 @@ export const site = {
 //  auf der Seite als „Angabe folgt“ und in der Konsole als Warnung.
 // ─────────────────────────────────────────────────────────────
 export const legal = {
-  owner: '', // Pflicht: Firma bzw. Name der Inhaberin / des Inhabers, z. B. „Muster Gastro e.U.“
-  legalForm: '', // Pflicht: e.U., GmbH, OG, KG …
-  email: '', // Pflicht: E-Mail-Adresse für Anfragen
+  owner: 'Gelati Am Dom GmbH', // Firma laut Firmenbuch
+  legalForm: 'GmbH',
+  address: 'Wlassakstraße 75, 1130 Wien', // Sitz der Gesellschaft (der Salon steht unter site.street)
+  manager: 'Arijeta Ahmeti', // Inhaberin
+  email: 'office@gelatiamdom.at',
   phone: '', // empfohlen
-  vat: '', // UID-Nummer (ATU…), falls vorhanden
-  register: '', // Firmenbuchnummer und Firmenbuchgericht, falls im Firmenbuch eingetragen, z. B. „FN 123456a, Handelsgericht Wien“
+  vat: 'ATU83468846',
+  register: 'FN 674694y, Handelsgericht Wien',
   business: 'Gastgewerbe (Eissalon und Café)',
   chamber: 'Wirtschaftskammer Wien, Fachgruppe Gastronomie',
   authority: 'Magistratisches Bezirksamt für den 1. und 8. Bezirk',

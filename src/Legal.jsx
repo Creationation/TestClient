@@ -22,9 +22,21 @@ function Address() {
   return (
     <>
       {need(legal.owner, 'Firma / Inhaber')}
-      {legal.legalForm && `, ${legal.legalForm}`}
+      {legal.legalForm && !legal.owner.endsWith(legal.legalForm) && `, ${legal.legalForm}`}
       <br />
-      {site.street}, {site.city}, Österreich
+      {legal.address || `${site.street}, ${site.city}`}, Österreich
+      {legal.manager && (
+        <>
+          <br />
+          Inhaberin: {legal.manager}
+        </>
+      )}
+      {legal.address && (
+        <>
+          <br />
+          Salon: {site.street}, {site.city}
+        </>
+      )}
     </>
   )
 }
