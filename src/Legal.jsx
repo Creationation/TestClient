@@ -165,7 +165,7 @@ function Datenschutz() {
         ermittelt dann Google Maps selbst, sofern du es dort erlaubst.
       </P>
       <P>
-        Die Links „Route starten“, „Von meinem Standort“, „Route planen“ und „Instagram“ führen zu Google Maps bzw. Instagram (Meta Platforms Ireland Limited, Merrion Road, Dublin 4, Irland). Daten werden erst übertragen, wenn
+        Die Links „Route starten“, „Von meinem Standort“, die Karte unter „Besuch uns“ („Route in Google Maps“) und das Instagram-Symbol führen zu Google Maps bzw. Instagram (Meta Platforms Ireland Limited, Merrion Road, Dublin 4, Irland). Daten werden erst übertragen, wenn
         du einen dieser Links anklickst; dann gelten die Datenschutzerklärungen dieser Anbieter: <A href="https://policies.google.com/privacy">Google</A>,{' '}
         <A href="https://privacycenter.instagram.com/policy">Instagram</A>.
       </P>
