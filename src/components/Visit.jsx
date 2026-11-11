@@ -5,6 +5,7 @@ import Sconce from './Sconce'
 
 // Lage des Salons auf public/images/osm-visit.jpg (Ausgabe von scripts/osm-map.py)
 const PIN = { left: '67.85%', top: '50.68%' }
+const DOM = { left: '24%', top: '55%' }
 
 export default function Visit() {
   const { t, lang } = useLang()
@@ -71,12 +72,21 @@ export default function Visit() {
               className="absolute inset-0 h-full w-full object-cover saturate-[0.8] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               style={{ transformOrigin: `${PIN.left} ${PIN.top}` }}
             />
+            {/* Stephansdom: einzige Beschriftung neben dem Salon */}
+            <span
+              aria-hidden="true"
+              className="font-display absolute -translate-x-1/2 -translate-y-1/2 text-[clamp(1rem,2.6vw,1.35rem)] whitespace-nowrap text-ink italic [text-shadow:0_0_4px_#fff,0_0_8px_#fff]"
+              style={DOM}
+            >
+              ✝ {t.route.map.dom}
+            </span>
             {/* Salon */}
             <span className="absolute" style={PIN} aria-hidden="true">
               <span className="route-pulse absolute -top-[18px] -left-[18px] h-9 w-9 rounded-full bg-gold" />
               <span className="absolute -top-[9px] -left-[9px] h-[18px] w-[18px] rounded-full border-[3px] border-gold-light bg-forest shadow-md" />
-              <span className="font-logo absolute bottom-[16px] left-1/2 -translate-x-1/2 rounded-full bg-forest px-4 py-1.5 text-[14px] whitespace-nowrap text-gold-light italic shadow-lg">
-                Gelati am Dom
+              <span className="absolute bottom-[16px] left-1/2 flex -translate-x-1/2 flex-col items-center rounded-[14px] bg-forest px-4 py-2 text-center whitespace-nowrap shadow-lg">
+                <span className="font-logo text-[15px] leading-tight text-gold-light italic">Gelati am Dom</span>
+                <span className="mt-0.5 text-[11px] leading-tight text-mist/85">{site.street}</span>
               </span>
             </span>
             {/* Hinweis: Route öffnen */}
