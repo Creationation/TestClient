@@ -1,7 +1,6 @@
 import { site } from '../content'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
-import Sconce from './Sconce'
 
 // Lage des Salons auf public/images/osm-visit.jpg (Ausgabe von scripts/osm-map.py)
 const PIN = { left: '67.85%', top: '50.68%' }
@@ -14,10 +13,7 @@ export default function Visit() {
     <section id="visit" data-bg="#C4D0BC" className="relative overflow-x-clip py-28 text-ink md:py-44">
       <div className="container-x grid gap-16 lg:grid-cols-[1fr_1.15fr] lg:gap-24">
         <div>
-          <div className="flex items-start justify-between gap-6">
-            <p className="label text-gold">{t.visit.eyebrow}</p>
-            <Sconce className="h-20 w-16 md:h-24 md:w-20 lg:hidden" />
-          </div>
+          <p className="label text-gold">{t.visit.eyebrow}</p>
           <Appear as="h2" className="font-display mt-6 max-w-[13ch] text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
             {t.visit.title}
           </Appear>
@@ -42,15 +38,21 @@ export default function Visit() {
             </address>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-6">
-            <a href={site.mapsLink(lang)} target="_blank" rel="noreferrer" className="btn border-forest bg-forest text-mist hover:border-gold hover:bg-gold">
-              {t.visit.directions}
-              <span aria-hidden="true">→</span>
-            </a>
-            <a href={site.instagram} target="_blank" rel="noreferrer" className="label border-b border-forest/30 pb-1 transition-colors duration-300 hover:border-forest">
-              {t.visit.instagram} ↗
-            </a>
-          </div>
+          {/* Instagram als Symbol im Stil der Seite (dünne Linie, runder Rahmen wie die Knöpfe) */}
+          <a
+            href={site.instagram}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`${t.visit.instagram}: @gelatiamdom`}
+            title="Instagram"
+            className="mt-10 inline-grid h-14 w-14 place-items-center rounded-full border border-forest/40 text-forest transition-colors duration-300 hover:border-gold hover:bg-gold hover:text-mist md:mt-12"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="5.5" />
+              <circle cx="12" cy="12" r="4.2" />
+              <circle cx="17.4" cy="6.6" r="0.6" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
         </div>
 
         {/* Echte OpenStreetMap-Karte (lokal gespeichertes Bild, keine Anfrage an Dritte).
