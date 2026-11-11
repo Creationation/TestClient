@@ -45,9 +45,9 @@ export default function Visit() {
             rel="noreferrer"
             aria-label={`${t.visit.instagram}: @gelatiamdom`}
             title="Instagram"
-            className="mt-10 inline-grid h-14 w-14 place-items-center rounded-full border border-forest/40 text-forest transition-colors duration-300 hover:border-gold hover:bg-gold hover:text-mist md:mt-12"
+            className="mx-auto mt-10 grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full border border-forest/40 text-forest transition-colors duration-300 hover:border-gold hover:bg-gold hover:text-mist md:mt-12"
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="5.5" />
               <circle cx="12" cy="12" r="4.2" />
               <circle cx="17.4" cy="6.6" r="0.6" fill="currentColor" stroke="none" />
