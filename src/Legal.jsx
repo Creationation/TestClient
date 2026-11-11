@@ -204,7 +204,7 @@ export default function Legal({ page }) {
       <header className="border-b border-forest/10">
         <div className="container-x flex items-center justify-between py-6">
           <a href="/" aria-label="Gelati am Dom, zur Startseite" className="text-[1.7rem]">
-            <Logo />
+            <Logo city={false} tone="dark" />
           </a>
           <a href="/" className="label text-ink-soft transition-colors hover:text-ink">
             ← Startseite

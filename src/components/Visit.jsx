@@ -31,7 +31,7 @@ export default function Visit() {
                 </div>
               ))}
             </dl>
-            <p className="mt-4 text-xs text-ink-soft">{t.visit.hoursNote}</p>
+            {t.visit.hoursNote && <p className="mt-4 text-xs text-ink-soft">{t.visit.hoursNote}</p>}
 
             <h3 className="label mt-12 text-ink-soft">{t.visit.addressTitle}</h3>
             <address className="font-display mt-4 text-3xl leading-snug not-italic md:text-4xl">

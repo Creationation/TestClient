@@ -1,16 +1,19 @@
-// Schriftzug wie an der Wand des Salons: „Gelati am Dom“ in Messing-Gold, darunter „WIEN“.
-// Größe über font-size der Klasse steuern.
-import { site } from '../content'
-
-export default function Logo({ className = '', city = true }) {
+// Das Logo des Kunden (vom Inhaber geliefert, freigestellt). Größe über font-size der Umgebung (em).
+//  tone="light": helle Version für dunkle Flächen (Hero, Fußzeile)
+//  tone="dark":  Originalfarben (Olivgrün und Gold) für helle Flächen
+//  city={false}: nur der Schriftzug, ohne „WIEN“ und Devise (kleine Kopfzeile)
+export default function Logo({ className = '', city = true, tone = 'light' }) {
+  const file = `/logo${city ? '' : '-word'}${tone === 'light' ? '-light' : ''}.png`
   return (
-    <span className={`inline-flex flex-col items-center leading-none ${className}`}>
-      <span className="text-gold-metal font-logo font-medium tracking-[-0.01em] whitespace-nowrap">
-        Gelati <span className="text-[0.52em]">am</span> Dom
-        {/* ® nur, wenn die Marke eingetragen ist (sonst irreführend) */}
-        {site.registeredMark && <sup className="ml-[0.05em] align-super font-sans text-[0.22em] font-normal">®</sup>}
-      </span>
-      {city && <span className="text-gold-metal mt-[0.18em] font-sans text-[0.17em] font-normal tracking-[0.9em] uppercase">Wien</span>}
+    <span className={`inline-block max-w-full leading-none ${className}`} style={{ width: city ? '5.8em' : '6.2em' }}>
+      <img
+        src={file}
+        alt=""
+        width={city ? 1400 : 1000}
+        height={city ? 427 : 216}
+        draggable="false"
+        className="block h-auto w-full"
+      />
     </span>
   )
 }
