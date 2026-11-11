@@ -1,10 +1,10 @@
 import { site } from '../content'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
-import { RouteVisual } from './Route'
 import Sconce from './Sconce'
 
-const FROM_DOM = { active: 'dom' }
+// Lage des Salons auf public/images/osm-visit.jpg (Ausgabe von scripts/osm-map.py)
+const PIN = { left: '67.85%', top: '50.68%' }
 
 export default function Visit() {
   const { t, lang } = useLang()
@@ -52,9 +52,48 @@ export default function Visit() {
           </div>
         </div>
 
-        {/* Eigene Karte (lokal, ohne Google): Weg vom Haupttor des Doms zum Salon */}
-        <div className="relative h-[350px] overflow-hidden rounded-[20px] bg-mint md:rounded-[26px] md:h-[450px] lg:sticky lg:top-28 lg:self-start">
-          <RouteVisual route={FROM_DOM} drawKey={0} />
+        {/* Echte OpenStreetMap-Karte (lokal gespeichertes Bild, keine Anfrage an Dritte).
+            Ein Tipp darauf öffnet Google Maps mit der Route vom eigenen Standort zum Salon. */}
+        <div className="relative lg:sticky lg:top-28 lg:self-start">
+          <a
+            href={site.mapsLink(lang)}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`${t.route.mapsHint}: ${site.street}, ${site.city}`}
+            className="group relative block aspect-[5/4] w-full overflow-hidden rounded-[20px] bg-mint shadow-[0_18px_50px_-30px_rgba(38,48,40,0.6)] md:rounded-[26px]"
+          >
+            <img
+              src="/images/osm-visit.jpg"
+              alt=""
+              width={1280}
+              height={1024}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover saturate-[0.8] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              style={{ transformOrigin: `${PIN.left} ${PIN.top}` }}
+            />
+            {/* Salon */}
+            <span className="absolute" style={PIN} aria-hidden="true">
+              <span className="route-pulse absolute -top-[18px] -left-[18px] h-9 w-9 rounded-full bg-gold" />
+              <span className="absolute -top-[9px] -left-[9px] h-[18px] w-[18px] rounded-full border-[3px] border-gold-light bg-forest shadow-md" />
+              <span className="font-logo absolute bottom-[16px] left-1/2 -translate-x-1/2 rounded-full bg-forest px-4 py-1.5 text-[14px] whitespace-nowrap text-gold-light italic shadow-lg">
+                Gelati am Dom
+              </span>
+            </span>
+            {/* Hinweis: Route öffnen */}
+            <span className="label absolute inset-x-3 bottom-3 flex items-center justify-center gap-3 rounded-full bg-forest/90 px-5 py-3.5 text-mist backdrop-blur-sm transition-colors duration-300 group-hover:bg-gold md:inset-x-auto md:right-4 md:bottom-4">
+              {t.route.mapsHint}
+              <span aria-hidden="true">↗</span>
+            </span>
+          </a>
+          {/* Pflichtnachweis der Kartendaten (ODbL) */}
+          <a
+            href="https://www.openstreetmap.org/copyright"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 inline-block text-[0.65rem] text-ink-soft/80 transition-colors hover:text-ink"
+          >
+            © OpenStreetMap {lang === 'de' ? 'Mitwirkende' : 'contributors'}
+          </a>
         </div>
       </div>
     </section>

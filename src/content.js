@@ -115,6 +115,8 @@ export const images = {
   story: { src: '/images/salon-wall.jpg' },
   // Schritt 02 „Hausgemacht mit Liebe“: eigenes Bild (Symbolfoto Pistazie)
   storyHomemade: { id: '1780340123533-954cef8c7eaa' },
+  // Schritt 03 „Für dich zubereitet“: Patisserie aus der Vitrine (vom Kunden)
+  storyFresh: { src: '/images/desserts.jpg' },
   // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
   gallery: [
     { id: '1764337008605-44abfb0f3816', span: 7, ratio: 3 / 2 },
@@ -165,15 +167,19 @@ export const content = {
       // zuerst der Salon, danach das Gelato; wo wir sind, zeigt erst der letzte Schritt „Der Weg zu uns“
       paragraphs: [
         {
+          heading: 'Willkommen in unserem Salon.',
           title: 'Ein Salon zum Verweilen',
           text: 'Salbeigrün, Messing und warmes Licht: ein Salon, in dem du in Ruhe Platz nimmst und genießt.',
         },
         {
+          heading: 'Gelato aus eigener Hand.',
           title: 'Hausgemacht mit Liebe',
           imageAlt: 'Pistazieneis mit frischen Pistazien',
           text: 'Unser Gelato machen wir selbst: mit guten Zutaten, viel Geduld und Freude an dem, was wir tun.',
         },
         {
+          heading: 'Frisch für dich zubereitet.',
+          imageAlt: 'Patisserie in der Vitrine von Gelati am Dom',
           title: 'Für dich zubereitet',
           text: 'Waffeln, Palatschinken und Kaffee bereiten wir für dich zu, dazu Gelato und feine Patisserie aus der Vitrine.',
         },
@@ -245,7 +251,7 @@ export const content = {
     reels: { eyebrow: 'Inside', title: 'Fresh from the display.', labels: ['Our flavours', 'Patisserie', 'Cakes & cheesecakes', 'The salon'] },
     hero: {
       kicker: 'Artisan Gelato · Caffè & Desserts',
-      tagline: 'Homemade gelato, fine coffee and desserts, one minute from St. Stephen’s Cathedral.',
+      tagline: 'Artisan gelati, fine coffee and desserts, one minute from St. Stephen’s Cathedral.',
       cta: 'Discover our menu',
       videoLabel: 'A look inside our gelateria in Schulerstraße',
     },
@@ -275,15 +281,19 @@ export const content = {
       imageAlt: 'The Gelati am Dom salon with its large gelato sculpture',
       paragraphs: [
         {
+          heading: 'Welcome to our salon.',
           title: 'A salon to linger in',
           text: 'Sage green, brass and warm light: a salon where you can sit down, take your time and enjoy.',
         },
         {
+          heading: 'Artisan gelati, made by us.',
           title: 'Homemade with love',
           imageAlt: 'Pistachio gelato with fresh pistachios',
           text: 'We make our gelato ourselves: with good ingredients, plenty of patience and real joy in what we do.',
         },
         {
+          heading: 'Freshly made for you.',
+          imageAlt: 'Patisserie in the display at Gelati am Dom',
           title: 'Made for you',
           text: 'Waffles, Palatschinken and coffee prepared for you, plus gelato and fine patisserie from the display.',
         },
@@ -341,7 +351,7 @@ export const content = {
       instagram: 'Instagram',
     },
     footer: {
-      claim: 'Homemade gelato, coffee and indulgence, in the heart of Vienna.',
+      claim: 'Artisan gelati, coffee and indulgence, in the heart of Vienna.',
       photos: 'Some photos are illustrative',
       imprint: 'Imprint',
       privacy: 'Privacy',

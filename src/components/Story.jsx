@@ -8,6 +8,10 @@ import { RoutePanel, RouteVisual, useRoute } from './Route'
 const src = (w) => imageSrc(images.story, w, Math.round(w * 1.3))
 // Schritt 02 hat ein eigenes Gesicht: Pistazienbild, samtgrüner Grund, helle Schrift, Playfair
 const HOME = 1
+// Schritt 03 ebenso: Patisserie-Foto, Vanille-Grund, Cormorant kursiv
+const FRESH = 2
+// Jeder Schritt hat seinen eigenen Titel in eigener Schrift (statt dreimal „Willkommen in unserem Salon“)
+const TITLE_FONT = ['font-display', 'font-logo tracking-[-0.01em]', 'font-display italic']
 
 // Sektion bleibt stehen: das Bild ist fix, die drei Absätze lösen einander ab.
 // Schritt 02 bekommt ein eigenes Bild, einen dunklen Grund und eine andere Schrift, der Weg einen Salbeigrund.
@@ -28,11 +32,13 @@ export default function Story() {
       gsap.matchMedia().add(MOTION, () => {
         const panels = gsap.utils.toArray('.story-p')
         const fills = gsap.utils.toArray('.story-fill')
+        const titles = gsap.utils.toArray('.story-t')
         const steps = panels.length - 1
         gsap.set(panels.slice(1), { autoAlpha: 0, y: 24 })
+        gsap.set(titles.slice(1), { autoAlpha: 0, y: 24 })
         gsap.set('.route-swap', { autoAlpha: 0, y: 24 })
         gsap.set('.route-media', { autoAlpha: 0 })
-        gsap.set('.story-home, .story-tint, .route-tint', { autoAlpha: 0 })
+        gsap.set('.story-home, .story-tint, .story-fresh, .fresh-tint, .route-tint', { autoAlpha: 0 })
         gsap.set(fills[0], { scaleX: 1 })
 
         // Schritt-Steuerung: Wer in die Sektion scrollt (auch mit viel Schwung), wird auf dem ersten Schritt
@@ -176,6 +182,9 @@ export default function Story() {
           tl.to(panels[k], { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, k + 0.3)
           tl.to(panels[k + 1], { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, k + 0.5)
           tl.fromTo(fills[k + 1], { scaleX: 0 }, { scaleX: 1, duration: 0.4 }, k + 0.3)
+          // der große Titel wechselt mit: jeder Schritt hat seinen eigenen
+          tl.to(titles[k], { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, k + 0.3)
+          tl.to(titles[k + 1], { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, k + 0.5)
         }
 
         // Schritt 02: Bild, Grund und Schriftfarben blenden mit dem Text um (Tailwind liest die Farben aus Variablen)
@@ -192,6 +201,11 @@ export default function Story() {
           .fromTo(root.current, light, { ...dark, duration: 0.3, ease: 'power2.out' }, HOME - 0.7)
           .to('.story-home, .story-tint', { autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, HOME + 0.3)
           .to(root.current, { ...light, duration: 0.3, ease: 'power2.in' }, HOME + 0.3)
+
+        // Schritt 03: Patisserie-Foto und Vanille-Grund
+        tl.to('.story-fresh, .fresh-tint', { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }, FRESH - 0.7)
+          .fromTo('.story-fresh img', { scale: 1.12 }, { scale: 1, duration: 1.3 }, FRESH - 0.7)
+          .to('.story-fresh, .fresh-tint', { autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, FRESH + 0.3)
 
         // Szenenwechsel zum letzten Schritt: Bild, Kicker und Titel komplett tauschen
         const s = steps - 1
@@ -220,6 +234,7 @@ export default function Story() {
   return (
     <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-lvh motion-safe:min-h-[620px]">
       <div className="story-tint invisible pointer-events-none absolute inset-0 bg-forest motion-reduce:hidden" aria-hidden="true" />
+      <div className="fresh-tint invisible pointer-events-none absolute inset-0 bg-vanilla motion-reduce:hidden" aria-hidden="true" />
       <div className="route-tint invisible pointer-events-none absolute inset-0 bg-sage motion-reduce:hidden" aria-hidden="true" />
       <div className="container-x relative flex h-full flex-col gap-6 motion-safe:h-svh motion-safe:min-h-[620px] pt-20 pb-8 short:gap-4 short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-24">
         <figure className="relative h-[30svh] w-full short:h-[25svh] overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px] max-lg:motion-safe:h-auto! max-lg:motion-safe:min-h-[140px] max-lg:motion-safe:flex-1">
@@ -245,6 +260,18 @@ export default function Story() {
               className="absolute inset-0 h-full w-full object-cover will-change-transform"
             />
           </div>
+          <div className="story-fresh invisible absolute inset-0 overflow-hidden motion-reduce:hidden">
+            <img
+              src={imageSrc(images.storyFresh, 900, 1125)}
+              sizes="(min-width: 768px) 540px, 100vw"
+              width={640}
+              height={800}
+              alt={t.story.paragraphs[FRESH].imageAlt}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover will-change-transform"
+            />
+          </div>
           <div className="route-media absolute inset-0 motion-reduce:hidden">
             <RouteVisual route={route} drawKey={drawKey} />
           </div>
@@ -259,9 +286,18 @@ export default function Story() {
           </div>
           <div className="mt-4 grid md:mt-6">
             <Appear as="h2" className="font-display text-[clamp(2.1rem,8vw,5.2rem)] leading-[0.98] [grid-area:1/1]">
-              <span className="story-swap block">{t.story.title}</span>
+              <span className="story-t block">{t.story.paragraphs[0].heading}</span>
             </Appear>
-            <h2 className="route-swap font-logo text-[clamp(1.9rem,7vw,4.4rem)] leading-[1.04] tracking-[-0.01em] [grid-area:1/1] motion-reduce:hidden">{r.title}</h2>
+            {t.story.paragraphs.slice(1).map((p, i) => (
+              <p
+                key={i}
+                aria-hidden="true"
+                className={`story-t ${TITLE_FONT[i + 1]} text-[clamp(2rem,7.5vw,4.8rem)] leading-[1.02] [grid-area:1/1] motion-reduce:hidden`}
+              >
+                {p.heading}
+              </p>
+            ))}
+            <h2 className="story-t font-logo text-[clamp(1.9rem,7vw,4.4rem)] leading-[1.04] tracking-[-0.01em] [grid-area:1/1] motion-reduce:hidden">{r.title}</h2>
           </div>
 
           <div className="mt-6 flex gap-2 short:mt-4 md:mt-10" aria-hidden="true">
@@ -276,7 +312,7 @@ export default function Story() {
             {t.story.paragraphs.map((p, i) => (
               <article key={i} className="story-p motion-safe:[grid-area:1/1]">
                 <p className={`text-xl text-gold ${i === HOME ? 'font-logo' : 'font-display italic'}`}>0{i + 1}</p>
-                <h3 className={`${i === HOME ? 'font-logo tracking-[-0.01em]' : 'font-display'} mt-2 text-[clamp(1.7rem,5vw,2.6rem)] leading-[1.1]`}>{p.title}</h3>
+                <h3 className={`${i === HOME ? 'font-logo tracking-[-0.01em]' : i === FRESH ? 'font-display italic' : 'font-display'} mt-2 text-[clamp(1.7rem,5vw,2.6rem)] leading-[1.1]`}>{p.title}</h3>
                 <p className="mt-3 max-w-[32rem] text-[0.95rem] leading-[1.8] text-ink-soft md:mt-5 md:text-base">{p.text}</p>
               </article>
             ))}
