@@ -33,7 +33,8 @@ export default function Header() {
     >
       <nav className="container-x flex h-16 items-center justify-between md:h-20">
         <a href="#top" aria-label="Gelati am Dom" className="text-[1.45rem] md:text-[1.7rem]">
-          <Logo city={false} tone={solid || open ? "dark" : "light"} />
+          {/* Gold wie die Schrift im Salon */}
+          <Logo city={false} tone={solid || open ? 'gold' : 'gold-light'} />
         </a>
         <div className="flex items-center gap-6 md:gap-12">
           <ul className="hidden items-center gap-10 lg:flex">
