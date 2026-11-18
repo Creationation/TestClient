@@ -26,7 +26,8 @@ export const site = {
   stockPhotos: true,
   // Google Maps nur als Link (öffnet erst auf Klick, keine eingebettete Karte ohne Einwilligung)
   mapsLink: (lang) => `https://www.google.com/maps/dir/?api=1&destination=Schulerstra%C3%9Fe+1-3%2C+1010+Wien&hl=${lang}`,
-  video: { webm: '/hero.webm', mp4: '/hero.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
+  // am Computer füllt das Video drei Fünftel des Bildschirms: dort die schärfere 1080p-Fassung, am Handy die leichte
+  video: { webm: '/hero.webm', mp4: '/hero.mp4', webmHD: '/hero-1080.webm', mp4HD: '/hero-1080.mp4', poster: '/hero-poster.jpg', blur: '/hero-blur.jpg' },
   // Eingang laut OpenStreetMap (Mittelpunkt der Karte)
   coords: { lat: 48.2085676, lng: 16.3746127 },
   // Route von einem Startpunkt (Name oder "lat,lng") zum Salon, zu Fuß oder mit den Öffis

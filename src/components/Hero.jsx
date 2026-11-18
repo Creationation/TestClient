@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { site } from '../content'
 import { gsap, useGSAP, MOTION } from '../lib/gsap'
 import { useLang } from '../lib/lang'
@@ -8,6 +8,8 @@ import Logo from './Logo'
 export default function Hero() {
   const { t } = useLang()
   const root = useRef(null)
+  // einmal beim Laden entschieden: großer Bildschirm → 1080p
+  const [hd] = useState(() => window.matchMedia('(min-width: 1024px)').matches)
 
   useGSAP(
     () => {
@@ -51,8 +53,8 @@ export default function Hero() {
             poster={site.video.poster}
             aria-label={t.hero.videoLabel}
           >
-            <source src={site.video.webm} type="video/webm" />
-            <source src={site.video.mp4} type="video/mp4" />
+            <source src={hd ? site.video.webmHD : site.video.webm} type="video/webm" />
+            <source src={hd ? site.video.mp4HD : site.video.mp4} type="video/mp4" />
           </video>
           {/* Mobil: dunkler Verlauf, damit der Titel lesbar bleibt */}
           <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[64%] bg-gradient-to-t from-forest from-30% via-forest/75 via-55% to-transparent sm:hidden" />
