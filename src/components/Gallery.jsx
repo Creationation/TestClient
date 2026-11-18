@@ -22,7 +22,7 @@ export default function Gallery() {
 
         <div className="mt-14 grid grid-cols-2 items-end gap-3 sm:gap-5 md:mt-20 md:grid-cols-12 md:gap-8">
           {images.gallery.map((img, i) => {
-            const cls = `${img.span === 7 ? 'col-span-2' : 'col-span-1'} ${SPAN[img.span]} ${i === 1 ? 'md:mb-24' : ''}`
+            const cls = `${img.span === 7 || img.full ? 'col-span-2' : 'col-span-1'} ${SPAN[img.span]} ${i === 1 ? 'md:mb-24' : ''}`
             // Videos (z. B. von Instagram) laufen stumm, sobald sie im Bild sind
             return img.video ? (
               <VideoTile key={img.video} name={img.video} ratio={img.ratio} className={cls} />

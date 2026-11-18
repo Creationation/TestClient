@@ -176,12 +176,14 @@ export const images = {
   // „Einblicke“: kurze Videos aus dem Salon
   reels: ['gelato-sorten', 'patisserie-2', 'torten', 'salon'],
   // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
-  // Nur Bilder und Videos aus dem Salon (video = Name in /public/videos, z. B. von Instagram)
+  // Nur Bilder und Videos aus dem Salon (video = Name in /public/videos, z. B. von Instagram); full = am Handy volle Breite
   gallery: [
     { src: '/images/vitrine.jpg', span: 7, ratio: 3 / 2 },
     { src: '/images/salon-tables.jpg', span: 5, ratio: 4 / 5 },
-    { video: 'salon-tour', span: 5, ratio: 4 / 5 },
-    { src: '/images/salon-xmas.jpg', span: 7, ratio: 3 / 2 },
+    { video: 'salon-tour', span: 4, ratio: 4 / 5 },
+    // die Vitrine mit unserem Gelato, langsam hin und zurück (aus dem Rundgang-Video)
+    { video: 'vitrine-eis', span: 4, ratio: 4 / 5 },
+    { src: '/images/salon-xmas.jpg', span: 4, ratio: 4 / 5 },
   ],
 }
 

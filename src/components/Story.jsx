@@ -43,6 +43,18 @@ export default function Story() {
         let locked = false
         let moving = false
         let quietUntil = 0
+        // Ein Laptop-Touchpad schwingt nach: es schickt noch lange kleine Rad-Ereignisse. Die Ruhezeit nach einem
+        // Schritt verlängert sich damit nur bis zu einer festen Grenze, und eine neue Geste (das Rad wird plötzlich
+        // wieder stärker statt schwächer) beendet sie sofort. Sonst blieb die Sektion am Touchpad einfach stehen.
+        let quietMax = 0
+        let quietMin = 0
+        let lastMag = 0
+        const quiet = (ms) => {
+          const now = performance.now()
+          quietUntil = now + ms
+          quietMin = now + 250
+          quietMax = now + 1100
+        }
         let acc = 0
         let spent = false
         let navUntil = 0
@@ -73,7 +85,7 @@ export default function Story() {
           index = k
           acc = 0
           // der Schwung, der uns hierher gebracht hat, zählt nicht als Geste
-          quietUntil = performance.now() + 500
+          quiet(500)
           lenis()?.stop()
           intent.enable()
           scrollTo(pos(k), true)
@@ -114,8 +126,11 @@ export default function Story() {
           onChangeY: (self) => {
             const now = performance.now()
             if (spent) return
-            if (moving || now < quietUntil) {
-              quietUntil = Math.max(quietUntil, now + 180)
+            const mag = Math.abs(self.event?.deltaY ?? self.deltaY)
+            const fresh = self.event?.type === 'wheel' && mag > lastMag * 1.6 + 2 && now > quietMin
+            lastMag = mag
+            if ((moving || now < quietUntil) && !fresh) {
+              quietUntil = Math.min(Math.max(quietUntil, now + 180), quietMax)
               acc = 0
               return
             }
@@ -123,7 +138,7 @@ export default function Story() {
             if (Math.abs(acc) < 24) return
             const dir = acc < 0 ? 1 : -1
             acc = 0
-            quietUntil = now + 400
+            quiet(400)
             spent = self.event?.type?.startsWith('touch')
             step(dir, Math.abs(self.velocityY))
           },
