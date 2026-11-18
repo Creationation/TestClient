@@ -109,7 +109,8 @@ function Impressum() {
             {' '}
             Einzelne Bilder sind Symbolfotos von <A href="https://unsplash.com">Unsplash</A> (Unsplash-Lizenz) und zeigen nicht unbedingt unsere Produkte.
           </>
-        )}
+        )}{' '}
+        Die Bilder der Sorten sind mit künstlicher Intelligenz erstellte Symbolbilder; Aussehen und Anrichtung können im Salon abweichen.
       </P>
       <P>
         Kartendaten © <A href="https://www.openstreetmap.org/copyright">OpenStreetMap-Mitwirkende</A>, verfügbar unter der Open Database License (ODbL).

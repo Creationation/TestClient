@@ -62,7 +62,7 @@ export const routeOrigins = [
   { key: 'stubentor', origin: 'U-Bahn Station Stubentor, 1010 Wien' },
 ]
 
-// Alle Sorten aus der Vitrine (Speisekarte und Schilder), Name & Text je Sprache; Fotos sind Symbolfotos
+// Alle Sorten aus der Vitrine (Speisekarte und Schilder), Name & Text je Sprache; Fotos im einheitlichen Stil in /images/sorten
 export const flavors = [
   {
     key: 'pistazie',
@@ -72,91 +72,91 @@ export const flavors = [
   },
   {
     key: 'stracciatella',
-    image: { id: '1628815870980-f416105d89b3' },
+    image: { local: 'stracciatella' },
     de: { name: 'Stracciatella', note: 'Ein Klassiker', text: 'Cremiges Milcheis mit hauchdünnen Splittern aus Zartbitterschokolade.' },
     en: { name: 'Stracciatella', note: 'A classic', text: 'Creamy milk gelato with wafer thin shards of dark chocolate.' },
   },
   {
     key: 'erdbeere',
-    image: { id: '1650553448920-9432f8086905' },
+    image: { local: 'erdbeere' },
     de: { name: 'Erdbeere', note: 'Fruchtig & leuchtend', text: 'Fruchtig und leuchtend. Einfach gut, ohne Schnickschnack.' },
     en: { name: 'Strawberry', note: 'Fruity & bright', text: 'Fruity and bright. Simply good, nothing else needed.' },
   },
   {
     key: 'haselnuss',
-    image: { id: '1673551493011-2b5f771013d4' },
+    image: { local: 'haselnuss' },
     de: { name: 'Haselnuss', note: 'Nussig & fein', text: 'Warm, nussig und wunderbar cremig. Ein Liebling für Nussfans.' },
     en: { name: 'Hazelnut', note: 'Nutty & smooth', text: 'Warm, nutty and wonderfully creamy. A favourite for nut lovers.' },
   },
   {
     key: 'mango',
-    image: { id: '1773694725698-89c5a0b2ae1b', crop: '&crop=focalpoint&fp-x=0.55&fp-y=0.3&fp-z=1.6' },
+    image: { local: 'mango' },
     de: { name: 'Mango', note: 'Fruchtig & erfrischend', text: 'Fruchtig, leicht und herrlich erfrischend.' },
     en: { name: 'Mango', note: 'Fruity & refreshing', text: 'Fruity, light and wonderfully refreshing.' },
   },
   {
     key: 'schokolade',
-    image: { id: '1620197544618-af5f5366abb3' },
+    image: { local: 'schokolade' },
     de: { name: 'Schokolade', note: 'Dunkel & intensiv', text: 'Dunkle Schokolade, intensiv und samtig. Für echte Schokoladenliebhaber.' },
     en: { name: 'Chocolate', note: 'Dark & intense', text: 'Dark chocolate, intense and velvety. For true chocolate lovers.' },
   },
   {
     key: 'vanille',
-    image: { id: '1650419741906-1cdead9c9b4f' },
+    image: { local: 'vanille' },
     de: { name: 'Vanille', note: 'Sanft & klassisch', text: 'Cremiges Vanilleeis, mild und fein. Der Klassiker, der zu allem passt.' },
     en: { name: 'Vanilla', note: 'Smooth & classic', text: 'Creamy vanilla gelato, mild and delicate. The classic that goes with everything.' },
   },
   {
     key: 'banane',
-    image: { id: '1594987066010-70ead9419f5c' },
+    image: { local: 'banane' },
     de: { name: 'Banane', note: 'Fruchtig & cremig', text: 'Reife Banane, cremig gerührt. Mild, süß und beliebt bei Groß und Klein.' },
     en: { name: 'Banana', note: 'Fruity & creamy', text: 'Ripe banana, churned creamy. Mild, sweet and loved by young and old.' },
   },
   {
     key: 'amarena',
-    image: { id: '1532678465554-94846274c297' },
+    image: { local: 'amarena' },
     de: { name: 'Amarena', note: 'Kirschig & cremig', text: 'Cremiges Eis mit Amarenakirschen. Süß, fruchtig und ein bisschen italienisch.' },
     en: { name: 'Amarena', note: 'Cherry & creamy', text: 'Creamy gelato with amarena cherries. Sweet, fruity and a little Italian.' },
   },
   {
     key: 'maroni',
-    image: { id: '1691200324934-d1fca4986671' },
+    image: { local: 'maroni' },
     de: { name: 'Maroni', note: 'Winterlich & nussig', text: 'Cremiges Maronieis, das nach Wiener Winter schmeckt.' },
     en: { name: 'Chestnut', note: 'Wintry & nutty', text: 'Creamy chestnut gelato that tastes of a Viennese winter.' },
   },
   {
     key: 'lotus',
-    image: { id: '1757672096062-95ef4bae941d' },
+    image: { local: 'lotus' },
     de: { name: 'Lotus', note: 'Karamellig & knusprig', text: 'Mit Lotus Keksen: karamellig, würzig und ein bisschen knusprig.' },
     en: { name: 'Lotus', note: 'Caramel & crunchy', text: 'With Lotus biscuits: caramelised, spiced and a little crunchy.' },
   },
   {
     key: 'cookies',
-    image: { id: '1642646669923-074199898e3c' },
+    image: { local: 'cookies' },
     de: { name: 'Cookies', note: 'Knusprig & schokoladig', text: 'Cremiges Eis mit Keksstücken. Für alle, die gern ein bisschen knuspern.' },
     en: { name: 'Cookies', note: 'Crunchy & chocolatey', text: 'Creamy gelato with cookie pieces. For everyone who likes a little crunch.' },
   },
   {
     key: 'joghurt',
-    image: { id: '1745636960781-ce50225eb290' },
+    image: { local: 'joghurt' },
     de: { name: 'Joghurt', note: 'Frisch & leicht', text: 'Frisches Joghurteis, leicht säuerlich und angenehm leicht.' },
     en: { name: 'Yoghurt', note: 'Fresh & light', text: 'Fresh yoghurt gelato, slightly tangy and pleasantly light.' },
   },
   {
     key: 'limetta',
-    image: { id: '1724805053558-aea1220afbfa' },
+    image: { local: 'limetta' },
     de: { name: 'Limetta', note: 'Spritzig & frisch', text: 'Limette, spritzig und erfrischend. Perfekt an warmen Tagen.' },
     en: { name: 'Limetta', note: 'Zesty & fresh', text: 'Lime, zesty and refreshing. Perfect on warm days.' },
   },
   {
     key: 'orange',
-    image: { id: '1748831875974-82037d88273f' },
+    image: { local: 'orange' },
     de: { name: 'Orange', note: 'Sonnig & fruchtig', text: 'Fruchtig und sonnig, mit dem Geschmack reifer Orangen.' },
     en: { name: 'Orange', note: 'Sunny & fruity', text: 'Fruity and sunny, with the taste of ripe oranges.' },
   },
   {
     key: 'acai',
-    image: { id: '1627222295124-f8b3fc09e47f' },
+    image: { local: 'acai' },
     de: { name: 'Açaí', note: 'Beerig & exotisch', text: 'Açaí mit dunkler, beeriger Note. Fruchtig und ein bisschen exotisch.' },
     en: { name: 'Açaí', note: 'Berry & exotic', text: 'Açaí with a dark, berry note. Fruity and a little exotic.' },
   },
