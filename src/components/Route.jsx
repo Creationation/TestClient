@@ -6,7 +6,85 @@ import { useLang } from '../lib/lang'
 
 // Echte Karte: Gebäude, Dom und Fußwege aus OpenStreetMap (© OpenStreetMap-Mitwirkende, ODbL),
 // in Metern, Salon-Eingang = 0 0, Norden oben. Erzeugt von scripts/build-map.mjs.
-const LABELS = ['Graben', 'Kärntner Straße', 'Rotenturmstraße', 'Wollzeile', 'Singerstraße', 'Schulerstraße', 'Bäckerstraße', 'Stubenring', 'Domgasse']
+// Reihenfolge = Vorrang: die Straßen am Salon zuerst, damit sie sicher einen guten Platz bekommen
+const LABELS = ['Schulerstraße', 'Domgasse', 'Wollzeile', 'Bäckerstraße', 'Rotenturmstraße', 'Graben', 'Singerstraße', 'Kärntner Straße', 'Blutgasse', 'Stubenbastei', 'Stubenring', 'Goldschmiedgasse', 'Jasomirgottstraße']
+const LABEL_PX = 10 // Schriftgröße der Straßennamen in Bildschirmpixeln (normale Schreibung, wie auf Stadtplänen: kompakter und lesbarer)
+const LABEL_TRACK = 0.3 // Sperrung in Bildschirmpixeln
+
+// Textbreite in Bildschirmpixeln (Canvas misst die echte Schrift)
+let measureCtx
+const textWidth = (text, font, track = 0) => {
+  measureCtx ??= document.createElement('canvas').getContext('2d')
+  measureCtx.font = font
+  return measureCtx.measureText(text).width + track * text.length
+}
+
+// Jeder Straßenname bekommt ein Stück seiner Straße, das ganz im Bild liegt, nicht zu stark knickt und weder den
+// Salon mit Schild, den Dom mit Namen, den Startpunkt mit Namen noch andere Namen berührt. Passt er nirgends ganz
+// hin, wird er weggelassen: lieber kein Name als ein abgeschnittener oder überdeckter.
+function placeLabels(c, cw, { start, startText, domText }) {
+  const s = c.w / cw // Meter pro Bildschirmpixel
+  const pad = 6 * s
+  const sans = getComputedStyle(document.documentElement).getPropertyValue('--font-sans') || 'sans-serif'
+  const display = getComputedStyle(document.documentElement).getPropertyValue('--font-display') || 'serif'
+  // Sperrflächen als Rechtecke in Metern [x0, y0, x1, y1]
+  const domW = textWidth(domText, `italic 500 15px ${display}`, 0.4) * s
+  const startW = (textWidth(startText, `400 12px ${sans}`) + 14) * s
+  const blocks = [
+    [-22 * s, -22 * s, 146 * s, 22 * s], // Salon, Puls und Schild „Gelati am Dom“
+    [map.cathedral[0] - domW / 2 - 6 * s, map.cathedral[1] - 14 * s, map.cathedral[0] + domW / 2 + 6 * s, map.cathedral[1] + 14 * s],
+    [map.cathedral[0] - 58, map.cathedral[1] - 26, map.cathedral[0] + 58, map.cathedral[1] + 30], // der Dom selbst (Meter)
+    start[0] < 0 // Startpunkt, sein Name steht über ihm zur Kartenmitte hin
+      ? [start[0] - 12 * s, start[1] - 28 * s, start[0] + startW, start[1] + 12 * s]
+      : [start[0] - startW, start[1] - 28 * s, start[0] + 12 * s, start[1] + 12 * s],
+    [c.x + c.w - 112 * s, c.y + c.h - 26 * s, c.x + c.w, c.y + c.h], // © OpenStreetMap
+  ]
+  const free = ([x, y]) =>
+    x > c.x + 10 * s && x < c.x + c.w - 10 * s && y > c.y + 10 * s && y < c.y + c.h - 10 * s &&
+    blocks.every(([x0, y0, x1, y1]) => x < x0 - pad || x > x1 + pad || y < y0 - pad || y > y1 + pad)
+
+  const out = []
+  for (const name of LABELS) {
+    const l = map.labels.find((x) => x.name === name)
+    if (!l) continue
+    const pts = l.pts
+    const acc = [0]
+    for (let i = 1; i < pts.length; i++) acc.push(acc[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]))
+    const total = acc[acc.length - 1]
+    const tw = (textWidth(name, `500 ${LABEL_PX}px ${sans}`, LABEL_TRACK) + 8) * s
+    if (tw > total) continue
+    const at = (d) => {
+      let i = 1
+      while (i < acc.length - 1 && acc[i] < d) i++
+      const t = (d - acc[i - 1]) / (acc[i] - acc[i - 1] || 1)
+      return [pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * t, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * t]
+    }
+    let best = null
+    for (let d0 = 0; d0 + tw <= total; d0 += 4 * s) {
+      const samples = []
+      for (let d = d0; d <= d0 + tw + 1e-6; d += 3 * s) samples.push(at(Math.min(d, d0 + tw)))
+      if (!samples.every(free)) continue
+      // Abstand zu bereits gesetzten Namen
+      if (out.some((o) => o.samples.some((p) => samples.some((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) < 12 * s)))) continue
+      // nicht über eine scharfe Ecke schreiben
+      const a = samples[1], b = samples[0], y = samples[samples.length - 1], z = samples[samples.length - 2]
+      const turn = Math.abs(Math.atan2(a[1] - b[1], a[0] - b[0]) - Math.atan2(y[1] - z[1], y[0] - z[0]))
+      if (Math.min(turn, 2 * Math.PI - turn) > 0.6) continue
+      // bevorzugt: mitten auf dem sichtbaren Teil der Straße
+      const mid = at(d0 + tw / 2)
+      const score = Math.hypot(mid[0] - (c.x + c.w / 2), mid[1] - (c.y + c.h / 2))
+      if (!best || score < best.score) best = { d0, samples, score }
+    }
+    if (!best) continue
+    // Stück der Straße unter dem Namen, immer von links nach rechts lesbar
+    const seg = []
+    for (let d = best.d0; d < best.d0 + tw; d += 2 * s) seg.push(at(d))
+    seg.push(at(best.d0 + tw))
+    if (seg[seg.length - 1][0] < seg[0][0]) seg.reverse()
+    out.push({ name, pts: seg.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]), samples: best.samples })
+  }
+  return out
+}
 
 // Gewählter Startpunkt, geteilt von Karte und Auswahl
 export function useRoute() {
@@ -92,6 +170,8 @@ function RouteMap({ route: { active }, drawKey }) {
   const root = useRef(null)
   const shop = useRef(null)
   const start = useRef(null)
+  // Straßennamen an freien, ganz sichtbaren Stellen (nach jedem Kameraflug neu gesucht)
+  const [placed, setPlaced] = useState([])
   const route = map.routes[active]
   const focusKey = route.bbox.join(',')
   const drawId = `${active}-${drawKey}`
@@ -116,6 +196,13 @@ function RouteMap({ route: { active }, drawKey }) {
     if (!c || !el.clientWidth) return
     el.setAttribute('viewBox', `${c.x} ${c.y} ${c.w} ${c.h}`)
     el.style.setProperty('--s', c.w / el.clientWidth)
+    setPlaced(
+      placeLabels(c, el.clientWidth, {
+        start: map.routes[active].start,
+        startText: active === 'dom' ? r.map.gate : r.from[active].label,
+        domText: r.map.dom,
+      }),
+    )
     delete root.current.dataset.flying
   }
 
@@ -206,8 +293,8 @@ function RouteMap({ route: { active }, drawKey }) {
       <canvas ref={base} aria-hidden="true" className="absolute top-0 left-0 origin-top-left will-change-transform" />
       <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" role="img" aria-label={r.imageAlt}>
         <defs>
-          {map.labels.map((l, i) => (
-            <path key={l.name} id={`${uid}-street-${i}`} d={l.d} />
+          {placed.map((l) => (
+            <path key={l.name} id={`${uid}-street-${l.name}`} d={'M' + l.pts.map((p) => p.join(' ')).join('L')} />
           ))}
           {/* Der Weg wird vom Start zum Salon aufgedeckt, darin wandern die Tirets weiter */}
           <mask id={`${uid}-reveal`} maskUnits="userSpaceOnUse" x={map.box.x} y={map.box.y} width={map.box.w} height={map.box.h}>
@@ -224,16 +311,20 @@ function RouteMap({ route: { active }, drawKey }) {
             />
           </mask>
         </defs>
-        <g fill="#5d695f" style={{ font: `400 ${px(9)} var(--font-sans)`, letterSpacing: px(2.4) }}>
-          {map.labels.map((l, i) =>
-            LABELS.includes(l.name) ? (
-              <text key={l.name} dominantBaseline="central">
-                <textPath href={`#${uid}-street-${i}`} startOffset="50%" textAnchor="middle">
-                  {l.name.toUpperCase()}
-                </textPath>
-              </text>
-            ) : null,
-          )}
+        {/* heller Rand um jede Schrift, damit sie auch über Gebäuden und dem Weg lesbar bleibt */}
+        <g
+          fill="#4a564c"
+          stroke="#eef2e9"
+          strokeLinejoin="round"
+          style={{ font: `500 ${px(LABEL_PX)} var(--font-sans)`, letterSpacing: px(LABEL_TRACK), strokeWidth: px(3), paintOrder: 'stroke' }}
+        >
+          {placed.map((l) => (
+            <text key={l.name} dominantBaseline="central">
+              <textPath href={`#${uid}-street-${l.name}`} startOffset="50%" textAnchor="middle">
+                {l.name}
+              </textPath>
+            </text>
+          ))}
         </g>
 
         <text
