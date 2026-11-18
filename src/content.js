@@ -63,6 +63,26 @@ export const routeOrigins = [
 ]
 
 // Sorten – Name, Herkunft & Text je Sprache
+// Alle Sorten in der Vitrine (aus der Speisekarte und den Schildern in der Vitrine), [Deutsch, Englisch]
+export const allFlavors = [
+  ['Vanille', 'Vanilla'],
+  ['Schokolade', 'Chocolate'],
+  ['Stracciatella', 'Stracciatella'],
+  ['Erdbeere', 'Strawberry'],
+  ['Pistazie', 'Pistachio'],
+  ['Haselnuss', 'Hazelnut'],
+  ['Mango', 'Mango'],
+  ['Banane', 'Banana'],
+  ['Amarena', 'Amarena'],
+  ['Maroni', 'Chestnut'],
+  ['Lotus', 'Lotus'],
+  ['Cookies', 'Cookies'],
+  ['Joghurt', 'Yoghurt'],
+  ['Limetta', 'Limetta'],
+  ['Orange', 'Orange'],
+  ['Açaí', 'Açaí'],
+]
+
 export const flavors = [
   {
     key: 'pistazie',
@@ -188,12 +208,22 @@ export const content = {
       go: 'Route starten',
       mapsHere: 'Von meinem Standort',
       mapsHint: 'Route in Google Maps',
-      map: { shop: 'Gelati am Dom', dom: 'Stephansdom', gate: 'Riesentor' },
+      map: {
+        shop: 'Gelati am Dom',
+        dom: 'Stephansdom',
+        gate: 'Riesentor',
+        zoomIn: 'Hineinzoomen',
+        zoomOut: 'Herauszoomen',
+        reset: 'Zurück zum Weg',
+        hintTouch: 'Mit zwei Fingern erkunden',
+        hintMouse: 'Ziehen zum Erkunden',
+      },
     },
     flavors: {
       eyebrow: 'Unsere Sorten',
       title: 'Sechs Lieblinge.',
       subtitle: 'Und viele weitere Sorten in unserer Vitrine.',
+      allTitle: 'Alle Sorten in unserer Vitrine',
       hint: 'Zum Entdecken wischen',
       prev: 'Zurück',
       next: 'Weiter',
@@ -294,12 +324,22 @@ export const content = {
       go: 'Start route',
       mapsHere: 'From my location',
       mapsHint: 'Directions in Google Maps',
-      map: { shop: 'Gelati am Dom', dom: 'St. Stephen’s', gate: 'Main portal' },
+      map: {
+        shop: 'Gelati am Dom',
+        dom: 'St. Stephen’s',
+        gate: 'Main portal',
+        zoomIn: 'Zoom in',
+        zoomOut: 'Zoom out',
+        reset: 'Back to the route',
+        hintTouch: 'Explore with two fingers',
+        hintMouse: 'Drag to explore',
+      },
     },
     flavors: {
       eyebrow: 'Our flavours',
       title: 'Six favourites.',
       subtitle: 'And many more flavours in our display.',
+      allTitle: 'All flavours in our display',
       hint: 'Swipe to discover',
       prev: 'Previous',
       next: 'Next',
@@ -361,6 +401,8 @@ export const menu = {
     {
       key: 'eis',
       title: t2('Eisbecher', 'Sundaes'),
+      // die Sorten stehen über den Bechern, damit man weiß, was es gibt
+      flavorsTitle: t2('Unsere Sorten', 'Our flavours'),
       tagline: t2('Fruchtig ♥ Cremig ♥ Verführerisch', 'Fruity ♥ Creamy ♥ Irresistible'),
       groups: [
         {

@@ -92,6 +92,10 @@ function RouteMap({ route: { active }, drawKey }) {
   const root = useRef(null)
   const shop = useRef(null)
   const start = useRef(null)
+  const recenter = useRef(null)
+  const zoomBy = useRef(null)
+  // hat der Besucher die Karte selbst bewegt? Dann gibt es den Knopf „zurück zum Weg“
+  const [moved, setMoved] = useState(false)
   const route = map.routes[active]
   const focusKey = route.bbox.join(',')
   const drawId = `${active}-${drawKey}`
@@ -181,6 +185,8 @@ function RouteMap({ route: { active }, drawKey }) {
       })
     }
     move(true)
+    recenter.current = () => move(true)
+    setMoved(false)
     // nur bei echter Größenänderung neu ausrichten: der ResizeObserver meldet sich auch sofort beim Beobachten,
     // das würde den Flug im ersten Bild abbrechen und die Karte ans Ziel springen lassen
     let size = `${el.clientWidth}x${el.clientHeight}`
@@ -197,12 +203,110 @@ function RouteMap({ route: { active }, drawKey }) {
     }
   }, [focusKey])
 
+  // Selbst erkunden: am Handy mit zwei Fingern verschieben und zoomen (ein Finger scrollt weiter die Seite),
+  // am Computer mit der Maus ziehen, per Trackpad-Geste oder Strg + Mausrad zoomen, oder mit den Knöpfen.
+  // Nie über den Kartenrand hinaus, nie schärfer heran, als die Grundkarte gezeichnet ist.
+  useEffect(() => {
+    const el = root.current
+    const view = svg.current
+    const pointers = new Map()
+    let last = null
+    let raf = 0
+    const limits = () => {
+      const cw = view.clientWidth
+      const ch = view.clientHeight
+      return { cw, aspect: cw / ch, min: (cw / sharpest(cw, ch)) * 0.7, max: Math.min(map.box.w, map.box.h * (cw / ch)) }
+    }
+    // Kamera um dx/dy Bildschirmpixel verschieben und um f zoomen, rund um den Punkt px/py
+    const nudge = (dx, dy, f = 1, px = view.clientWidth / 2, py = view.clientHeight / 2) => {
+      const c = cam.current
+      if (!c) return
+      tween.current?.kill()
+      const { cw, aspect, min, max } = limits()
+      const mx = c.x + (px * c.w) / cw
+      const my = c.y + (py * c.w) / cw
+      const w = Math.min(Math.max(c.w / f, min), max)
+      const h = w / aspect
+      const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi)
+      cam.current = {
+        x: clamp(mx - (px * w) / cw - (dx * w) / cw, map.box.x, map.box.x + map.box.w - w),
+        y: clamp(my - (py * w) / cw - (dy * w) / cw, map.box.y, map.box.y + map.box.h - h),
+        w,
+        h,
+      }
+      setMoved(true)
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        place()
+        settle()
+      })
+    }
+    zoomBy.current = (f) => nudge(0, 0, f)
+    const local = (e) => {
+      const r = view.getBoundingClientRect()
+      return [e.clientX - r.left, e.clientY - r.top]
+    }
+    const gesture = () => {
+      const pts = [...pointers.values()]
+      const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length
+      const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length
+      const dist = pts.length > 1 ? Math.hypot(pts[0][0] - pts[1][0], pts[0][1] - pts[1][1]) : 0
+      return { cx, cy, dist }
+    }
+    // am Handy zählt erst der zweite Finger, mit der Maus jeder Zug
+    const active = (e) => (e.pointerType === 'touch' ? pointers.size >= 2 : pointers.size >= 1)
+    const down = (e) => {
+      if (e.target.closest('a, button')) return
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      pointers.set(e.pointerId, local(e))
+      el.setPointerCapture?.(e.pointerId)
+      last = active(e) ? gesture() : null
+    }
+    const moveP = (e) => {
+      if (!pointers.has(e.pointerId)) return
+      pointers.set(e.pointerId, local(e))
+      if (!active(e)) return
+      const g = gesture()
+      if (last) {
+        const f = last.dist && g.dist ? g.dist / last.dist : 1
+        nudge(g.cx - last.cx, g.cy - last.cy, f, g.cx, g.cy)
+        e.preventDefault()
+      }
+      last = g
+    }
+    const up = (e) => {
+      pointers.delete(e.pointerId)
+      last = active(e) ? gesture() : null
+    }
+    // Trackpad-Zoom kommt als Mausrad mit Strg; normales Mausrad scrollt weiter die Seite
+    const wheel = (e) => {
+      if (!e.ctrlKey) return
+      e.preventDefault()
+      const [px, py] = local(e)
+      nudge(0, 0, Math.exp(-e.deltaY * 0.01), px, py)
+    }
+    el.addEventListener('pointerdown', down)
+    el.addEventListener('pointermove', moveP, { passive: false })
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', up)
+    el.addEventListener('wheel', wheel, { passive: false })
+    return () => {
+      cancelAnimationFrame(raf)
+      el.removeEventListener('pointerdown', down)
+      el.removeEventListener('pointermove', moveP)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', up)
+      el.removeEventListener('wheel', wheel)
+    }
+  }, [])
+
   const px = (n) => `calc(var(--s, 1) * ${n}px)`
   const halo = { fill: '#2f3b32', stroke: '#f3f6ef', strokeWidth: 4, paintOrder: 'stroke' }
   const left = route.start[0] < 0
 
   return (
-    <div ref={root} className="route-map absolute inset-0 overflow-hidden bg-[#EEF2E9]">
+    // touch-action pan-y: ein Finger scrollt die Seite, zwei Finger gehören der Karte
+    <div ref={root} className="route-map absolute inset-0 cursor-grab touch-pan-y overflow-hidden select-none bg-[#EEF2E9] active:cursor-grabbing">
       <canvas ref={base} aria-hidden="true" className="absolute top-0 left-0 origin-top-left will-change-transform" />
       <svg ref={svg} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" role="img" aria-label={r.imageAlt}>
         <defs>
@@ -276,6 +380,38 @@ function RouteMap({ route: { active }, drawKey }) {
           {r.map.shop}
         </span>
       </div>
+
+      {/* Zoom und zurück zum Weg; am Handy der Hinweis auf die zwei Finger */}
+      <div className="absolute top-3 right-3 flex flex-col gap-1.5 md:top-4 md:right-4">
+        {[
+          [1.5, '+', r.map.zoomIn],
+          [1 / 1.5, '−', r.map.zoomOut],
+        ].map(([f, sign, label]) => (
+          <button
+            key={sign}
+            type="button"
+            onClick={() => zoomBy.current?.(f)}
+            aria-label={label}
+            className="grid h-9 w-9 place-items-center rounded-full bg-paper/90 text-lg leading-none text-forest shadow-[0_4px_14px_-6px_rgba(47,59,50,0.5)] transition-colors hover:bg-forest hover:text-mist"
+          >
+            {sign}
+          </button>
+        ))}
+      </div>
+      {moved ? (
+        <button
+          type="button"
+          onClick={() => recenter.current?.()}
+          className="absolute bottom-3 left-3 rounded-full bg-forest px-4 py-2 text-[0.7rem] tracking-[0.12em] text-mist uppercase shadow-[0_6px_18px_-8px_rgba(0,0,0,0.5)] md:bottom-4 md:left-4"
+        >
+          {r.map.reset}
+        </button>
+      ) : (
+        <p className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-paper/85 px-3 py-1.5 text-[0.65rem] text-ink-soft md:bottom-4 md:left-4">
+          <span className="md:hidden">{r.map.hintTouch}</span>
+          <span className="hidden md:inline">{r.map.hintMouse}</span>
+        </p>
+      )}
     </div>
   )
 }

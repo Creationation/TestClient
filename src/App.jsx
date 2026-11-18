@@ -1,15 +1,12 @@
 import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { gsap, ScrollTrigger, useGSAP, prefersReduced, scroller } from './lib/gsap'
-import { site } from './content'
 import { LangProvider, useLang } from './lib/lang'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Story from './components/Story'
 import Flavors from './components/Flavors'
 import Marquee from './components/Marquee'
-import Stats from './components/Stats'
-import Process from './components/Process'
 import Offer from './components/Offer'
 import Menu from './components/Menu'
 import Reels from './components/Reels'
@@ -93,12 +90,11 @@ function Page() {
         <Story />
         <Flavors />
         <Marquee />
-        <Stats />
-        {site.madeInHouse && <Process />}
-        <Offer />
-        <Menu />
+        {/* direkt nach den Sorten: Videos und Fotos aus dem Salon („Hausgemacht“ in Zahlen und „Handwerk“ entfernt, der Salon steht schon oben) */}
         <Reels />
         <Gallery />
+        <Offer />
+        <Menu />
         <Visit />
       </main>
       <Footer />

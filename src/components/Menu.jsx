@@ -1,10 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
-import { menu } from '../content'
+import { allFlavors, menu } from '../content'
 import { ScrollTrigger } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
 
 const tr = (v, lang) => (v && typeof v === 'object' ? v[lang] : v)
+
+// Jede Seite der Karte hat ihre Farbe, wie die Zutaten: kräftig für Titel und Preise, zart für den Grund
+const ACCENT = {
+  eis: { deep: '#B4596A', soft: '#F6DFE0' },
+  kaffee: { deep: '#7A5638', soft: '#EFE2D2' },
+  matcha: { deep: '#6E8A3E', soft: '#E3EDCF' },
+  waffeln: { deep: '#B07A2A', soft: '#F5E6C6' },
+  acai: { deep: '#6E3A68', soft: '#EEDCEA' },
+  getraenke: { deep: '#3F7E8C', soft: '#D9EBEE' },
+}
+// Farbpunkte der Sorten, abwechselnd wie Kugeln in der Vitrine
+const SCOOPS = ['#E7A6AE', '#8BA35F', '#E8C35A', '#7A5638', '#F0E3C4', '#B4596A', '#E89A4C', '#6E3A68']
 
 // Ornament wie auf der gedruckten Karte: Linie, Raute, Linie
 const Ornament = ({ className = '' }) => (
@@ -35,10 +47,10 @@ function Item({ item, lang }) {
       <div className="flex items-baseline gap-3">
         <h4 className="font-display text-xl leading-snug md:text-[1.35rem]">
           {name}
-          {item.allergens && <span className="ml-2 align-middle font-sans text-[0.6rem] tracking-[0.15em] text-gold">({item.allergens})</span>}
+          {item.allergens && <span className="ml-2 align-middle font-sans text-[0.6rem] tracking-[0.15em] text-[var(--acc)]">({item.allergens})</span>}
         </h4>
         <span className="min-w-6 flex-1 translate-y-[-5px] border-b border-dotted border-forest/30" aria-hidden="true" />
-        {item.price && <span className="font-display shrink-0 text-xl lining-nums tabular-nums">{item.price} €</span>}
+        {item.price && <span className="font-display shrink-0 text-xl text-[var(--acc)] lining-nums tabular-nums">{item.price} €</span>}
       </div>
       {item.prices && (
         <div className="mt-1 flex justify-end gap-5 text-sm text-ink-soft">
@@ -59,6 +71,7 @@ export default function Menu() {
   const { t, lang } = useLang()
   const [active, setActive] = useState(menu.categories[0].key)
   const cat = menu.categories.find((c) => c.key === active)
+  const accent = ACCENT[active] ?? ACCENT.eis
   const first = useRef(true)
 
   // Höhe ändert sich je Register → Scroll-Trigger darunter neu vermessen
@@ -70,48 +83,69 @@ export default function Menu() {
   return (
     <section id="menu" data-bg="#F3F6EF" className="relative py-28 text-ink md:py-40">
       <div className="container-x">
-        <p className="label text-pistachio">{t.menu.eyebrow}</p>
-        <Appear as="h2" className="font-display mt-6 text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
-          {t.menu.title}
-        </Appear>
-
-        {/* Register */}
-        <div role="tablist" aria-label={t.menu.eyebrow} className="mt-10 flex flex-wrap gap-2 md:mt-14 md:gap-3">
-          {menu.categories.map((c) => (
-            <button
-              key={c.key}
-              role="tab"
-              type="button"
-              aria-selected={active === c.key}
-              aria-controls="menu-panel"
-              onClick={() => setActive(c.key)}
-              className={`rounded-full border px-4 py-2.5 font-sans text-[0.68rem] tracking-[0.2em] uppercase transition-colors duration-300 md:px-6 ${
-                active === c.key ? 'border-forest bg-forest text-mist' : 'border-forest/20 text-ink hover:border-forest/50'
-              }`}
-            >
-              {tr(c.title, lang)}
-            </button>
-          ))}
+        <div className="text-center">
+          <p className="label text-pistachio">{t.menu.eyebrow}</p>
+          <Appear as="h2" className="font-display mt-6 text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
+            {t.menu.title}
+          </Appear>
         </div>
 
-        {/* Karte im Stil der gedruckten Speisekarte: Marmorpapier, goldener Doppelrahmen */}
+        {/* Register, jedes mit dem Farbpunkt seiner Seite */}
+        <div role="tablist" aria-label={t.menu.eyebrow} className="mt-10 flex flex-wrap justify-center gap-2 md:mt-14 md:gap-3">
+          {menu.categories.map((c) => {
+            const a = ACCENT[c.key] ?? ACCENT.eis
+            const on = active === c.key
+            return (
+              <button
+                key={c.key}
+                role="tab"
+                type="button"
+                aria-selected={on}
+                aria-controls="menu-panel"
+                onClick={() => setActive(c.key)}
+                style={on ? { backgroundColor: a.deep, borderColor: a.deep } : { backgroundColor: a.soft, borderColor: 'transparent' }}
+                className={`flex items-center gap-2 rounded-full border px-4 py-2.5 font-sans text-[0.68rem] tracking-[0.2em] uppercase transition-colors duration-300 md:px-6 ${on ? 'text-white' : 'text-ink hover:brightness-95'}`}
+              >
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: on ? '#fff' : a.deep }} aria-hidden="true" />
+                {tr(c.title, lang)}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Karte im Stil der gedruckten Speisekarte: Doppelrahmen, jede Seite in ihrer eigenen Farbe */}
         <div
           id="menu-panel"
           role="tabpanel"
-          className="relative mt-8 rounded-[20px] border border-gold/40 bg-paper bg-[radial-gradient(ellipse_at_20%_10%,rgba(216,189,131,0.12),transparent_50%),radial-gradient(ellipse_at_90%_80%,rgba(196,208,188,0.25),transparent_55%)] p-3 shadow-[0_30px_60px_-40px_rgba(47,59,50,0.45)] md:mt-10 md:rounded-[28px] md:p-4"
+          style={{ '--acc': accent.deep, '--acc-soft': accent.soft }}
+          className="relative mt-8 rounded-[20px] border border-[var(--acc)]/40 bg-paper bg-[radial-gradient(ellipse_at_15%_0%,var(--acc-soft),transparent_55%),radial-gradient(ellipse_at_95%_100%,var(--acc-soft),transparent_50%)] p-3 shadow-[0_30px_60px_-40px_rgba(47,59,50,0.45)] transition-[background-color,border-color] duration-500 md:mt-10 md:rounded-[28px] md:p-4"
         >
-          <div className="rounded-[14px] border border-gold/30 px-5 py-10 md:rounded-[20px] md:px-14 md:py-16">
+          <div className="rounded-[14px] border border-[var(--acc)]/30 px-5 py-10 md:rounded-[20px] md:px-14 md:py-16">
             <div key={active} className="animate-[menuIn_0.5s_ease-out]">
               <div className="flex flex-col items-center text-center">
-                <Ornament />
-                <h3 className="font-display mt-5 text-[clamp(2.2rem,6vw,4rem)] leading-none tracking-[0.04em] uppercase">{tr(cat.title, lang)}</h3>
+                <Ornament className="text-[var(--acc)]!" />
+                <h3 className="font-display mt-5 text-[clamp(2.2rem,6vw,4rem)] leading-none tracking-[0.04em] text-[var(--acc)] uppercase">{tr(cat.title, lang)}</h3>
                 <Tagline text={tr(cat.tagline, lang)} className="mt-4" />
               </div>
+
+              {cat.flavorsTitle && (
+                <div className="mt-10 rounded-[18px] bg-[var(--acc-soft)] px-5 py-7 text-center md:mt-14 md:px-10 md:py-9">
+                  <h4 className="font-display text-3xl text-[var(--acc)] italic md:text-4xl">{tr(cat.flavorsTitle, lang)}</h4>
+                  <ul className="mt-5 flex flex-wrap justify-center gap-2 md:gap-2.5">
+                    {allFlavors.map(([de, en], i) => (
+                      <li key={de} className="font-display flex items-center gap-2 rounded-full bg-paper px-3.5 py-1.5 text-lg leading-none md:px-4 md:text-xl">
+                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: SCOOPS[i % SCOOPS.length] }} aria-hidden="true" />
+                        {lang === 'en' ? en : de}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className={`mt-10 grid gap-x-14 gap-y-10 md:mt-14 ${cat.groups.length > 1 ? 'lg:grid-cols-2' : ''}`}>
                 {cat.groups.map((g, gi) => (
                   <div key={gi}>
-                    {g.title && <h4 className="font-display text-3xl text-gold italic md:text-4xl">{tr(g.title, lang)}</h4>}
+                    {g.title && <h4 className="font-display text-3xl text-[var(--acc)] italic md:text-4xl">{tr(g.title, lang)}</h4>}
                     <ul className={`divide-y divide-forest/10 ${g.title ? 'mt-3' : ''} ${!g.title && cat.groups.length === 1 ? 'md:columns-2 md:gap-x-14 [&>li]:break-inside-avoid' : ''}`}>
                       {g.items.map((item, i) => (
                         <Item key={i} item={item} lang={lang} />

@@ -37,11 +37,12 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-forest/90 via-forest/80 to-forest lg:bg-gradient-to-r lg:from-forest lg:via-forest/85 lg:to-forest/55" />
       </div>
 
-      <div className="relative mx-auto h-full max-w-[1520px] sm:flex sm:flex-col sm:items-center sm:justify-center sm:gap-10 sm:px-10 sm:pt-20 sm:pb-10 lg:grid lg:grid-cols-[1fr_auto] lg:items-center lg:gap-24 lg:px-16 lg:pt-20 lg:pb-0">
-        {/* Video: immer komplett sichtbar (contain), nie beschnitten */}
-        <div className="hero-frame absolute inset-0 sm:relative sm:inset-auto sm:order-1 sm:aspect-[9/16] sm:h-[clamp(14rem,54svh,40rem)] sm:shrink-0 sm:overflow-hidden sm:rounded-[28px] lg:order-2 lg:h-[min(85svh,calc(100svh-7.5rem))]">
+      <div className="relative mx-auto h-full max-w-[1520px] sm:flex sm:flex-col sm:items-center sm:justify-center sm:gap-10 sm:px-10 sm:pt-20 sm:pb-10 lg:static lg:grid lg:grid-cols-[minmax(0,40%)_1fr] lg:items-center lg:px-16 lg:pt-20 lg:pb-0">
+        {/* Video: auf Handy und Tablet komplett sichtbar (contain). Am Computer füllt es die rechten drei Fünftel
+            in voller Höhe bis an den Rand (cover), links bleibt Platz für Logo und Text */}
+        <div className="hero-frame absolute inset-0 sm:relative sm:inset-auto sm:order-1 sm:aspect-[9/16] sm:h-[clamp(14rem,54svh,40rem)] sm:shrink-0 sm:overflow-hidden sm:rounded-[28px] lg:absolute lg:inset-y-0 lg:right-0 lg:left-auto lg:h-full lg:w-[60%] lg:aspect-auto lg:rounded-none">
           <video
-            className="hero-video h-full w-full object-contain object-top sm:object-center"
+            className="hero-video h-full w-full object-contain object-top sm:object-center lg:object-cover"
             autoPlay
             muted
             loop
@@ -55,14 +56,18 @@ export default function Hero() {
           </video>
           {/* Mobil: dunkler Verlauf, damit der Titel lesbar bleibt */}
           <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[64%] bg-gradient-to-t from-forest from-30% via-forest/75 via-55% to-transparent sm:hidden" />
+          {/* Computer: weicher Übergang vom Textbereich ins Video */}
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 hidden w-1/3 bg-gradient-to-r from-forest to-transparent lg:block" />
+          {/* oben abgedunkelt, damit das Menü auf hellen Stellen im Video lesbar bleibt */}
+          <div aria-hidden="true" className="absolute inset-x-0 top-0 hidden h-40 bg-gradient-to-b from-forest/75 to-transparent lg:block" />
         </div>
 
-        <div className="hero-copy absolute inset-x-0 bottom-0 z-10 px-6 pb-10 sm:static sm:order-2 sm:flex sm:flex-col sm:items-center sm:p-0 sm:text-center lg:order-1 lg:items-start lg:text-left">
+        <div className="hero-copy absolute inset-x-0 bottom-0 z-10 px-6 pb-10 sm:static sm:order-2 sm:flex sm:flex-col sm:items-center sm:p-0 sm:text-center lg:relative lg:order-1 lg:items-start lg:text-left">
           <div className="hero-fade flex flex-wrap items-center gap-x-4 gap-y-3 sm:justify-center lg:justify-start">
             <p className="label text-gold-light">{t.hero.kicker}</p>
           </div>
           {/* Schriftzug wie an der Wand des Salons */}
-          <h1 aria-label="Gelati am Dom Wien" className="mt-6 text-[clamp(3rem,14vw,4.6rem)] sm:mt-5 sm:text-[clamp(3.4rem,8vw,4.8rem)] lg:mt-10 lg:text-[clamp(4rem,6.6vw,8rem)]">
+          <h1 aria-label="Gelati am Dom Wien" className="mt-6 text-[clamp(3rem,14vw,4.6rem)] sm:mt-5 sm:text-[clamp(3.4rem,8vw,4.8rem)] lg:mt-10 lg:text-[clamp(3.4rem,4.8vw,6.6rem)]">
             <Appear as="span" immediate delay={0.5} className="block drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)]">
               <Logo />
             </Appear>

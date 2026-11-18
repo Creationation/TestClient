@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { flavors, unsplash } from '../content'
+import { allFlavors, flavors, unsplash } from '../content'
 import { gsap } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
@@ -162,6 +162,18 @@ export default function Flavors() {
           </span>
           <span className="label text-[0.6rem] text-ink-soft">{t.flavors.hint}</span>
         </div>
+      </div>
+
+      {/* Alle Sorten auf einen Blick, nicht nur die sechs Lieblinge */}
+      <div className="container-x mt-16 md:mt-24">
+        <h3 className="label text-ink-soft">{t.flavors.allTitle}</h3>
+        <ul className="mt-6 flex flex-wrap gap-2.5 md:gap-3">
+          {allFlavors.map(([de, en]) => (
+            <li key={de} className="font-display rounded-full border border-forest/20 bg-paper/50 px-4 py-2 text-lg leading-none md:px-5 md:py-2.5 md:text-xl">
+              {lang === 'en' ? en : de}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )
