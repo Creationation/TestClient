@@ -203,3 +203,30 @@
     transform: none;
   }
 }
+
+/* Kopfleiste nach dem Hero: nimmt die aktuelle Farbe der Seite an (--page-bg, von App beim Scrollen gesetzt),
+   ganz leicht durchscheinend; auf dunklem Grund (data-page-tone="dark") helle Schrift und helles Gold.
+   Außerhalb der @layer, damit es die Tailwind-Klassen sicher überstimmt. */
+.site-header {
+  transition:
+    color 0.5s ease,
+    border-color 0.5s ease;
+}
+.site-header[data-solid] {
+  background-color: color-mix(in srgb, var(--page-bg, #f3f6ef) 94%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--color-ink);
+  border-bottom-color: transparent;
+}
+html[data-page-tone='dark'] .site-header[data-solid] {
+  color: var(--color-mist);
+  border-bottom-color: transparent;
+}
+.site-header .logo-on-dark,
+html[data-page-tone='dark'] .site-header .logo-on-light {
+  display: none;
+}
+html[data-page-tone='dark'] .site-header .logo-on-dark {
+  display: inline-block;
+}

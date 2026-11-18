@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import Lenis from 'lenis'
 import { gsap, ScrollTrigger, useGSAP, prefersReduced, scroller } from './lib/gsap'
 import { LangProvider, useLang } from './lib/lang'
+import { pageBg } from './lib/pageBg'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Story, { Salon } from './components/Story'
@@ -45,16 +46,23 @@ function Page() {
       const sections = gsap.utils.toArray('[data-bg]')
       const setBg = gsap.quickSetter('#bg', 'backgroundColor')
       let steps = []
+      const root = document.documentElement
       const render = () => {
-        // die letzte Sektion, deren Übergang begonnen hat, bestimmt die Farbe
-        let color = sections[0].dataset.bg
+        // die letzte Sektion, deren Übergang begonnen hat, bestimmt die Farbe;
+        // die angehaltene Story-Sektion meldet ihre aktuelle Farbe selbst (data-bg-now)
+        let color = sections[0].dataset.bgNow || sections[0].dataset.bg
         for (const [i, st] of steps.entries()) {
           if (st.progress <= 0) break
           const prev = sections[i]
           color = gsap.utils.interpolate(prev.dataset.bgEnd || prev.dataset.bg, sections[i + 1].dataset.bg, st.progress)
         }
         setBg(color)
+        // die Kopfleiste nimmt dieselbe Farbe an; auf dunklem Grund wird ihre Schrift hell
+        root.style.setProperty('--page-bg', color)
+        const [r, g, b] = gsap.utils.splitColor(color)
+        root.dataset.pageTone = 0.2126 * r + 0.7152 * g + 0.0722 * b < 140 ? 'dark' : 'light'
       }
+      pageBg.render = render
       steps = sections
         .slice(1)
         .map((sec) => ScrollTrigger.create({ trigger: sec, start: 'top 85%', end: 'top 30%', onUpdate: render }))

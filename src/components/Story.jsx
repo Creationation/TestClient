@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { site } from '../content'
 import { gsap, ScrollTrigger, useGSAP, MOTION, scroller } from '../lib/gsap'
 import { useLang } from '../lib/lang'
+import { pageBg } from '../lib/pageBg'
 import Appear from './Appear'
 import Reveal from './Reveal'
 import { RoutePanel, RouteVisual, useRoute } from './Route'
@@ -186,6 +187,12 @@ export default function Story() {
             refreshPriority: 2,
             onEnter: () => lock(0),
             onEnterBack: () => lock(steps),
+            // Seitenfarbe (und damit die Kopfleiste) wechselt mit dem Grund: Samtgrün beim Gelato, Salbei beim Weg
+            onUpdate: (self) => {
+              const p = gsap.utils.clamp(0, 1, (self.progress * steps - 0.3) / 0.3)
+              root.current.dataset.bgNow = gsap.utils.interpolate('#2F3B32', '#C4D0BC', p)
+              pageBg.render()
+            },
           },
         })
         tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: 0.5 }, 0)
