@@ -6,17 +6,18 @@ import Appear from './Appear'
 
 const tr = (v, lang) => (v && typeof v === 'object' ? v[lang] : v)
 
-// Jede Seite der Karte hat ihre Farbe, wie die Zutaten: kräftig für Titel und Preise, zart für den Grund
+// Jede Seite der Karte hat ihren Ton, aber nur aus den Farben des Salons (index.css @theme):
+// kräftig (Pistazie, Messing-Gold, Samtgrün, Salbei dunkel) für Titel und Preise, zart (Minze, Vanille, Salbei) für den Grund
 const ACCENT = {
-  eis: { deep: '#B4596A', soft: '#F6DFE0' },
-  kaffee: { deep: '#7A5638', soft: '#EFE2D2' },
-  matcha: { deep: '#6E8A3E', soft: '#E3EDCF' },
-  waffeln: { deep: '#B07A2A', soft: '#F5E6C6' },
-  acai: { deep: '#6E3A68', soft: '#EEDCEA' },
-  getraenke: { deep: '#3F7E8C', soft: '#D9EBEE' },
+  eis: { deep: '#7F9468', soft: '#DFE7D8' }, // Pistazie auf Minze
+  kaffee: { deep: '#A98848', soft: '#EEE6D4' }, // Gold auf Vanille
+  matcha: { deep: '#2F3B32', soft: '#DFE7D8' }, // Samtgrün auf Minze
+  waffeln: { deep: '#A98848', soft: '#F3EEE2' }, // Gold auf hellem Vanille
+  acai: { deep: '#2F3B32', soft: '#E4EADF' }, // Samtgrün auf hellem Salbei
+  getraenke: { deep: '#7F9468', soft: '#EEE6D4' }, // Pistazie auf Vanille
 }
-// Farbpunkte der Sorten, abwechselnd wie Kugeln in der Vitrine
-const SCOOPS = ['#E7A6AE', '#8BA35F', '#E8C35A', '#7A5638', '#F0E3C4', '#B4596A', '#E89A4C', '#6E3A68']
+// Farbpunkte der Sorten, abwechselnd in den Salonfarben
+const SCOOPS = ['#7F9468', '#A98848', '#8B9C84', '#D8BD83', '#2F3B32']
 
 // Ornament wie auf der gedruckten Karte: Linie, Raute, Linie
 const Ornament = ({ className = '' }) => (
