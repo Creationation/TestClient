@@ -26,8 +26,12 @@ export default function Footer() {
 
   return (
     <footer ref={root} className="relative overflow-hidden border-t border-mist/10 bg-forest-deep text-mist">
-      <div className="container-x grid gap-12 pt-20 pb-14 md:grid-cols-[1.5fr_1fr_1fr] md:pt-28">
-        <p className="font-display max-w-[20ch] text-3xl leading-tight italic md:text-4xl">{t.footer.claim}</p>
+      {/* Leitsatz groß und mittig, in der kräftigeren Playfair (wie die Überschriften), gut lesbar */}
+      <div className="container-x pt-20 text-center md:pt-28">
+        <span className="mx-auto block h-px w-16 bg-gold-light/60" aria-hidden="true" />
+        <p className="font-logo mx-auto mt-8 max-w-[17ch] text-[clamp(2.3rem,7vw,4.8rem)] leading-[1.08] tracking-[-0.01em] text-mist">{t.footer.claim}</p>
+      </div>
+      <div className="container-x grid gap-12 pt-16 pb-14 md:grid-cols-2 md:pt-20">
         <div className="text-sm leading-relaxed text-mist/65">
           <p className="label text-gold">{t.visit.addressTitle}</p>
           <p className="mt-4">

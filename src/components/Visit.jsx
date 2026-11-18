@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { site } from '../content'
+import { legal, site } from '../content'
 import vm from '../data/visit-map.json'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
@@ -199,6 +199,108 @@ function DistrictMap() {
   )
 }
 
+// Stunde in Wien, egal wo der Besucher gerade ist
+const viennaHour = () => {
+  const p = new Intl.DateTimeFormat('de-AT', { timeZone: 'Europe/Vienna', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date())
+  const get = (type) => Number(p.find((x) => x.type === type)?.value ?? 0)
+  return get('hour') + get('minute') / 60
+}
+
+// Öffnungszeiten, Adresse und die drei Wege zu uns (Route, Anruf, Instagram) in einer samtgrünen Karte mit Messing,
+// oben ein lebendiger Hinweis, ob der Salon gerade geöffnet hat. Nur Farben der Seite.
+function VisitCard() {
+  const { t, lang } = useLang()
+  const v = t.visit
+  const [hour, setHour] = useState(viennaHour)
+  useEffect(() => {
+    const id = window.setInterval(() => setHour(viennaHour()), 60_000)
+    return () => window.clearInterval(id)
+  }, [])
+  const { from, to } = site.open
+  const open = hour >= from && hour < to
+  const fmt = (h) => (lang === 'en' ? `${((h + 11) % 12) + 1} ${h < 12 ? 'am' : 'pm'}` : String(h))
+
+  return (
+    <div className="relative mt-12 overflow-hidden rounded-[28px] bg-forest p-7 text-mist shadow-[0_30px_70px_-40px_rgba(36,45,38,0.9)] md:mt-16 md:rounded-[34px] md:p-10">
+      {/* warmer Messing-Schimmer in der Ecke */}
+      <span aria-hidden="true" className="pointer-events-none absolute -top-24 -right-20 h-64 w-64 rounded-full bg-gold-light/20 blur-3xl" />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-[10px] rounded-[20px] border border-gold-light/20 md:rounded-[26px]" />
+
+      <div className="relative">
+        <p className={`inline-flex items-center gap-2.5 rounded-full px-4 py-2 text-[0.72rem] tracking-[0.12em] uppercase ${open ? 'bg-pistachio/25 text-mist' : 'bg-mist/10 text-mist/80'}`}>
+          <span className="relative grid h-2.5 w-2.5 place-items-center" aria-hidden="true">
+            {open && <span className="absolute h-full w-full animate-ping rounded-full bg-sage opacity-70" />}
+            <span className={`relative h-2.5 w-2.5 rounded-full ${open ? 'bg-sage' : 'bg-gold-light'}`} />
+          </span>
+          {open ? v.openNow : v.closedNow}
+          <span className="text-mist/60 normal-case tracking-normal">· {open ? v.until(fmt(to)) : v.opensAt(fmt(from))}</span>
+        </p>
+
+        <h3 className="label mt-9 text-gold-light/80">{v.hoursTitle}</h3>
+        <p className="font-logo mt-3 flex items-baseline gap-3 text-[clamp(2.8rem,10vw,4.4rem)] leading-none text-gold-light lining-nums">
+          {fmt(from)}
+          <span className="text-[0.55em] text-gold-light/60">–</span>
+          {fmt(to)}
+          {lang !== 'en' && <span className="font-sans text-base tracking-[0.2em] text-mist/70 uppercase">{v.clock}</span>}
+        </p>
+        <p className="mt-2 text-sm text-mist/70">{v.daily}</p>
+
+        <span className="mt-8 block h-px bg-gradient-to-r from-gold-light/50 via-gold-light/20 to-transparent" aria-hidden="true" />
+
+        <h3 className="label mt-8 text-gold-light/80">{v.addressTitle}</h3>
+        <address className="font-display mt-3 flex items-start gap-3 text-[1.9rem] leading-tight not-italic md:text-4xl">
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="mt-1.5 h-6 w-6 shrink-0 text-gold-light" fill="none" stroke="currentColor" strokeWidth="1.4">
+            <path d="M12 21s-6.5-5.7-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.3-6.5 11-6.5 11Z" />
+            <circle cx="12" cy="10" r="2.3" />
+          </svg>
+          <span>
+            {site.street}
+            <br />
+            <span className="text-mist/75">{site.city}</span>
+          </span>
+        </address>
+
+        {/* die drei Wege zu uns */}
+        <div className="mt-9 flex flex-wrap items-center gap-3">
+          <a
+            href={site.mapsLink(lang)}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-gold-light px-5 py-3 text-[0.72rem] tracking-[0.16em] text-forest uppercase transition-colors hover:bg-mist"
+          >
+            {v.directions} <span aria-hidden="true">↗</span>
+          </a>
+          {legal.phone && (
+            <a
+              href={`tel:${legal.phone.replace(/[^+\d]/g, '')}`}
+              className="inline-flex items-center gap-2 rounded-full border border-mist/30 px-5 py-3 text-[0.72rem] tracking-[0.16em] uppercase transition-colors hover:border-gold-light hover:text-gold-light"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+              </svg>
+              {v.call}
+            </a>
+          )}
+          <a
+            href={site.instagram}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`${v.instagram}: @gelatiamdom`}
+            title="Instagram"
+            className="grid h-[2.85rem] w-[2.85rem] place-items-center rounded-full border border-mist/30 transition-colors hover:border-gold-light hover:text-gold-light"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="5.5" />
+              <circle cx="12" cy="12" r="4.2" />
+              <circle cx="17.4" cy="6.6" r="0.6" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Visit() {
   const { t, lang } = useLang()
 
@@ -211,41 +313,7 @@ export default function Visit() {
             {t.visit.title}
           </Appear>
 
-          <div className="molding mt-14 bg-paper/40 px-7 py-9 md:mt-20 md:px-10 md:py-12">
-            <h3 className="label text-ink-soft">{t.visit.hoursTitle}</h3>
-            <dl className="mt-6 border-t border-forest/15">
-              {t.visit.hours.map((h) => (
-                <div key={h.days} className="flex items-baseline justify-between gap-6 border-b border-forest/15 py-4">
-                  <dt className="text-sm text-ink">{h.days}</dt>
-                  <dd className="font-display text-xl lining-nums tabular-nums">{h.time}</dd>
-                </div>
-              ))}
-            </dl>
-            {t.visit.hoursNote && <p className="mt-4 text-xs text-ink-soft">{t.visit.hoursNote}</p>}
-
-            <h3 className="label mt-12 text-ink-soft">{t.visit.addressTitle}</h3>
-            <address className="font-display mt-4 text-3xl leading-snug not-italic md:text-4xl">
-              {site.street}
-              <br />
-              {site.city}
-            </address>
-          </div>
-
-          {/* Instagram als Symbol im Stil der Seite (dünne Linie, runder Rahmen wie die Knöpfe) */}
-          <a
-            href={site.instagram}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`${t.visit.instagram}: @gelatiamdom`}
-            title="Instagram"
-            className="mx-auto mt-10 grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full border border-forest/40 text-forest transition-colors duration-300 hover:border-gold hover:bg-gold hover:text-mist md:mt-12"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="5.5" />
-              <circle cx="12" cy="12" r="4.2" />
-              <circle cx="17.4" cy="6.6" r="0.6" fill="currentColor" stroke="none" />
-            </svg>
-          </a>
+          <VisitCard />
         </div>
 
         {/* Echte OpenStreetMap-Karte des ganzen ersten Bezirks (lokal gespeicherte Bilder, keine Anfrage an Dritte),

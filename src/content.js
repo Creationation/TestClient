@@ -17,6 +17,8 @@ export const site = {
   street: 'Schulerstraße 1–3',
   city: '1010 Wien',
   instagram: 'https://www.instagram.com/gelatiamdom/',
+  // Öffnungszeiten als Stunden (Wiener Zeit), für „Jetzt geöffnet“ bei „Besuch uns“; täglich gleich
+  open: { from: 10, to: 22 },
   // Gelato wird im Salon selbst gemacht (vom Kunden bestätigt, Okt. 2026); die Patisserie NICHT.
   // „Hausgemacht“ daher nur beim Gelato verwenden (sonst irreführende Werbung, UWG).
   madeInHouse: true,
@@ -294,6 +296,13 @@ export const content = {
       addressTitle: 'Adresse',
       directions: 'Route planen',
       instagram: 'Instagram',
+      call: 'Anrufen',
+      daily: 'Täglich geöffnet',
+      clock: 'Uhr',
+      openNow: 'Jetzt geöffnet',
+      closedNow: 'Gerade geschlossen',
+      until: (h) => `bis ${h} Uhr`,
+      opensAt: (h) => `öffnet um ${h} Uhr`,
     },
     footer: {
       claim: 'Hausgemachtes Gelato, Kaffee und Genuss, mitten in Wien.',
@@ -409,6 +418,13 @@ export const content = {
       addressTitle: 'Address',
       directions: 'Get directions',
       instagram: 'Instagram',
+      call: 'Call us',
+      daily: 'Open every day',
+      clock: 'h',
+      openNow: 'Open now',
+      closedNow: 'Closed right now',
+      until: (h) => `until ${h}:00`,
+      opensAt: (h) => `opens at ${h}:00`,
     },
     footer: {
       claim: 'Artisan gelati, coffee and indulgence, in the heart of Vienna.',
