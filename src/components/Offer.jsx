@@ -11,14 +11,15 @@ export default function Offer() {
   return (
     <section id="offer" data-bg="#F3F6EF" className="relative py-28 text-ink md:py-40">
       <div className="container-x">
-        <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+        {/* mittig: Kicker, Titel, darunter der Knopf */}
+        <div className="flex flex-col items-center gap-8 text-center md:gap-10">
           <div>
             <p className="label text-pistachio">{t.offer.eyebrow}</p>
-            <Appear as="h2" className="font-display mt-6 max-w-[14ch] text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
+            <Appear as="h2" className="font-display mx-auto mt-6 max-w-[14ch] text-[clamp(2.6rem,8vw,5.2rem)] leading-[0.98]">
               {t.offer.title}
             </Appear>
           </div>
-          <a href="#menu" className="btn self-start border-forest/30 text-forest hover:border-forest hover:bg-forest hover:text-mist md:self-auto">
+          <a href="#menu" className="btn border-forest/30 text-forest hover:border-forest hover:bg-forest hover:text-mist">
             {t.offer.cta}
             <span aria-hidden="true">→</span>
           </a>

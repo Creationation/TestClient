@@ -91,14 +91,14 @@ export default function Flavors() {
 
   return (
     <section id="flavors" data-bg="#C4D0BC" className="relative overflow-hidden py-24 text-ink md:py-32">
-      {/* am Computer mittig, darunter Zähler und Pfeile */}
-      <div className="container-x flex items-end justify-between gap-6 md:flex-col md:items-center md:gap-8 md:text-center">
+      {/* überall mittig, darunter Zähler und (am Computer) Pfeile */}
+      <div className="container-x flex flex-col items-center gap-6 text-center md:gap-8">
         <div>
           <p className="label text-gold">{t.flavors.eyebrow}</p>
           <Appear as="h2" className="font-display mt-4 text-[clamp(2.6rem,9vw,5.2rem)] leading-[0.95] md:mt-6">
             {t.flavors.title}
           </Appear>
-          <p className="mt-3 max-w-md text-sm text-ink-soft md:mx-auto md:mt-4">{t.flavors.subtitle}</p>
+          <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft md:mt-4">{t.flavors.subtitle}</p>
         </div>
         <div className="flex shrink-0 items-center gap-5">
           <p className="font-display text-2xl lining-nums tabular-nums md:text-3xl" aria-hidden="true">

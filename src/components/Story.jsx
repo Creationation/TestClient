@@ -289,12 +289,12 @@ export function Salon() {
   const shop = t.story.shop
   return (
     <section id="salon" data-bg="#F3F6EF" className="relative pt-24 text-ink md:pt-36">
-      <div className="container-x">
+      <div className="container-x text-center">
         <p className="label text-gold">{shop.eyebrow}</p>
-        <Appear as="h2" className="font-display mt-6 max-w-[24ch] text-[clamp(2rem,5.6vw,4rem)] leading-[1.08]">
+        <Appear as="h2" className="font-display mx-auto mt-6 max-w-[24ch] text-[clamp(2rem,5.6vw,4rem)] leading-[1.08]">
           {shop.lead}
         </Appear>
-        <Appear className="mt-10 max-w-[44rem] text-[0.95rem] leading-[1.9] text-ink-soft md:mt-14 md:text-base">{shop.text}</Appear>
+        <Appear className="mx-auto mt-10 max-w-[44rem] text-[0.95rem] leading-[1.9] text-ink-soft md:mt-14 md:text-base">{shop.text}</Appear>
       </div>
     </section>
   )
