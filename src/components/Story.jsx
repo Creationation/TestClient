@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react'
+import { site } from '../content'
 import { gsap, ScrollTrigger, useGSAP, MOTION, scroller } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
+import Reveal from './Reveal'
 import { RoutePanel, RouteVisual, useRoute } from './Route'
 
 // Gelato: samtgrüner Grund, helle Schrift. Der Weg: Salbeigrund, dunkle Schrift.
@@ -289,12 +291,31 @@ export function Salon() {
   const shop = t.story.shop
   return (
     <section id="salon" data-bg="#F3F6EF" className="relative pt-24 text-ink md:pt-36">
-      <div className="container-x text-center">
-        <p className="label text-gold">{shop.eyebrow}</p>
-        <Appear as="h2" className="font-display mx-auto mt-6 max-w-[24ch] text-[clamp(2rem,5.6vw,4rem)] leading-[1.08]">
-          {shop.lead}
-        </Appear>
-        <Appear className="mx-auto mt-10 max-w-[44rem] text-[0.95rem] leading-[1.9] text-ink-soft md:mt-14 md:text-base">{shop.text}</Appear>
+      {/* Text links wie gehabt, daneben ein echtes Bild des Salons im Rundbogen (wie ein Fenster), mit Messing-Details */}
+      <div className="container-x grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-24">
+        <div>
+          <p className="label text-gold">{shop.eyebrow}</p>
+          <Appear as="h2" className="font-display mt-6 max-w-[24ch] text-[clamp(2rem,5.6vw,4rem)] leading-[1.08]">
+            {shop.lead}
+          </Appear>
+          <span className="mt-10 block h-px w-24 bg-gradient-to-r from-gold to-transparent md:mt-12" aria-hidden="true" />
+          <Appear className="mt-8 max-w-[44rem] text-[0.95rem] leading-[1.9] text-ink-soft md:mt-10 md:text-base">{shop.text}</Appear>
+        </div>
+        <figure className="relative mx-auto w-full max-w-[420px]">
+          {/* goldener Bogen, leicht versetzt hinter dem Bild */}
+          <span aria-hidden="true" className="absolute inset-0 translate-x-3 translate-y-3 rounded-t-[999px] rounded-b-[28px] border border-gold/50" />
+          <Reveal
+            image={{ src: '/images/salon-wall.jpg' }}
+            ratio={3 / 4}
+            sizes="(min-width: 1024px) 420px, 90vw"
+            alt={shop.imageAlt}
+            className="rounded-t-[999px]! rounded-b-[28px]!"
+          />
+          <figcaption className="absolute -bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-[0.7rem] tracking-[0.16em] whitespace-nowrap text-gold-light uppercase shadow-[0_12px_30px_-14px_rgba(36,45,38,0.8)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-gold-light" aria-hidden="true" />
+            {site.street} · {site.city}
+          </figcaption>
+        </figure>
       </div>
     </section>
   )

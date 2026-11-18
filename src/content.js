@@ -229,6 +229,7 @@ export const content = {
       shop: {
         eyebrow: 'Gelati am Dom',
         lead: 'Eine Gelateria mitten im ersten Bezirk, nur wenige Schritte vom Stephansdom entfernt.',
+        imageAlt: 'Der Salon von Gelati am Dom mit der großen Gelato-Skulptur an der Wand',
         text: 'In unserem Salon in Salbeigrün, Messing und warmem Licht servieren wir hausgemachtes Gelato, frisch zubereitete Waffeln und Palatschinken, Kaffee und feine Patisserie. Ob eine schnelle Kugel auf dem Weg durch die Stadt oder eine ruhige Pause am Tisch: Bei uns bist du herzlich willkommen.',
         facts: [
           { title: 'Hausgemachtes Gelato', text: 'Von uns selbst gemacht, in vielen Sorten.' },
@@ -351,6 +352,7 @@ export const content = {
       shop: {
         eyebrow: 'Gelati am Dom',
         lead: 'A gelateria in the heart of Vienna’s first district, just a few steps from St. Stephen’s Cathedral.',
+        imageAlt: 'The Gelati am Dom salon with the large gelato sculpture on the wall',
         text: 'In our salon of sage green, brass and warm light we serve homemade gelato, freshly made waffles and Palatschinken, coffee and fine patisserie. Whether it is a quick scoop on your way through the city or a quiet break at the table, you are always welcome.',
         facts: [
           { title: 'Homemade gelato', text: 'Made by us, in many flavours.' },
