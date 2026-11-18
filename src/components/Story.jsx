@@ -1,327 +1,104 @@
 import { useRef, useState } from 'react'
-import { images, imageSrc } from '../content'
-import { gsap, ScrollTrigger, useGSAP, MOTION, scroller } from '../lib/gsap'
+import { images } from '../content'
+import { ScrollTrigger, useGSAP } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
+import Reveal from './Reveal'
 import { RoutePanel, RouteVisual, useRoute } from './Route'
 
-const src = (w) => imageSrc(images.story, w, Math.round(w * 1.3))
-// Schritt 02 hat ein eigenes Gesicht: Pistazienbild, samtgrüner Grund, helle Schrift, Playfair
-const HOME = 1
-// Schritt 03 ebenso: Patisserie-Foto, Vanille-Grund, Cormorant kursiv
-const FRESH = 2
-// Jeder Schritt hat seinen eigenen Titel in eigener Schrift (statt dreimal „Willkommen in unserem Salon“)
-const TITLE_FONT = ['font-display', 'font-logo tracking-[-0.01em]', 'font-display italic']
-
-// Sektion bleibt stehen: das Bild ist fix, die drei Absätze lösen einander ab.
-// Schritt 02 bekommt ein eigenes Bild, einen dunklen Grund und eine andere Schrift, der Weg einen Salbeigrund.
-// Danach wechselt alles (Bild, Titel, Text) zu „Der Weg zu uns“ vom Stephansdom.
-// Jede Scrollbewegung führt genau einen Schritt weiter, auch bei schnellem Wischen.
-// Unter lg bekommt das Bild nur den Platz, der neben dem Text bleibt: nichts rutscht unter den Header.
-// Die Sektion ist so hoch wie der Bildschirm mit eingeklappter Browserleiste (lvh), der Inhalt so hoch wie mit
-// sichtbarer Leiste (svh): der Hintergrund reicht immer bis unten, und der Inhalt wird nie verdeckt.
+// Drei ruhige Blöcke statt eines Karussells, damit sich niemand verliert:
+// zuerst das Gelato, darunter der Salon in einem Text, danach gleich der Weg zu uns.
+// Die Seite scrollt ganz normal, nichts bleibt stehen.
 export default function Story() {
   const { t } = useLang()
-  const root = useRef(null)
-  const route = useRoute()
-  // erhöht sich, sobald die Karte erscheint → der Weg zeichnet sich neu
-  const [drawKey, setDrawKey] = useState(0)
-
-  useGSAP(
-    () => {
-      gsap.matchMedia().add(MOTION, () => {
-        const panels = gsap.utils.toArray('.story-p')
-        const fills = gsap.utils.toArray('.story-fill')
-        const titles = gsap.utils.toArray('.story-t')
-        const steps = panels.length - 1
-        gsap.set(panels.slice(1), { autoAlpha: 0, y: 24 })
-        gsap.set(titles.slice(1), { autoAlpha: 0, y: 24 })
-        gsap.set('.route-swap', { autoAlpha: 0, y: 24 })
-        gsap.set('.route-media', { autoAlpha: 0 })
-        gsap.set('.story-home, .story-tint, .story-fresh, .fresh-tint, .route-tint', { autoAlpha: 0 })
-        gsap.set(fills[0], { scaleX: 1 })
-
-        // Schritt-Steuerung: Wer in die Sektion scrollt (auch mit viel Schwung), wird auf dem ersten Schritt
-        // angehalten (von unten: auf dem letzten). Der Schwung verpufft, danach führt jede Geste genau einen Schritt
-        // weiter. Nach dem letzten Schritt (bzw. vor dem ersten) scrollt die Seite wieder ganz normal.
-        let index = 0
-        let locked = false
-        let moving = false
-        let quietUntil = 0
-        let acc = 0
-        let spent = false
-        let navUntil = 0
-        const lenis = () => scroller.lenis
-        const pos = (k) => tl.scrollTrigger.start + (k / steps) * (tl.scrollTrigger.end - tl.scrollTrigger.start)
-        // Während der Sperre steht Lenis still, deshalb gleitet die Seite hier selbst (nativer Scroll, per GSAP)
-        const glide = { y: 0 }
-        const scrollTo = (y, immediate) => {
-          gsap.killTweensOf(glide)
-          if (immediate) {
-            moving = false
-            return window.scrollTo(0, y)
-          }
-          moving = true
-          glide.y = window.scrollY
-          gsap.to(glide, {
-            y,
-            duration: 0.9,
-            ease: 'power2.inOut',
-            onUpdate: () => window.scrollTo(0, glide.y),
-            onComplete: () => (moving = false),
-          })
-        }
-        const lock = (k) => {
-          // schon gesperrt (z. B. genau am Anfang: GSAP meldet beim ersten Pixel erneut „Eintritt“)
-          if (locked || performance.now() < navUntil) return
-          locked = true
-          index = k
-          acc = 0
-          // der Schwung, der uns hierher gebracht hat, zählt nicht als Geste
-          quietUntil = performance.now() + 500
-          lenis()?.stop()
-          intent.enable()
-          scrollTo(pos(k), true)
-        }
-        const release = () => {
-          locked = false
-          intent.disable()
-          lenis()?.start()
-        }
-        const step = (dir, speed = 0) => {
-          const k = index + dir
-          if (k < 0 || k > steps) {
-            // raus aus der Sektion: die Seite läuft so weit, wie die Geste Schwung hat, wie beim normalen Scrollen
-            release()
-            const vh = window.innerHeight
-            const dist = gsap.utils.clamp(80, vh * 1.5, speed ? speed * 0.3 : vh * 0.4)
-            const y = window.scrollY + dir * dist
-            const l = lenis()
-            return l
-              ? l.scrollTo(y, {
-                  duration: 0.5 + (dist / vh) * 0.5,
-                  easing: (t) => 1 - Math.pow(1 - t, 3),
-                })
-              : scrollTo(y)
-          }
-          index = k
-          scrollTo(pos(k))
-        }
-        // Rad, Trackpad und Wischen: Ausschwingen eines Trackpads oder ein langer Wisch zählen als eine Geste
-        const intent = ScrollTrigger.observe({
-          target: window,
-          type: 'wheel,touch',
-          wheelSpeed: -1,
-          preventDefault: true,
-          allowClicks: true,
-          // ein Finger auf dem Bildschirm = höchstens ein Schritt, auch wenn er lange liegen bleibt
-          onPress: () => (spent = false),
-          onChangeY: (self) => {
-            const now = performance.now()
-            if (spent) return
-            if (moving || now < quietUntil) {
-              quietUntil = Math.max(quietUntil, now + 180)
-              acc = 0
-              return
-            }
-            acc += self.deltaY
-            if (Math.abs(acc) < 24) return
-            const dir = acc < 0 ? 1 : -1
-            acc = 0
-            quietUntil = now + 400
-            spent = self.event?.type?.startsWith('touch')
-            step(dir, Math.abs(self.velocityY))
-          },
-        })
-        intent.disable()
-        // Restschwung (z. B. iOS) hält die Seite nicht auf: zurück auf den aktuellen Schritt
-        const hold = () => locked && !moving && Math.abs(window.scrollY - pos(index)) > 2 && scrollTo(pos(index), true)
-        window.addEventListener('scroll', hold, { passive: true })
-        // Tastatur: Pfeile, Bild auf/ab und Leertaste blättern ebenfalls Schritt für Schritt
-        const onKey = (e) => {
-          if (!locked || e.defaultPrevented || moving) return
-          const field = e.target.closest?.('a, button, input, select, textarea, [role="listbox"]')
-          const dir = {
-            ArrowDown: 1,
-            PageDown: 1,
-            ArrowUp: -1,
-            PageUp: -1,
-            ' ': field ? 0 : e.shiftKey ? -1 : 1,
-          }[e.key]
-          if (!dir) return
-          e.preventDefault()
-          step(dir)
-        }
-        window.addEventListener('keydown', onKey)
-        // Menü- und Ankerlinks springen ungebremst durch die Sektion
-        const onAnchor = (e) => {
-          if (!e.target.closest?.('a[href^="#"]')) return
-          navUntil = performance.now() + 3000
-          if (locked) release()
-        }
-        document.addEventListener('click', onAnchor, true)
-
-        // Schritt k liegt genau bei Zeit k; die Wechsel passieren dazwischen
-        const tl = gsap.timeline({
-          defaults: { ease: 'none' },
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top top',
-            end: `+=${steps * 80}%`,
-            scrub: true,
-            pin: true,
-            anticipatePin: 1,
-            refreshPriority: 2,
-            onEnter: () => lock(0),
-            onEnterBack: () => lock(steps),
-          },
-        })
-        tl.fromTo('.story-img', { scale: 1.15 }, { scale: 1, duration: steps - 0.5 }, 0)
-        for (let k = 0; k < steps; k++) {
-          // erst ausblenden, dann einblenden – Texte überlagern sich nie
-          tl.to(panels[k], { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, k + 0.3)
-          tl.to(panels[k + 1], { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, k + 0.5)
-          tl.fromTo(fills[k + 1], { scaleX: 0 }, { scaleX: 1, duration: 0.4 }, k + 0.3)
-          // der große Titel wechselt mit: jeder Schritt hat seinen eigenen
-          tl.to(titles[k], { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, k + 0.3)
-          tl.to(titles[k + 1], { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, k + 0.5)
-        }
-
-        // Schritt 02: Bild, Grund und Schriftfarben blenden mit dem Text um (Tailwind liest die Farben aus Variablen)
-        const dark = {
-          '--color-ink': '#F3F6EF',
-          '--color-ink-soft': '#C4D0BC',
-        }
-        const light = {
-          '--color-ink': '#263028',
-          '--color-ink-soft': '#5D695F',
-        }
-        tl.to('.story-home, .story-tint', { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }, HOME - 0.7)
-          .fromTo('.story-home img', { scale: 1.12 }, { scale: 1, duration: 1.3 }, HOME - 0.7)
-          .fromTo(root.current, light, { ...dark, duration: 0.3, ease: 'power2.out' }, HOME - 0.7)
-          .to('.story-home, .story-tint', { autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, HOME + 0.3)
-          .to(root.current, { ...light, duration: 0.3, ease: 'power2.in' }, HOME + 0.3)
-
-        // Schritt 03: Patisserie-Foto und Vanille-Grund
-        tl.to('.story-fresh, .fresh-tint', { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }, FRESH - 0.7)
-          .fromTo('.story-fresh img', { scale: 1.12 }, { scale: 1, duration: 1.3 }, FRESH - 0.7)
-          .to('.story-fresh, .fresh-tint', { autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, FRESH + 0.3)
-
-        // Szenenwechsel zum letzten Schritt: Bild, Kicker und Titel komplett tauschen
-        const s = steps - 1
-        tl.to('.story-swap', { autoAlpha: 0, y: -24, duration: 0.15, ease: 'power2.in' }, s + 0.3)
-          .to('.route-swap', { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, s + 0.5)
-          .to('.story-img', { autoAlpha: 0, duration: 0.25, ease: 'power2.in' }, s + 0.3)
-          .to('.route-tint', { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }, s + 0.3)
-          .fromTo('.route-media', { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'power2.out' }, s + 0.4)
-          .call(() => setDrawKey((k) => k + 1), null, s + 0.6)
-          .set({}, {}, steps)
-
-        return () => {
-          if (locked) release()
-          intent.kill()
-          window.removeEventListener('scroll', hold)
-          window.removeEventListener('keydown', onKey)
-          document.removeEventListener('click', onAnchor, true)
-        }
-      })
-    },
-    { scope: root },
-  )
-
-  const r = t.route
+  const s = t.story
 
   return (
-    <section ref={root} id="story" data-bg="#F3F6EF" className="relative overflow-hidden text-ink motion-safe:h-lvh motion-safe:min-h-[620px]">
-      <div className="story-tint invisible pointer-events-none absolute inset-0 bg-forest motion-reduce:hidden" aria-hidden="true" />
-      <div className="fresh-tint invisible pointer-events-none absolute inset-0 bg-vanilla motion-reduce:hidden" aria-hidden="true" />
-      <div className="route-tint invisible pointer-events-none absolute inset-0 bg-sage motion-reduce:hidden" aria-hidden="true" />
-      <div className="container-x relative flex h-full flex-col gap-6 motion-safe:h-svh motion-safe:min-h-[620px] pt-20 pb-8 short:gap-4 short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-24">
-        <figure className="relative h-[30svh] w-full short:h-[25svh] overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px] max-lg:motion-safe:h-auto! max-lg:motion-safe:min-h-[140px] max-lg:motion-safe:flex-1">
-          <img
-            src={src(900)}
-            sizes="(min-width: 768px) 540px, 100vw"
-            width={900}
-            height={1170}
-            alt={t.story.imageAlt}
-            decoding="async"
-            className="story-img absolute inset-0 h-full w-full object-cover will-change-transform"
+    <>
+      {/* Gelato: dunkler Grund, helle Schrift (Tailwind liest die Farben aus Variablen) */}
+      <section
+        id="story"
+        data-bg="#2F3B32"
+        style={{ '--color-ink': '#F3F6EF', '--color-ink-soft': '#C4D0BC' }}
+        className="relative py-24 text-ink md:py-36"
+      >
+        <div className="container-x grid items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-24">
+          <Reveal
+            image={images.story}
+            ratio={4 / 5}
+            sizes="(min-width: 1024px) 540px, 100vw"
+            alt={s.imageAlt}
+            className="w-full max-lg:aspect-[4/3]! lg:mx-auto lg:max-w-[540px]"
           />
-          <div className="story-home invisible absolute inset-0 overflow-hidden motion-reduce:hidden">
-            <img
-              src={imageSrc(images.storyHomemade, 900, 1125)}
-              srcSet={[500, 900, 1400].map((w) => `${imageSrc(images.storyHomemade, w, w * 1.25)} ${w}w`).join(', ')}
-              sizes="(min-width: 768px) 540px, 100vw"
-              width={900}
-              height={1125}
-              alt={t.story.paragraphs[HOME].imageAlt}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover will-change-transform"
-            />
-          </div>
-          <div className="story-fresh invisible absolute inset-0 overflow-hidden motion-reduce:hidden">
-            <img
-              src={imageSrc(images.storyFresh, 900, 1125)}
-              sizes="(min-width: 768px) 540px, 100vw"
-              width={640}
-              height={800}
-              alt={t.story.paragraphs[FRESH].imageAlt}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover will-change-transform"
-            />
-          </div>
-          <div className="route-media absolute inset-0 motion-reduce:hidden">
-            <RouteVisual route={route} drawKey={drawKey} />
-          </div>
-        </figure>
-
-        <div className="flex min-w-0 shrink-0 flex-col">
-          <div className="grid">
-            <p className="story-swap label text-gold [grid-area:1/1]">{t.story.eyebrow}</p>
-            <p className="route-swap label text-gold [grid-area:1/1] motion-reduce:hidden" aria-hidden="true">
-              {r.eyebrow}
-            </p>
-          </div>
-          <div className="mt-4 grid md:mt-6">
-            <Appear as="h2" className="font-display text-[clamp(2.1rem,8vw,5.2rem)] leading-[0.98] [grid-area:1/1]">
-              <span className="story-t block">{t.story.paragraphs[0].heading}</span>
+          <div>
+            <p className="label text-gold">{s.eyebrow}</p>
+            <Appear as="h2" className="font-logo mt-6 text-[clamp(2.4rem,8vw,5.2rem)] leading-[1] tracking-[-0.01em]">
+              {s.title}
             </Appear>
-            {t.story.paragraphs.slice(1).map((p, i) => (
-              <p
-                key={i}
-                aria-hidden="true"
-                className={`story-t ${TITLE_FONT[i + 1]} text-[clamp(2rem,7.5vw,4.8rem)] leading-[1.02] [grid-area:1/1] motion-reduce:hidden`}
-              >
-                {p.heading}
-              </p>
-            ))}
-            <h2 className="story-t font-logo text-[clamp(1.9rem,7vw,4.4rem)] leading-[1.04] tracking-[-0.01em] [grid-area:1/1] motion-reduce:hidden">{r.title}</h2>
+            <Appear className="mt-6 max-w-[32rem] text-[0.95rem] leading-[1.8] text-ink-soft md:mt-10 md:text-base">{s.text}</Appear>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-6 flex gap-2 short:mt-4 md:mt-10" aria-hidden="true">
-            {[...t.story.paragraphs, r].map((_, i) => (
-              <span key={i} className="h-px w-12 bg-ink/15 md:w-16">
-                <span className="story-fill block h-full origin-left bg-gold motion-reduce:scale-x-100" />
-              </span>
-            ))}
-          </div>
+      <Salon shop={s.shop} />
+      <Way />
+    </>
+  )
+}
 
-          <div className="mt-5 grid min-w-0 short:mt-4 grid-cols-1 motion-reduce:gap-10 md:mt-10">
-            {t.story.paragraphs.map((p, i) => (
-              <article key={i} className="story-p motion-safe:[grid-area:1/1]">
-                <p className={`text-xl text-gold ${i === HOME ? 'font-logo' : 'font-display italic'}`}>0{i + 1}</p>
-                <h3 className={`${i === HOME ? 'font-logo tracking-[-0.01em]' : i === FRESH ? 'font-display italic' : 'font-display'} mt-2 text-[clamp(1.7rem,5vw,2.6rem)] leading-[1.1]`}>{p.title}</h3>
-                <p className="mt-3 max-w-[32rem] text-[0.95rem] leading-[1.8] text-ink-soft md:mt-5 md:text-base">{p.text}</p>
-              </article>
+// Der Salon in einem Text: Leitsatz, Absatz und drei kurze Eckdaten
+function Salon({ shop }) {
+  return (
+    <section id="salon" data-bg="#F3F6EF" className="relative py-24 text-ink md:py-36">
+      <div className="container-x">
+        <p className="label text-gold">{shop.eyebrow}</p>
+        <Appear as="h2" className="font-display mt-6 max-w-[24ch] text-[clamp(2rem,5.6vw,4rem)] leading-[1.08]">
+          {shop.lead}
+        </Appear>
+        <div className="mt-12 grid gap-12 md:mt-20 lg:grid-cols-[1.1fr_1fr] lg:gap-24">
+          <Appear className="max-w-[36rem] text-[0.95rem] leading-[1.9] text-ink-soft md:text-base">{shop.text}</Appear>
+          <dl className="grid gap-8 sm:grid-cols-3 lg:grid-cols-1 lg:gap-0">
+            {shop.facts.map((f) => (
+              <div key={f.title} className="border-t border-forest/15 pt-5 lg:flex lg:items-baseline lg:gap-8 lg:py-6">
+                <dt className="font-display text-xl italic text-gold lg:w-56 lg:shrink-0">{f.title}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-ink-soft lg:mt-0">{f.text}</dd>
+              </div>
             ))}
-            <article className="story-p motion-safe:[grid-area:1/1]">
-              {/* ohne Animation steht der Weg einfach als vierter Abschnitt da */}
-              <h3 className="font-display mb-6 hidden text-[clamp(1.7rem,5vw,2.6rem)] leading-[1.1] motion-reduce:block">{r.title}</h3>
-              <RoutePanel route={route} />
-            </article>
-          </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Der Weg zu uns: Karte und Startpunkt-Auswahl nebeneinander
+function Way() {
+  const { t } = useLang()
+  const r = t.route
+  const route = useRoute()
+  const map = useRef(null)
+  // erhöht sich, sobald die Karte ins Bild kommt → der Weg zeichnet sich vor den Augen des Besuchers
+  const [drawKey, setDrawKey] = useState(0)
+
+  useGSAP(() => {
+    ScrollTrigger.create({ trigger: map.current, start: 'top 75%', once: true, onEnter: () => setDrawKey((k) => k + 1) })
+  })
+
+  return (
+    <section id="route" data-bg="#C4D0BC" className="relative py-24 text-ink md:py-36">
+      <div className="container-x grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-24">
+        <figure
+          ref={map}
+          className="relative aspect-[4/3] w-full overflow-hidden rounded-[22px] bg-[#EEF2E9] md:rounded-[28px] lg:aspect-auto lg:h-[70svh] lg:max-h-[680px] lg:min-h-[440px]"
+        >
+          <RouteVisual route={route} drawKey={drawKey} />
+        </figure>
+        <div className="min-w-0">
+          <p className="label text-gold">{r.eyebrow}</p>
+          <Appear as="h2" className="font-logo mt-6 mb-10 text-[clamp(2.2rem,7vw,4.4rem)] leading-[1.04] tracking-[-0.01em] md:mb-14">
+            {r.title}
+          </Appear>
+          <RoutePanel route={route} />
         </div>
       </div>
     </section>
