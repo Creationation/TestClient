@@ -12,13 +12,11 @@ export default function Gallery() {
   return (
     <section id="gallery" data-bg="#F3F6EF" className="relative pb-28 text-ink md:pb-44">
       <div className="container-x">
-        <div className="flex flex-col justify-between gap-6 border-t border-ink/15 pt-16 md:flex-row md:items-end md:pt-24">
-          <div>
-            <p className="label text-pistachio">{t.gallery.eyebrow}</p>
-            <Appear as="h2" className="font-display mt-6 max-w-[12ch] text-[clamp(2.6rem,8vw,5.5rem)] leading-[0.98]">
-              {t.gallery.title}
-            </Appear>
-          </div>
+        {/* nur das Wort „Galerie“, groß und mittig */}
+        <div className="border-t border-ink/15 pt-16 text-center md:pt-24">
+          <Appear as="h2" className="font-display text-[clamp(3.2rem,10vw,7rem)] leading-[0.95]">
+            {t.gallery.eyebrow}
+          </Appear>
         </div>
 
         <div className="mt-14 grid grid-cols-2 items-end gap-3 sm:gap-5 md:mt-20 md:grid-cols-12 md:gap-8">

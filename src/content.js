@@ -62,27 +62,7 @@ export const routeOrigins = [
   { key: 'stubentor', origin: 'U-Bahn Station Stubentor, 1010 Wien' },
 ]
 
-// Sorten – Name, Herkunft & Text je Sprache
-// Alle Sorten in der Vitrine (aus der Speisekarte und den Schildern in der Vitrine), [Deutsch, Englisch]
-export const allFlavors = [
-  ['Vanille', 'Vanilla'],
-  ['Schokolade', 'Chocolate'],
-  ['Stracciatella', 'Stracciatella'],
-  ['Erdbeere', 'Strawberry'],
-  ['Pistazie', 'Pistachio'],
-  ['Haselnuss', 'Hazelnut'],
-  ['Mango', 'Mango'],
-  ['Banane', 'Banana'],
-  ['Amarena', 'Amarena'],
-  ['Maroni', 'Chestnut'],
-  ['Lotus', 'Lotus'],
-  ['Cookies', 'Cookies'],
-  ['Joghurt', 'Yoghurt'],
-  ['Limetta', 'Limetta'],
-  ['Orange', 'Orange'],
-  ['Açaí', 'Açaí'],
-]
-
+// Alle Sorten aus der Vitrine (Speisekarte und Schilder), Name & Text je Sprache; Fotos sind Symbolfotos
 export const flavors = [
   {
     key: 'pistazie',
@@ -120,7 +100,70 @@ export const flavors = [
     de: { name: 'Schokolade', note: 'Dunkel & intensiv', text: 'Dunkle Schokolade, intensiv und samtig. Für echte Schokoladenliebhaber.' },
     en: { name: 'Chocolate', note: 'Dark & intense', text: 'Dark chocolate, intense and velvety. For true chocolate lovers.' },
   },
+  {
+    key: 'vanille',
+    image: { id: '1650419741906-1cdead9c9b4f' },
+    de: { name: 'Vanille', note: 'Sanft & klassisch', text: 'Cremiges Vanilleeis, mild und fein. Der Klassiker, der zu allem passt.' },
+    en: { name: 'Vanilla', note: 'Smooth & classic', text: 'Creamy vanilla gelato, mild and delicate. The classic that goes with everything.' },
+  },
+  {
+    key: 'banane',
+    image: { id: '1594987066010-70ead9419f5c' },
+    de: { name: 'Banane', note: 'Fruchtig & cremig', text: 'Reife Banane, cremig gerührt. Mild, süß und beliebt bei Groß und Klein.' },
+    en: { name: 'Banana', note: 'Fruity & creamy', text: 'Ripe banana, churned creamy. Mild, sweet and loved by young and old.' },
+  },
+  {
+    key: 'amarena',
+    image: { id: '1532678465554-94846274c297' },
+    de: { name: 'Amarena', note: 'Kirschig & cremig', text: 'Cremiges Eis mit Amarenakirschen. Süß, fruchtig und ein bisschen italienisch.' },
+    en: { name: 'Amarena', note: 'Cherry & creamy', text: 'Creamy gelato with amarena cherries. Sweet, fruity and a little Italian.' },
+  },
+  {
+    key: 'maroni',
+    image: { id: '1691200324934-d1fca4986671' },
+    de: { name: 'Maroni', note: 'Winterlich & nussig', text: 'Cremiges Maronieis, das nach Wiener Winter schmeckt.' },
+    en: { name: 'Chestnut', note: 'Wintry & nutty', text: 'Creamy chestnut gelato that tastes of a Viennese winter.' },
+  },
+  {
+    key: 'lotus',
+    image: { id: '1757672096062-95ef4bae941d' },
+    de: { name: 'Lotus', note: 'Karamellig & knusprig', text: 'Mit Lotus Keksen: karamellig, würzig und ein bisschen knusprig.' },
+    en: { name: 'Lotus', note: 'Caramel & crunchy', text: 'With Lotus biscuits: caramelised, spiced and a little crunchy.' },
+  },
+  {
+    key: 'cookies',
+    image: { id: '1642646669923-074199898e3c' },
+    de: { name: 'Cookies', note: 'Knusprig & schokoladig', text: 'Cremiges Eis mit Keksstücken. Für alle, die gern ein bisschen knuspern.' },
+    en: { name: 'Cookies', note: 'Crunchy & chocolatey', text: 'Creamy gelato with cookie pieces. For everyone who likes a little crunch.' },
+  },
+  {
+    key: 'joghurt',
+    image: { id: '1745636960781-ce50225eb290' },
+    de: { name: 'Joghurt', note: 'Frisch & leicht', text: 'Frisches Joghurteis, leicht säuerlich und angenehm leicht.' },
+    en: { name: 'Yoghurt', note: 'Fresh & light', text: 'Fresh yoghurt gelato, slightly tangy and pleasantly light.' },
+  },
+  {
+    key: 'limetta',
+    image: { id: '1724805053558-aea1220afbfa' },
+    de: { name: 'Limetta', note: 'Spritzig & frisch', text: 'Limette, spritzig und erfrischend. Perfekt an warmen Tagen.' },
+    en: { name: 'Limetta', note: 'Zesty & fresh', text: 'Lime, zesty and refreshing. Perfect on warm days.' },
+  },
+  {
+    key: 'orange',
+    image: { id: '1748831875974-82037d88273f' },
+    de: { name: 'Orange', note: 'Sonnig & fruchtig', text: 'Fruchtig und sonnig, mit dem Geschmack reifer Orangen.' },
+    en: { name: 'Orange', note: 'Sunny & fruity', text: 'Fruity and sunny, with the taste of ripe oranges.' },
+  },
+  {
+    key: 'acai',
+    image: { id: '1627222295124-f8b3fc09e47f' },
+    de: { name: 'Açaí', note: 'Beerig & exotisch', text: 'Açaí mit dunkler, beeriger Note. Fruchtig und ein bisschen exotisch.' },
+    en: { name: 'Açaí', note: 'Berry & exotic', text: 'Açaí with a dark, berry note. Fruity and a little exotic.' },
+  },
 ]
+
+// Alle Sorten als [Deutsch, Englisch], z. B. für die Speisekarte
+export const allFlavors = flavors.map((f) => [f.de.name, f.en.name])
 
 export const images = {
   // „Mehr als Gelato“: Videos aus dem Salon (vom Kunden), Kaffee als Foto
@@ -221,9 +264,8 @@ export const content = {
     },
     flavors: {
       eyebrow: 'Unsere Sorten',
-      title: 'Sechs Lieblinge.',
-      subtitle: 'Und viele weitere Sorten in unserer Vitrine.',
-      allTitle: 'Alle Sorten in unserer Vitrine',
+      title: 'Sechzehn Sorten.',
+      subtitle: 'Alle Sorten aus unserer Vitrine, zum Durchwischen.',
       hint: 'Zum Entdecken wischen',
       prev: 'Zurück',
       next: 'Weiter',
@@ -337,9 +379,8 @@ export const content = {
     },
     flavors: {
       eyebrow: 'Our flavours',
-      title: 'Six favourites.',
-      subtitle: 'And many more flavours in our display.',
-      allTitle: 'All flavours in our display',
+      title: 'Sixteen flavours.',
+      subtitle: 'Every flavour in our display, swipe through.',
       hint: 'Swipe to discover',
       prev: 'Previous',
       next: 'Next',

@@ -4,9 +4,8 @@ import { gsap, ScrollTrigger, useGSAP, prefersReduced, scroller } from './lib/gs
 import { LangProvider, useLang } from './lib/lang'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import Story from './components/Story'
+import Story, { Salon } from './components/Story'
 import Flavors from './components/Flavors'
-import Marquee from './components/Marquee'
 import Offer from './components/Offer'
 import Menu from './components/Menu'
 import Reels from './components/Reels'
@@ -87,13 +86,15 @@ function Page() {
       <Header />
       <main>
         <Hero />
+        {/* angehalten in zwei Schritten: Gelato, dann der Weg zu uns */}
         <Story />
+        {/* gleich danach der Salon in einem Text und „Mehr als Gelato“ */}
+        <Salon />
+        <Offer />
         <Flavors />
-        <Marquee />
-        {/* direkt nach den Sorten: Videos und Fotos aus dem Salon („Hausgemacht“ in Zahlen und „Handwerk“ entfernt, der Salon steht schon oben) */}
+        {/* Videos und Fotos aus dem Salon direkt nach den Sorten */}
         <Reels />
         <Gallery />
-        <Offer />
         <Menu />
         <Visit />
       </main>
