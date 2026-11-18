@@ -178,14 +178,12 @@ export const images = {
   // „Gelato aus eigener Hand“ (Symbolfoto Pistazie, bis die Fotos aus dem Salon da sind)
   story: { id: '1780340123533-954cef8c7eaa' },
   // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
+  // Nur noch Bilder, die zum Salon passen (fremde Vitrinen und Becher entfernt); Instagram-Videos kommen dazu
   gallery: [
-    { id: '1764337008605-44abfb0f3816', span: 7, ratio: 3 / 2 },
+    { src: '/images/vitrine.jpg', span: 7, ratio: 3 / 2 },
     { src: '/images/salon-tables.jpg', span: 5, ratio: 4 / 5 },
-    { id: '1780340123533-954cef8c7eaa', span: 4, ratio: 4 / 5 },
-    { id: '1780444122216-dad92e90090f', span: 4, ratio: 4 / 5 },
-    { id: '1674595605055-fa617cb4f8d7', span: 4, ratio: 4 / 5 },
-    { src: '/images/vitrine.jpg', span: 5, ratio: 4 / 5 },
-    { id: '1760308798378-d1a2e29ce54f', span: 7, ratio: 3 / 2 },
+    { src: '/images/salon-wall.jpg', span: 5, ratio: 4 / 5 },
+    { id: '1780340123533-954cef8c7eaa', span: 7, ratio: 3 / 2 },
   ],
 }
 

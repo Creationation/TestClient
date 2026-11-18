@@ -27,7 +27,7 @@ export default function Gallery() {
               ratio={img.ratio}
               sizes={img.span === 7 ? '(min-width: 768px) 58vw, 100vw' : '(min-width: 768px) 40vw, 50vw'}
               alt={t.gallery.alt}
-              className={`${img.span === 7 || i === 5 ? 'col-span-2' : 'col-span-1'} ${SPAN[img.span]} ${i === 1 || i === 5 ? 'md:mb-24' : ''}`}
+              className={`${img.span === 7 ? 'col-span-2' : 'col-span-1'} ${SPAN[img.span]} ${i === 1 ? 'md:mb-24' : ''}`}
             />
           ))}
         </div>

@@ -31,6 +31,14 @@
     text-rendering: optimizeLegibility;
     background: var(--color-forest);
   }
+  /* Startseite: die Seite selbst lässt sich nicht aufzoomen und nie seitlich verschieben. Zwei Finger in der Nähe
+     der Karte zoomten sonst die ganze Seite, und man konnte sie danach nach links und rechts schieben.
+     Gezoomt wird nur die Karte (eigene Gesten). Impressum und Datenschutz bleiben normal zoombar. */
+  html:has(#bg) {
+    touch-action: pan-x pan-y;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
   body {
     /* transparent: darunter liegt die Hintergrundebene #bg */
     @apply font-sans text-ink antialiased;

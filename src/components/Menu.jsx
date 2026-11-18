@@ -91,8 +91,13 @@ export default function Menu() {
           </Appear>
         </div>
 
-        {/* Register, jedes mit dem Farbpunkt seiner Seite */}
-        <div role="tablist" aria-label={t.menu.eyebrow} className="mt-10 flex flex-wrap justify-center gap-2 md:mt-14 md:gap-3">
+        {/* Register, jedes mit dem Farbpunkt seiner Seite. Am Handy eine saubere Zeile zum Wischen (statt
+            ungleich umbrechender Reihen), das aktive Register rückt in die Mitte; ab Tablet mittig umbrochen */}
+        <div
+          role="tablist"
+          aria-label={t.menu.eyebrow}
+          className="-mx-6 mt-10 flex snap-x gap-2 overflow-x-auto scroll-px-6 px-6 pb-1 [scrollbar-width:none] sm:-mx-10 sm:scroll-px-10 sm:px-10 md:mx-0 md:mt-14 md:flex-wrap md:justify-center md:gap-3 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden"
+        >
           {menu.categories.map((c) => {
             const a = ACCENT[c.key] ?? ACCENT.eis
             const on = active === c.key
@@ -103,9 +108,14 @@ export default function Menu() {
                 type="button"
                 aria-selected={on}
                 aria-controls="menu-panel"
-                onClick={() => setActive(c.key)}
+                onClick={(e) => {
+                  setActive(c.key)
+                  // nur die Leiste waagrecht mittig rücken, die Seite bleibt stehen
+                  const b = e.currentTarget
+                  b.parentElement.scrollTo({ left: b.offsetLeft - (b.parentElement.clientWidth - b.offsetWidth) / 2, behavior: 'smooth' })
+                }}
                 style={on ? { backgroundColor: a.deep, borderColor: a.deep } : { backgroundColor: a.soft, borderColor: 'transparent' }}
-                className={`flex items-center gap-2 rounded-full border px-4 py-2.5 font-sans text-[0.68rem] tracking-[0.2em] uppercase transition-colors duration-300 md:px-6 ${on ? 'text-white' : 'text-ink hover:brightness-95'}`}
+                className={`flex shrink-0 snap-start items-center gap-2 rounded-full border px-4 py-2.5 whitespace-nowrap font-sans text-[0.68rem] tracking-[0.2em] uppercase transition-colors duration-300 md:px-6 ${on ? 'text-white' : 'text-ink hover:brightness-95'}`}
               >
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: on ? '#fff' : a.deep }} aria-hidden="true" />
                 {tr(c.title, lang)}
