@@ -1,11 +1,9 @@
 import { useRef, useState } from 'react'
-import { images, imageSrc } from '../content'
 import { gsap, ScrollTrigger, useGSAP, MOTION, scroller } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
 import { RoutePanel, RouteVisual, useRoute } from './Route'
 
-const src = (w) => imageSrc(images.story, w, Math.round(w * 1.25))
 // Gelato: samtgrüner Grund, helle Schrift. Der Weg: Salbeigrund, dunkle Schrift.
 const DARK = { '--color-ink': '#F3F6EF', '--color-ink-soft': '#C4D0BC' }
 const LIGHT = { '--color-ink': '#263028', '--color-ink-soft': '#5D695F' }
@@ -212,16 +210,20 @@ export default function Story() {
       <div className="route-tint invisible pointer-events-none absolute inset-0 bg-sage motion-reduce:hidden" aria-hidden="true" />
       <div className="container-x relative flex h-full flex-col gap-6 motion-safe:h-svh motion-safe:min-h-[620px] pt-20 pb-8 short:gap-4 short:pb-5 motion-reduce:py-28 md:gap-10 md:pt-24 md:pb-12 lg:grid lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-24">
         <figure className="relative h-[30svh] w-full short:h-[25svh] overflow-hidden rounded-[22px] bg-mint md:h-[40svh] md:rounded-[28px] lg:mx-auto lg:h-[74svh] lg:max-h-[780px] lg:max-w-[540px] max-lg:motion-safe:h-auto! max-lg:motion-safe:min-h-[140px] max-lg:motion-safe:flex-1">
-          <img
-            src={src(900)}
-            srcSet={[500, 900, 1400].map((w) => `${src(w)} ${w}w`).join(', ')}
-            sizes="(min-width: 768px) 540px, 100vw"
-            width={900}
-            height={1125}
-            alt={s.imageAlt}
-            decoding="async"
+          {/* echtes Video aus dem Salon: das Gelato kommt frisch aus der Eismaschine */}
+          <video
             className="story-img absolute inset-0 h-full w-full object-cover will-change-transform"
-          />
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/videos/making-of.jpg"
+            aria-label={s.imageAlt}
+          >
+            <source src="/videos/making-of.webm" type="video/webm" />
+            <source src="/videos/making-of.mp4" type="video/mp4" />
+          </video>
           <div className="route-media absolute inset-0 motion-reduce:hidden">
             <RouteVisual route={route} drawKey={drawKey} />
           </div>

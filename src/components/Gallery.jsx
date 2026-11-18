@@ -2,6 +2,7 @@ import { images } from '../content'
 import { useLang } from '../lib/lang'
 import Reveal from './Reveal'
 import Appear from './Appear'
+import VideoTile from './VideoTile'
 
 // Strenges 12-Spalten-Raster (Desktop), 2 Spalten auf dem Handy
 const SPAN = { 4: 'md:col-span-4', 5: 'md:col-span-5', 7: 'md:col-span-7' }
@@ -20,16 +21,22 @@ export default function Gallery() {
         </div>
 
         <div className="mt-14 grid grid-cols-2 items-end gap-3 sm:gap-5 md:mt-20 md:grid-cols-12 md:gap-8">
-          {images.gallery.map((img, i) => (
-            <Reveal
-              key={img.id ?? img.src}
-              image={img}
-              ratio={img.ratio}
-              sizes={img.span === 7 ? '(min-width: 768px) 58vw, 100vw' : '(min-width: 768px) 40vw, 50vw'}
-              alt={t.gallery.alt}
-              className={`${img.span === 7 ? 'col-span-2' : 'col-span-1'} ${SPAN[img.span]} ${i === 1 ? 'md:mb-24' : ''}`}
-            />
-          ))}
+          {images.gallery.map((img, i) => {
+            const cls = `${img.span === 7 ? 'col-span-2' : 'col-span-1'} ${SPAN[img.span]} ${i === 1 ? 'md:mb-24' : ''}`
+            // Videos (z. B. von Instagram) laufen stumm, sobald sie im Bild sind
+            return img.video ? (
+              <VideoTile key={img.video} name={img.video} ratio={img.ratio} className={cls} />
+            ) : (
+              <Reveal
+                key={img.id ?? img.src}
+                image={img}
+                ratio={img.ratio}
+                sizes={img.span === 7 ? '(min-width: 768px) 58vw, 100vw' : '(min-width: 768px) 40vw, 50vw'}
+                alt={t.gallery.alt}
+                className={cls}
+              />
+            )
+          })}
         </div>
       </div>
     </section>

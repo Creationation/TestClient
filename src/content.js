@@ -175,15 +175,13 @@ export const images = {
   ],
   // „Einblicke“: kurze Videos aus dem Salon
   reels: ['gelato-sorten', 'patisserie-2', 'torten', 'salon'],
-  // „Gelato aus eigener Hand“ (Symbolfoto Pistazie, bis die Fotos aus dem Salon da sind)
-  story: { id: '1780340123533-954cef8c7eaa' },
   // Redaktionelles Raster: span = Spalten von 12 (Desktop), ratio = Breite/Höhe
-  // Nur noch Bilder, die zum Salon passen (fremde Vitrinen und Becher entfernt); Instagram-Videos kommen dazu
+  // Nur Bilder und Videos aus dem Salon (video = Name in /public/videos, z. B. von Instagram)
   gallery: [
     { src: '/images/vitrine.jpg', span: 7, ratio: 3 / 2 },
     { src: '/images/salon-tables.jpg', span: 5, ratio: 4 / 5 },
-    { src: '/images/salon-wall.jpg', span: 5, ratio: 4 / 5 },
-    { id: '1780340123533-954cef8c7eaa', span: 7, ratio: 3 / 2 },
+    { video: 'salon-tour', span: 5, ratio: 4 / 5 },
+    { src: '/images/salon-xmas.jpg', span: 7, ratio: 3 / 2 },
   ],
 }
 
@@ -223,7 +221,7 @@ export const content = {
       // erst das Gelato, darunter der Salon in einem Text, danach „Der Weg zu uns“
       title: 'Gelato aus eigener Hand.',
       text: 'Unser Gelato machen wir selbst: mit guten Zutaten, viel Geduld und Freude an dem, was wir tun. Cremig, voller Geschmack und in vielen Sorten in unserer Vitrine.',
-      imageAlt: 'Pistazieneis mit frischen Pistazien',
+      imageAlt: 'Unser Gelato kommt frisch aus der Eismaschine',
       shop: {
         eyebrow: 'Gelati am Dom',
         lead: 'Eine Gelateria mitten im ersten Bezirk, nur wenige Schritte vom Stephansdom entfernt.',
@@ -338,7 +336,7 @@ export const content = {
       eyebrow: 'Our story',
       title: 'Artisan gelati, made by us.',
       text: 'We make our gelato ourselves: with good ingredients, plenty of patience and real joy in what we do. Creamy, full of flavour and in many varieties in our display.',
-      imageAlt: 'Pistachio gelato with fresh pistachios',
+      imageAlt: 'Our gelato fresh from the machine',
       shop: {
         eyebrow: 'Gelati am Dom',
         lead: 'A gelateria in the heart of Vienna’s first district, just a few steps from St. Stephen’s Cathedral.',

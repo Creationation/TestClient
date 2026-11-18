@@ -61,7 +61,7 @@ export default function Footer() {
       </div>
       {/* großer Schriftzug in Messing-Gold, wie an der Wand */}
       <div className="footer-giant flex justify-center overflow-hidden px-6 pt-[4vw] pb-[3vw] text-[12.5vw] md:text-[10.5vw]">
-        <Logo className="footer-logo" />
+        <Logo className="footer-logo" tone="gold-light" />
       </div>
     </footer>
   )
