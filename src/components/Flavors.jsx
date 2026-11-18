@@ -4,7 +4,8 @@ import { gsap } from '../lib/gsap'
 import { useLang } from '../lib/lang'
 import Appear from './Appear'
 
-const cardSrc = (img, w) => unsplash(img.id, w, Math.round(w * 1.25), img.crop)
+// eigene Sortenfotos (alle im selben Stil) liegen in /images/sorten, sonst noch das Symbolfoto
+const cardSrc = (img, w) => (img.local ? `/images/sorten/${img.local}-${w}.jpg` : unsplash(img.id, w, Math.round(w * 1.25), img.crop))
 
 const Arrow = ({ dir }) => (
   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">

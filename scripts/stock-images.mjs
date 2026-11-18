@@ -8,7 +8,8 @@ const dir = new URL('../public/images/stock/', import.meta.url)
 mkdirSync(dir, { recursive: true })
 
 const jobs = []
-for (const f of flavors) for (const w of [480, 760, 1100]) jobs.push([f.image.id, w, Math.round(w * 1.25), f.image.crop])
+// Sorten mit eigenem Foto (public/images/sorten) brauchen kein Symbolfoto
+for (const f of flavors) if (f.image.id) for (const w of [480, 760, 1100]) jobs.push([f.image.id, w, Math.round(w * 1.25), f.image.crop])
 for (const img of [...images.offer, ...images.gallery])
   if (img.id) for (const w of [500, 900, 1400]) jobs.push([img.id, w, Math.round(w / (img.ratio ?? 0.8)), img.crop])
 

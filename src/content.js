@@ -66,7 +66,7 @@ export const routeOrigins = [
 export const flavors = [
   {
     key: 'pistazie',
-    image: { id: '1603736029103-dafad0eb0906' },
+    image: { local: 'pistazie' },
     de: { name: 'Pistazie', note: 'Nussig & cremig', text: 'Cremiges Pistazieneis, nussig, mild und unverwechselbar.' },
     en: { name: 'Pistachio', note: 'Nutty & creamy', text: 'Creamy pistachio gelato, nutty, mild and unmistakable.' },
   },
